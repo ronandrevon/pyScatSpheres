@@ -1,0 +1,31 @@
+site_name: pyScatSpheres
+site_author: Tarik Ronan Drevon
+
+docs_dir: 'docs'
+site_dir: 'site'
+
+theme: readthedocs
+markdown_extensions:
+    - wikilinks
+    - toc:
+        title: Table of Contents
+    - attr_list
+    - fenced_code
+    - pymdownx.highlight
+    - pymdownx.critic
+    - pymdownx.tasklist
+    - mdx_math:
+        enable_dollar_delimiter: True
+
+extra_javascript:
+ - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML'
+ - 'mathjaxhelper.js'
+
+plugins:
+  - macros
+
+nav:
+  - Index : 'README.md'
+  - Theory:
+    - linear array hard spheres : 'linear_array_hard_sphere.md'
+    - linear array qdot spheres : 'linear_array_qdot_sphere.md'
