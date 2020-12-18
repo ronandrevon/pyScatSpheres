@@ -1,13 +1,11 @@
-import importlib as imp
+# import importlib as imp
 import scipy.special as spe
 import numpy as np, pandas as pd
-# import utils.displayStandards as dsp ;imp.reload(dsp)
-import utils.glob_colors as colors
-from . import spherical_utils as spu ;imp.reload(spu)
-from . import hard_sphere_base as hsb ;imp.reload(hsb)
+from . import spherical_utils as spu  #;imp.reload(spu)
+from . import hard_sphere_base as hsb #;imp.reload(hsb)
+from . import glob_colors as colors
 
 Pl = lambda l,theta: np.sqrt(4*np.pi/(2*l+1))*spe.sph_harm(0,l,0,theta)
-
 
 class HardSphereArray(hsb.HardSphereArrayBase):
     def solve(self,nmax=-1,copt=1,v=1):
