@@ -15,7 +15,7 @@ ax_props = [
     {'axPos':[0.0+wm,0.5+hm,0.5-2*wm,0.5-1.5*hm],},
     # {'axPos':[0.0+wm,0.5+hm,0.5-2*wm,0.5-1.5*hm],'labs':[r'Normalized radius $ka$',r'Normalized Cross section $\sigma/ka^2$']},
     {'axPos':[0.0+wm,0.0+hm,0.5-2*wm,0.5-1.5*hm],'labs':[r'$\Re$',r'$\Im$'  ]},
-    {'axPos':[0.5+wm,0.5+hm,0.5-2*wm,0.5-1.5*hm],'xylims':['x',0,180]        },
+    {'axPos':[0.5+wm,0.5+hm,0.5-2*wm,0.5-1.5*hm],},#'xylims':['x',0,180]        },
     {'axPos':[0.5+wm,0.0+hm,0.5-2*wm,0.5-1.5*hm],'labs':['$y$','$z$'        ]},
 ]
 for d in ax_props:d.update(props)

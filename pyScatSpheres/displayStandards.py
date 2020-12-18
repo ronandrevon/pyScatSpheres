@@ -14,8 +14,9 @@ from PIL import Image
 from . import glob_colors as colors
 # Get screen info, remove toolbar
 # matplotlib.rcParams['toolbar'] = 'None'
-matplotlib.rcParams['backend'] = 'GTK3Agg'
-matplotlib.rcParams['pcolor.shading'] = 'auto'
+matplotlib.rcParams['backend']='GTK3Agg'
+# matplotlib.rcParams['pcolor.shading'] = 'auto'
+# matplotlib.rc('backend','GTK3Agg')
 matplotlib.rc('text', usetex=True)
 # matplotlib.rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
 dpi = check_output("xdpyinfo | awk '/resolution/{print $2}'",shell=True).decode()

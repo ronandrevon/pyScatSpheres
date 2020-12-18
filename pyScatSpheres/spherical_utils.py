@@ -7,7 +7,7 @@ from . import displayStandards as dsp
 
 
 w3j = lambda n1,n2,n3,m1,m2,m3 : py3nj.wigner3j(2*n1,2*n2,2*n3,2*m1,2*m2,2*m3)
-gaunt = lambda l1,l2,l3,m1,m2,m3:np.sqrt((2*l1+1)*(2*l2+1)*(2*l3+1)/(4*np.pi))*w3j(l1,l2,l3)*w3j(l1,l2,l3,m1,m2,m3)
+gaunt = lambda l1,l2,l3,m1,m2,m3:np.sqrt((2*l1+1)*(2*l2+1)*(2*l3+1)/(4*np.pi))*w3j(l1,l2,l3,0,0,0)*w3j(l1,l2,l3,m1,m2,m3)
 yn   = lambda n,z : np.sqrt(np.pi/(2*z))*spe.yv(n+0.5,z)
 jn   = lambda n,z : np.sqrt(np.pi/(2*z))*spe.jv(n+0.5,z)
 hn1  = lambda n,z : np.sqrt(np.pi/(2*z))*spe.hankel1(n+0.5,z)
