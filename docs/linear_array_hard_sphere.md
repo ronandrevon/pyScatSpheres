@@ -85,11 +85,11 @@ where $\sigma_p^{(coupled)}$ is the scattering expression for the scattering of 
 
 a) $\sigma(ka)$ | b) $f(\theta;ka)$ | c) $abs(h_l(ka))$
 --------------- | ----------------- | ---------------
-[<img src="{{figs}}1_ska.svg" width="250" />]({{figs}}1_ska.svg) |  [<img src="{{figs}}1_fka.svg" width="250" />]({{figs}}1_fka.svg) |  [<img src="{{figs}}1_hl.svg" width="250" />]({{figs}}1_hl.svg)
+[<img src="figures/hardSphereArray1_ska.svg" width="250" />](figures/hardSphereArray1_ska.svg) |  [<img src="figures/hardSphereArray1_fka.svg" width="250" />](figures/hardSphereArray1_fka.svg) |  [<img src="figures/hardSphereArray1_hl.svg" width="250" />](figures/hardSphereArray1_hl.svg)
 
 d) $c_{pl}(ka=0.5-5)$ | (e) $c_{pl}(ka=5-20)$ | (f) $c_{pl}(ka=30-40)$
 --------------------- | --------------------- | ---------------------
-[<img src="{{figs}}1_1cpl.svg" width="250" />]({{figs}}1_1cpl.svg) |  [<img src="{{figs}}1_2cpl.svg" width="250" />]({{figs}}1_2cpl.svg) | [<img src="{{figs}}1_cpl.svg" width="250" />]({{figs}}1_cpl.svg)
+[<img src="figures/hardSphereArray1_1cpl.svg" width="250" />](figures/hardSphereArray1_1cpl.svg) |  [<img src="figures/hardSphereArray1_2cpl.svg" width="250" />](figures/hardSphereArray1_2cpl.svg) | [<img src="figures/hardSphereArray1_cpl.svg" width="250" />](figures/hardSphereArray1_cpl.svg)
 
 a) Integrated and b) differential cross sections for a single sphere with normalized radius $ka$.
 c) The magnitude of the Hankel functions up to order $l=50$ and $ka=50$.
@@ -103,8 +103,8 @@ Case for 2 identical spheres of normalized radius $ka$ and inter-distance $kd$.
 
  --          | ka=0.5 | ka=1.0 | ka=2.0 | ka=4.0
 ------------ | ------ | ------ | ------ | ------
-$C_{0l}(kd)$ |[![]({{figs}}_ka0cpl0.svg)]({{figs}}_ka0cpl0.svg) | [![]({{figs}}_ka1cpl0.svg)]({{figs}}_ka1cpl0.svg) | [![]({{figs}}_ka2cpl0.svg)]({{figs}}_ka2cpl0.svg) | [![]({{figs}}_ka3cpl0.svg)]({{figs}}_ka3cpl0.svg)
-$C_{1l}(kd)$ |[![]({{figs}}_ka0cpl1.svg)]({{figs}}_ka0cpl1.svg) | [![]({{figs}}_ka1cpl1.svg)]({{figs}}_ka1cpl1.svg) | [![]({{figs}}_ka2cpl1.svg)]({{figs}}_ka2cpl1.svg) | [![]({{figs}}_ka3cpl1.svg)]({{figs}}_ka3cpl1.svg)
+$C_{0l}(kd)$ |[![](figures/hardSphereArray_ka0cpl0.svg)](figures/hardSphereArray_ka0cpl0.svg) | [![](figures/hardSphereArray_ka1cpl0.svg)](figures/hardSphereArray_ka1cpl0.svg) | [![](figures/hardSphereArray_ka2cpl0.svg)](figures/hardSphereArray_ka2cpl0.svg) | [![](figures/hardSphereArray_ka3cpl0.svg)](figures/hardSphereArray_ka3cpl0.svg)
+$C_{1l}(kd)$ |[![](figures/hardSphereArray_ka0cpl1.svg)](figures/hardSphereArray_ka0cpl1.svg) | [![](figures/hardSphereArray_ka1cpl1.svg)](figures/hardSphereArray_ka1cpl1.svg) | [![](figures/hardSphereArray_ka2cpl1.svg)](figures/hardSphereArray_ka2cpl1.svg) | [![](figures/hardSphereArray_ka3cpl1.svg)](figures/hardSphereArray_ka3cpl1.svg)
 
 Scattering coefficients of sphere 0 and sphere 1 for the coupled(solid lines) and uncoupled(dashed lines) systems with varying inter-sphere distance $kd$.
 Different graphs for $ka=0.5,1,2,4$. The different colours on each graph correspond the coefficient of a given mode order.
@@ -112,16 +112,16 @@ Different graphs for $ka=0.5,1,2,4$. The different colours on each graph corresp
 
 $\sigma(kd;ka)$ | $f(\theta;ka=2.0)$ | $f(\theta;ka=5.0)$ | $f(\theta;ka=10)$
 --------------- | -----------------  | -----------------  | ------------------
-[<img src="{{figs}}2_ska.svg"  width="180" />]({{figs}}2_ska.svg) |  [<img src="{{figs}}2_fka0.svg" width="180" />]({{figs}}2_fka0.svg) |  [<img src="{{figs}}2_fka1.svg" width="180" />]({{figs}}2_fka1.svg) |  [<img src="{{figs}}2_fka2.svg" width="180" />]({{figs}}2_fka2.svg)
+[<img src="figures/hardSphereArray2_ska.svg"  width="180" />](figures/hardSphereArray2_ska.svg) |  [<img src="figures/hardSphereArray2_fka0.svg" width="180" />](figures/hardSphereArray2_fka0.svg) |  [<img src="figures/hardSphereArray2_fka1.svg" width="180" />](figures/hardSphereArray2_fka1.svg) |  [<img src="figures/hardSphereArray2_fka2.svg" width="180" />](figures/hardSphereArray2_fka2.svg)
 
 Scattering amplitudes and total scattering cross section with inter-sphere distance for various normalized radius.
 
 
 --   | $i$ | $s$ | $t$  
 ----- | --- | --- | ---
-p0    | [![]({{figs}}2_fi_sphere0.png)]({{figs}}2_fi_sphere0.png) | [![]({{figs}}2_fs_sphere0.png)]({{figs}}2_fs_sphere0.png) | [![]({{figs}}2_ft_sphere0.png)]({{figs}}2_ft_sphere0.png)
-p1    | [![]({{figs}}2_fi_sphere1.png)]({{figs}}2_fi_sphere1.png) | [![]({{figs}}2_fs_sphere1.png)]({{figs}}2_fs_sphere1.png) |  [![]({{figs}}2_ft_sphere1.png)]({{figs}}2_ft_sphere1.png)
-p0+p1 | [![]({{figs}}2_fi.png)]({{figs}}2_fi.png) | [![]({{figs}}2_fs.png)]({{figs}}2_fs.png) | [![]({{figs}}2_ft.png)]({{figs}}2_ft.png)
+p0    | [![](figures/hardSphereArray2_fi_sphere0.png)](figures/hardSphereArray2_fi_sphere0.png) | [![](figures/hardSphereArray2_fs_sphere0.png)](figures/hardSphereArray2_fs_sphere0.png) | [![](figures/hardSphereArray2_ft_sphere0.png)](figures/hardSphereArray2_ft_sphere0.png)
+p1    | [![](figures/hardSphereArray2_fi_sphere1.png)](figures/hardSphereArray2_fi_sphere1.png) | [![](figures/hardSphereArray2_fs_sphere1.png)](figures/hardSphereArray2_fs_sphere1.png) |  [![](figures/hardSphereArray2_ft_sphere1.png)](figures/hardSphereArray2_ft_sphere1.png)
+p0+p1 | [![](figures/hardSphereArray2_fi.png)](figures/hardSphereArray2_fi.png) | [![](figures/hardSphereArray2_fs.png)](figures/hardSphereArray2_fs.png) | [![](figures/hardSphereArray2_ft.png)](figures/hardSphereArray2_ft.png)
 
 Incident, scattered and total wave function for the uncoupled $0th$ sphere, uncoupled $1st$ sphere and coupled hard sphere system. Normalized radius $ka=1$ and inter-distance $kd=\pi$.
 
@@ -211,7 +211,7 @@ where $P_l$ are the Legendre polynomials.
 
 <!-- N=10 | N=20 | N=50 | N=99
 ---- | ---- | ---- | ----
-[![]({{figs}}Exi_sphere1.png)]({{figs}}Exi_sphere1.png) |  [![]({{figs}}Exi_sphere2.png)]({{figs}}Exi_sphere2.png) | [![]({{figs}}Exi_sphere3.png)]({{figs}}Exi_sphere3.png) | [![]({{figs}}Exi_sphere4.png)]({{figs}}Exi_sphere4.png) -->
+[![](figures/hardSphereArrayExi_sphere1.png)](figures/hardSphereArrayExi_sphere1.png) |  [![](figures/hardSphereArrayExi_sphere2.png)](figures/hardSphereArrayExi_sphere2.png) | [![](figures/hardSphereArrayExi_sphere3.png)](figures/hardSphereArrayExi_sphere3.png) | [![](figures/hardSphereArrayExi_sphere4.png)](figures/hardSphereArrayExi_sphere4.png) -->
 
 ### Translational addition theorem coefficients
 The spherical wave function $\psi_{l,0}^{out}=\hl Y_l^0(\theta_p)$ can be translated from $(r_p,\theta_p,\phi_p)$ to $(r,\theta,\phi)$ where $\bb r=\bb r_p+\bb t$ using :
@@ -226,5 +226,5 @@ Spherical Hankel functions of the first kind in $(r_p,\theta_p,\phi_p)$ and in r
 
 $\psi_{0}$ | $\psi_{1}$ | $\psi_{2}$ | $\psi_{3}$  
 ----------- | ----------- | ----------- | -----------  
-[![]({{figs}}_psi0.png)]({{figs}}_psi0.png) | [![]({{figs}}_psi1.png)]({{figs}}_psi1.png) | [![]({{figs}}_psi2.png)]({{figs}}_psi2.png) | [![]({{figs}}_psi3.png)]({{figs}}_psi3.png)
-[![]({{figs}}_psi0_t.png)]({{figs}}_psi0_t.png) | [![]({{figs}}_psi1_t.png)]({{figs}}_psi1_t.png) | [![]({{figs}}_psi2_t.png)]({{figs}}_psi2_t.png) | [![]({{figs}}_psi3_t.png)]({{figs}}_psi3_t.png)
+[![](figures/hardSphereArray_psi0.png)](figures/hardSphereArray_psi0.png) | [![](figures/hardSphereArray_psi1.png)](figures/hardSphereArray_psi1.png) | [![](figures/hardSphereArray_psi2.png)](figures/hardSphereArray_psi2.png) | [![](figures/hardSphereArray_psi3.png)](figures/hardSphereArray_psi3.png)
+[![](figures/hardSphereArray_psi0_t.png)](figures/hardSphereArray_psi0_t.png) | [![](figures/hardSphereArray_psi1_t.png)](figures/hardSphereArray_psi1_t.png) | [![](figures/hardSphereArray_psi2_t.png)](figures/hardSphereArray_psi2_t.png) | [![](figures/hardSphereArray_psi3_t.png)](figures/hardSphereArray_psi3_t.png)

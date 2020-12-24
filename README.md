@@ -25,6 +25,12 @@ Those packages can be installed on linux with
 A gui is available to interactively display pre calculated solutions.
 
 ```
+import os
+from pyScatSpheres import gui_base as hsa_gui
+
+#fetch built-in solution
+df_path=os.path.dirname(hsa_gui.__file__)+'/data/qdotSphereArray2_kp0.pkl'
+hsa_e = hsa_gui.GUI_handler(df_path)
 ```
 
 [![](https://pyscatspheres.readthedocs.io/en/latest/figures/gui_screenshot.png)](https://pyscatspheres.readthedocs.io/en/latest/figures/gui_screenshot.png)
