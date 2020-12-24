@@ -5,6 +5,8 @@ Possibility to solve for constant potential well and hard spheres i.e. infinite 
 
 ## Installation
 
+`pip install pyScatSpheres`
+
 The installation requires external system based installations :
 
 - Fortran compiler : to run external library py3nj
@@ -12,13 +14,8 @@ The installation requires external system based installations :
 
 Those packages can be installed on linux with
 
-`apt get install gfortran`
-`apt get install tex-live`
-
-
-### pyScatSpheres
-
-`pip install pyScatSpheres`
+- `apt-get install gfortran`
+- `apt-get install tex-live`
 
 
 ## Using the GUI
