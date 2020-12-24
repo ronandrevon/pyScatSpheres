@@ -1,5 +1,5 @@
 # Linear array N hard spheres
-{% set figs='/figures/hardSphereArray' %}
+{% set figs='figures/hardSphereArray' %}
 
 ## Scattered field
 The scattering amplitude from the $p$th sphere is expressed as :

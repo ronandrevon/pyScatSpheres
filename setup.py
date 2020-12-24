@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyScatSpheres",
-    version="1.0.3.dev3",
+    version="1.0.3.a1",
     author="Tarik Ronan Drevon",
     author_email="tarik.drevon@stfc.ac.uk",
     description="Scattering of array of spheres, scalar theory",
@@ -21,7 +21,7 @@ setuptools.setup(
     packages=['pyScatSpheres'],
     include_package_data=True,
     package_data={'':['data*.pkl']},
-    install_requires=['numpy','scipy','pandas','colorama','py3nj','matplotlib','easygui'],
+    install_requires=['numpy','scipy','pandas','colorama','matplotlib','easygui','py3nj'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License ",

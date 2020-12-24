@@ -1,7 +1,7 @@
 # Linear array N constant potential spheres
-{% set figs='/figures/qdotSphereArray' %}
-{% set figs1='/figures/qdotSphereSingle_' %}
-{% set figs2='/figures/qdotSphereArray2_' %}
+{% set figs='figures/qdotSphereArray' %}
+{% set figs1='figures/qdotSphereSingle_' %}
+{% set figs2='figures/qdotSphereArray2_' %}
 
 ## Formulation
 ### Scattered field

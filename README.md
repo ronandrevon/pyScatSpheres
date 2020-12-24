@@ -4,14 +4,27 @@ Package for solving the scalar wave equation  with a linear array of scattering 
 Possibility to solve for constant potential well and hard spheres i.e. infinite potential.
 
 ## Installation
+
+The installation requires external system based installations :
+
+- Fortran compiler : to run external library py3nj
+- optional tex compiler : necessary for the figures to be displayed in latex text.
+
+Those packages can be installed on linux with
+
+`apt get install gfortran`
+`apt get install tex-live`
+
+
+### pyScatSpheres
+
 `pip install pyScatSpheres`
+
 
 ## Using the GUI
 A gui is available to interactively display pre calculated solutions.
 
-```python
-from pyScatSpheres import gui_base as gui
-sa = gui.GUI_handler()
+```
 ```
 
 [![](https://pyscatspheres.readthedocs.io/en/latest/figures/gui_screenshot.png)](https://pyscatspheres.readthedocs.io/en/latest/figures/gui_screenshot.png)
