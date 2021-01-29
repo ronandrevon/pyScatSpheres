@@ -164,6 +164,10 @@ If the potential is small $\epsilon=V_0/E\ll 1$, the first Born approximation is
 \end{eqnarray}
 where the $q=2k_0\sin\frac{\theta}{2}$ is the momentum transfer wave vector and $\theta$ the scattering angle.
 
+<!-- \begin{equation}
+f(q) = \frac{V_0}{E} \frac{a^3k_0^2}{q^2a^2}\Big(-\cos qa + \frac{\sin qa}{qa}\Big)
+\end{equation} -->
+
 a) $abs(f(\bb qa))$ | b) $f(\theta),\epsilon\ll 1$ | c) $f(\theta),\epsilon\approx 1$
 ------------- | --------------- | --------------
 [![]({{figs1}}fqa.png )]({{figs1}}fqa.png) | [![]({{figs1}}fka1.svg)]({{figs1}}fka1.svg) | [![]({{figs1}}fka2.svg)]({{figs1}}fka2.svg)

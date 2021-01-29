@@ -140,7 +140,7 @@ Assuming that the scattering amplitude at the $pth$ sphere from the $qth $ spher
 \begin{eqnarray}
   g_p^{(s)}(\bb r_p)  
     &=&g_{p}^{(s,0)}(r_p,\theta_p)\Big(1 + \sum_{q=1}^{p-1} c_q e^{-jkd_q} \Big) \\
-    && g_{p}^{(s,0)}(r_p,\pi-\theta_p)\sum_{q=p+1}^{N}c_q e^{+jkd_q}
+    &&+g_{p}^{(s,0)}(r_p,\pi-\theta_p)\sum_{q=p+1}^{N}c_q e^{+jkd_q}
 \end{eqnarray}
 
 where $g_{p}^{(s,0)}$ is the far field scattering function due to an incident plane wave of the $pth$ sphere located at $d_p$ :
@@ -191,7 +191,7 @@ $Y_l^0(\pi-\theta)=(-1)^lY_l^0(\theta)$ has been used.
 
 $f(ka=1.0;kd=20)$ | $f(ka=5.0;kd=40)$ | $c0l(ka=2;kd)$ | $c1l(ka=2;kd)$
 ----------------- | ----------------- | -------------- | --------------
-[<img src="{{figsa}}fka0.svg" width="150" />]({{figsa}}fka1.svg) |  [<img src="{{figsa}}fka1.svg" width="150" />]({{figsa}}fka1.svg) | [<img src="{{figsa}}ka0cpl0.svg" width="150" />]({{figsa}}ka0cpl0.svg) | [<img src="{{figsa}}ka0cpl1.svg" width="150" />]({{figsa}}ka0cpl1.svg)
+[<img src="{{figsa}}fka0.svg" width="150" />]({{figsa}}fka0.svg) |  [<img src="{{figsa}}fka1.svg" width="150" />]({{figsa}}fka1.svg) | [<img src="{{figsa}}ka0cpl0.svg" width="150" />]({{figsa}}ka0cpl0.svg) | [<img src="{{figsa}}ka0cpl1.svg" width="150" />]({{figsa}}ka0cpl1.svg)
 
 
 <!--
