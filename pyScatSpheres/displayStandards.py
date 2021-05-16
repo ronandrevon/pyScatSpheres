@@ -33,7 +33,7 @@ screen_size = np.array(screen_size.split('x'),dtype=int)/dpi #inches
 def standardDisplay(ax,labs=['','',''],name='', xylims=[], axPos=1,legOpt=None,view=None,
     fonts=[30,25,15,20], c=['k','k'], logOpt='',changeXYlims=True,is_3d=0,
     gridOn=True,gridmOn=False,ticksOn=True,title='',legLoc='best',legElt=[],
-    figopt='1',xyTicks=None,xyTicksm=None,xyTickLabs=None,mg=0.05,opt='p',setPos=True,equal=False,
+    figopt='1',xyTicks=None,xyTicksm=None,xyTickLabs=None,mg=0,opt='p',setPos=True,equal=False,
     pOpt=None):
     '''
     legElt : dict - {'lab1':[(1,0,0),'s-']} overrides existing handles

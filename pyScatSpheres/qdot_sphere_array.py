@@ -7,7 +7,7 @@ from . import spherical_utils as spu  #;imp.reload(spu)
 from . import hard_sphere_base as hsb #;imp.reload(hsb)
 
 class QdotSphereArray(hsb.HardSphereArrayBase):
-    def solve(self,nmax=-1,copt=1,opt2=0,v=0):
+    def solve(self,nmax=-1,copt=1,opt2=0,v=1):
         ''' Finds the unknown coefficients
         - nmax : max inlcuded order
         - copt : solve coupled problem
@@ -44,9 +44,9 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         #### assembling
         T = np.zeros((2*N*nmax,2*N*nmax),dtype=complex)
         P = np.zeros((2*N*nmax,2*N*nmax),dtype=complex)
-        if v:print("...assembling coupling...")
+        if v:print(colors.blue+"...assembling coupling..."+colors.black)
         for p in range(N):
-            print(colors.yellow+'p=%d' %p+colors.black)
+            if v>1:print(colors.yellow+'p=%d' %p+colors.black)
             idp1,idp2 = slice(p*nmax,(p+1)*nmax),slice((N+p)*nmax,(N+p+1)*nmax)
             P[idp1,idp1] =  np.diag(jl1)
             P[idp1,idp2] = -np.diag(hl0)
@@ -66,7 +66,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                     T[idp1,idqb] =  jl0[:,None]* aln1
                     T[idp2,idqb] = djl0[:,None]* aln1
         #### Solving
-        if v:print("...solving...")
+        if v:print(colors.blue+"...solving..."+colors.black)
         cp = np.linalg.solve(P-copt*T,L)
         self.ap,self.bp = cp[:N*nmax],cp[N*nmax:]
 
@@ -77,14 +77,14 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         self.ap,self.bp = cp[:self.N*self.nmax],cp[self.N*self.nmax:]
 
 
-    def compute_f(self,r,theta,phi,ftype='t',Gopt=0,idp=None):
+    def compute_f(self,r,theta,phi,ftype='t',Gopt='',idp=None):
         ''' computes scattering amplitude f
         - r,theta,phi : np.ndarray each - coordinates
         - ftype : str - 't'(total), 's'(scattered), 'i'(incident),
-        - Gopt : compute gradient
+        - Gopt : compute gradient(G), Flux(F)
         - idp : index of sphere to show (None or -1 => all)
         return :
-        - np.real(E_ftype)
+            - Field
         '''
         k,n_p,d_p,nmax,N = self.k,self.kp,self.d_p,self.nmax,self.N
         x,y,z = spu.sphere2cart(r,theta,phi)
@@ -141,12 +141,18 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                     gs[idx_i] += self.ap[p*nmax+l]*n_p*spu.jnp( l,n_p*k*r_p[idx_i])*Yl[idx_i]
 
         #total field
-        if Gopt:
-            # print('     return Gradient');
+        if Gopt=='G':
+            # print('Radial derivative');
             if   ftype=='t' :return gs+gi
             elif ftype=='s' :return gs
             elif ftype=='i' :return gi
             elif ftype=='a' :return gi,gs
+        elif Gopt=='F':
+            # print('Flux');
+            if   ftype=='t' :return np.conj(fs+fi)#*(gs+gi)
+            elif ftype=='s' :return np.conj(fs)#*gs
+            elif ftype=='i' :return np.conj(fi)#*gi
+            elif ftype=='a' :return np.conj(fi)*gi,np.conj(fs)*gs
         else:
             if   ftype=='t' :return fs+fi
             elif ftype=='s' :return fs

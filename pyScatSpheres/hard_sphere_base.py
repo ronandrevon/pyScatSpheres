@@ -5,7 +5,7 @@ from . import displayStandards as dsp #;imp.reload(dsp)
 from . import spherical_utils as spu #;imp.reload(spu)
 
 class HardSphereArrayBase():
-    def __init__(self,N=1,ka=1,kd=2,kp=np.inf,k=1,nmax=7,Cp=None,solve=False,copt=1):
+    def __init__(self,N=1,ka=1,kd=2,kp=np.inf,k=1,nmax=7,Cp=None,solve=True,copt=1):
         '''equally disitributed linear array of hard spheres
         - N,ka,kp,kd : nb spheres,wave number inside spheres, normalized radius, normalized distances
         - k : incident wave number
@@ -27,13 +27,15 @@ class HardSphereArrayBase():
     ###############################################################
     #  display
     ###############################################################
-    def show_f(self,cart_opt=True,npts=200,r=None,opts='tT',idp=None,fz=np.abs,name='',def_args=True,**kwargs):
+    def show_f(self,cart_opt=True,npts=200,r=None,opts='tT',idp=None,fz=np.abs,
+        name='',def_args=True,short_title=False,v=0,**kwargs):
         '''
-        opts : i(incident), s(scattered), t(total), P(sphere idp),T(All), G(Gradient)
+        opts : i(incident), s(scattered), t(total), P(sphere idp),T(All), G(Gradient), F(flux)
         '''
         ka,kd,N = self.ka,self.kd,self.N
-        if not isinstance(r,tuple) or not isinstance(r,list) or not isinstance(r,np.ndarray):
+        if not isinstance(r,tuple) and not isinstance(r,list) and not isinstance(r,np.ndarray):
             r=(1e-3,4*ka+N*kd,-2*ka,N*kd+2*ka)
+        # print(r)
         r,theta,y,z = spu.polar_mesh2D(cart_opt,npts,r)
         k,N,nmax = self.k,self.N,self.nmax
         ap,dp = self.ka/k,self.kd/k
@@ -43,16 +45,18 @@ class HardSphereArrayBase():
         if def_args:
             args = {'lw':2,'labs':['$y$','$z$'],'imOpt':'c','axPos':'V','fonts':{'title':25},}
 
+        if not ('T'  in opts or 'P' in opts) : opts+='T'
 
         t = np.linspace(-np.pi/2,np.pi/2,100)
         ct,st = np.cos(t), np.sin(t)
         plts = [ [ap*ct, dp*p+ap*st,'k-',''] for p in range(N)]
         fstr =  r'$%s \psi(r,\theta)$' %(['',r'\partial_r']['G' in opts])
+        Gopt =  ''.join([c for c in opts if c in 'GF'] )
         name+=['f','df']['G' in opts]
         if 'P' in opts:
             for p in idp:
-                print("...compute amplitude at p=%d..." %p)
-                fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt='G' in opts,idp=p)
+                if v:print("...compute field at sphere p=%d..." %p)
+                fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt=Gopt,idp=p)
                 if 'i' in opts:
                     f = fz(fi)
                     dsp.stddisp(plts,im=[y,z,f],
@@ -69,9 +73,11 @@ class HardSphereArrayBase():
                         title = r"Total %s at sphere %d, $N_{max}=%d$" %(fstr,p,nmax),
                         name=name+'t_sphere%d.png' %p,**args,**kwargs)
         if 'T' in opts:
-            print("...compute total amplitude ...")
-            fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt='G' in opts)
+            if v:print("...compute field from all spheres ...")
+            fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt=Gopt)
             params = self._params()
+            if short_title:params,fstr = '',[r'$\Psi$',r'$\partial_r\Psi$']['G' in opts]
+            # if ''
             if 'i' in opts:
                 f = fz(fi)
                 dsp.stddisp(plts,im=[y,z,f],
@@ -89,7 +95,7 @@ class HardSphereArrayBase():
                     name=name+'t.png',**args,**kwargs)
         return f.max(),f.min()
 
-    def show_ff(self,npts=361,fopts='m',lw=2,leg=1,name='',title=None,**kwargs):
+    def show_ff(self,npts=361,fopts='m',lw=2,leg=1,name='',title=None,xylims=[],**kwargs):
         ''' display far field scattering amplitude
         - fopts : r(real), i(imag), m(mag), a(angle), 2(mag2)
         '''
@@ -106,8 +112,16 @@ class HardSphereArrayBase():
         if '2' in fopts: plts+= [[theta_d,np.abs(ff)**2  ,[[0.25,0.75,1],ls],['',r'$||^2$'][leg] ]]
         if not isinstance(title,str):
             title='Scattering amplitude for %s' %self._params()
+        # if not xylims:
+        #     m,M = 0,0
+        #     if 'r' in fopts:m,M = min(m,np.abs(ff).min()
+        #     if 'i' in fopts:
+        #     if 'a' in fopts:
+        #     if 'm' in fopts:
+        #     if '2' in fopts:
+        #     xylims=[0,180,m,M]
         return dsp.stddisp(plts,labs=[r"$\theta(^{\circ})$",r"$f(\theta)$"],lw=lw,
-            title=title, xylims=[0,180,0,np.abs(ff).max()],
+            title=title, xylims=xylims,
             name=name+'fka.svg',**kwargs)
 
     def _params(self):
