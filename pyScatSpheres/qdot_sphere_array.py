@@ -149,9 +149,9 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             elif ftype=='a' :return gi,gs
         elif Gopt=='F':
             # print('Flux');
-            if   ftype=='t' :return np.conj(fs+fi)#*(gs+gi)
-            elif ftype=='s' :return np.conj(fs)#*gs
-            elif ftype=='i' :return np.conj(fi)#*gi
+            if   ftype=='t' :return np.conj(fs+fi)*(gs+gi)
+            elif ftype=='s' :return np.conj(fs)*gs
+            elif ftype=='i' :return np.conj(fi)*gi
             elif ftype=='a' :return np.conj(fi)*gi,np.conj(fs)*gs
         else:
             if   ftype=='t' :return fs+fi

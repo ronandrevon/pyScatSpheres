@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyScatSpheres",
-    version="1.0.3",
+    version="1.0.4",
     author="Tarik Ronan Drevon",
     author_email="tarik.drevon@stfc.ac.uk",
     description="Scattering of array of spheres, scalar theory",

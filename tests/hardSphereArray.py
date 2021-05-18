@@ -338,5 +338,5 @@ name=path+'hardSphereArray2approx_'
 s1=hsa.HardSphereArray(N=10,ka=2,kd=10,nmax=5,solve=True);
 s1.show_ff(fopts='m',opt='p')
 s1.show_f(opts='tT',npts=500,fz=np.real,caxis=[-1,1],name=name+'10_',opt='p')
-s1.show_f(opts='sT',npts=500,fz=np.real,caxis=[-1,1],name=name+'10_',opt='p')
+# s1.show_f(opts='sT',npts=500,fz=np.real,caxis=[-1,1],name=name+'10_',opt='p')
 # s1.test_convergence(nmaxs=[3,4,5])

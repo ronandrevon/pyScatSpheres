@@ -29,3 +29,6 @@ nav:
   - Theory:
     - linear array hard spheres : 'linear_array_hard_sphere.md'
     - linear array qdot spheres : 'linear_array_qdot_sphere.md'
+  - Appendix:
+    - Scattering : 'scattering.md'
+    - Spherical coordinates : 'spherical_coords.md'
