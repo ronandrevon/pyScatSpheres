@@ -68,7 +68,7 @@ where $\bb A=(\bb a_{pl}, \bb b_{pl})$ is the unknown vector, $\bb T$ the coupli
 ~\mbox{and}~~~
 \bb L &=&
   \left[\begin{array}{c}
-    e^{jk_0d_1}j_0^1\\...\\e^{jk_0d_N}j_M^N\\e^{jk_0d_1}j_0^{N'}\\...\\e^{jk_0d_N}j_M^{N'}
+    c_0e^{jk_0d_1}j_0^1\\...\\c_Me^{jk_0d_N}j_M^N\\c_0e^{jk_0d_1}j_0^{N'}\\...\\c_Me^{jk_0d_N}j_M^{N'}
   \end{array}\right]
 \end{eqnarray}
 
