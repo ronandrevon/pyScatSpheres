@@ -2,8 +2,7 @@ import importlib as imp
 from optics.scattering import qdot_sphere_array as qsa ;imp.reload(qsa)
 from optics.scattering import spherical_utils as spu   ;imp.reload(spu)
 from optics.scattering import spherical_utils as sphu  ;imp.reload(sphu)
-from utils import *
-imp.reload(dsp)
+from utils import *                                    ;imp.reload(dsp)
 from scipy.integrate import trapz,quad
 import scipy.special as spe
 import scipy.fft as fft

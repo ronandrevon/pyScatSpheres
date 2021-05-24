@@ -76,24 +76,29 @@ where $j_l^p = j_l(k_pa_p)$, $h_l^p = h_l^{(1)}(k_0a_p)$ and $z_l^{p'}=\dP_{\rho
 
 ### Far field scattering
 In the far field,
-$\hl(kr_p)\approx (-j)^{l+1}\frac{e^{jkrp}}{kr_p}$, $r_p=r-d_p\cos\theta$, $\theta_p=\theta$
-so the scattering amplitude from the $pth$ sphere can be written $\frac{e^{jkr}}{kr} f_p^{(out)}(\theta)$ where :
+$\hl(k_0r_p)\approx (-j)^{l+1}\frac{e^{jk_0rp}}{k_0r_p}$, $r_p=r-d_p\cos\theta$, $\theta_p=\theta$
+so the scattering amplitude from the $pth$ sphere $f_p(\theta)$  can be written :  
+<!-- $\frac{e^{jkr}}{kr} f_p(\theta)$ where : -->
 
 \begin{equation}
   f_p(\theta) = \sum_{l=0}^{\infty} (-j)^{l+1}b_{pl}Y_l^0(\theta)
 \end{equation}
+where we have used the notation $f_p(r_p,\theta)=\frac{e^{jk_0r_p}}{k_0r_p}f_p(\theta)$.
 
-The total scattering amplitude is the sum of the contribution from individual spheres is :
+The total scattering amplitude is the sum of the contribution from all individual spheres.
 \begin{eqnarray}
-  f(\theta) &=& \sum_{p=1}^{N} f_p(\theta)e^{-jkd_p\cos\theta} \\
+  f(\theta) &=& \sum_{p=1}^{N} f_p(\theta)e^{-jk_0d_p\cos\theta} \\
             &=& \sum_{l=1}^{\infty}(-j)^{l+1}Y_l^0(\theta)
-              \sum_{p=1}^{N} b_{pl}e^{-jkd_p\cos\theta} \\
+              \sum_{p=1}^{N} b_{pl}e^{-jk_0d_p\cos\theta} \\
 \end{eqnarray}
+where we have used the notation $f(r,\theta) = \frac{e^{jk_0r}}{k_0r}f(\theta)$.
 
 The normalized differential scattering cross section is therefore :
 \begin{equation}
-  \frac{\sigma(\theta)}{a_p^2} = \frac{|f(\theta)|^2}{\left(ka_p\right)^2}
+  \frac{\sigma(\theta)}{\pi a_p^2} = \frac{4|f(\theta)|^2}{\left(k_0a_p\right)^2}
 \end{equation}
+
+where we have used the definition $\sigma=4\pi r^2 \Bigg |\frac{f(r,\theta)|}{f^{(i)}(r,\theta)}\Bigg|^2$.
 
 
 
