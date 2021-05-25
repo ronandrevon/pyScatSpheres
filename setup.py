@@ -16,7 +16,7 @@ setuptools.setup(
         'Documentation': 'https://pyscatspheres.readthedocs.io/en/latest/',
         'Source':'https://github.com/ronandrevon/pyScatSpheres',
     },
-    keywords=["diffraction","spherical","scalar","wave","array"],
+    keywords=["scattering","diffraction","spherical","scalar","wave","array"],
     python_requires='>=3.6',
     packages=['pyScatSpheres'],
     include_package_data=True,

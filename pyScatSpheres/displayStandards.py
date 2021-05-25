@@ -17,16 +17,17 @@ from . import glob_colors as colors
 matplotlib.rcParams['backend']='GTK3Agg'
 # matplotlib.rcParams['pcolor.shading'] = 'auto'
 # matplotlib.rc('backend','GTK3Agg')
-matplotlib.rc('text', usetex=True)
+# matplotlib.rc('text', usetex=True)
 # matplotlib.rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
-dpi = check_output("xdpyinfo | awk '/resolution/{print $2}'",shell=True).decode()
-dpi = np.array(dpi.strip().split('x'),dtype=int)
-screen_size = check_output("xrandr | grep \"*+\" | awk '{print $1}'",shell=True).decode().split('\n')
+# dpi = check_output("xdpyinfo | awk '/resolution/{print $2}'",shell=True).decode()
+# dpi = np.array(dpi.strip().split('x'),dtype=int)
+# screen_size = check_output("xrandr | grep \"*+\" | awk '{print $1}'",shell=True).decode().split('\n')
 #choose second monitor if present
-screen_size=screen_size[int(len(screen_size)>2)]
-screen_size = np.array(screen_size.split('x'),dtype=int)/dpi #inches
+# screen_size=screen_size[int(len(screen_size)>2)]
+# screen_size = np.array(screen_size.split('x'),dtype=int)/dpi #inches
 
-
+dpi=96
+screen_size=np.array([20. , 11.25])
 ###########################################################################
 #def : plotting standard
 ###########################################################################
