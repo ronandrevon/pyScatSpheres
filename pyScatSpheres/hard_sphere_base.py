@@ -40,7 +40,7 @@ class HardSphereArrayBase():
         k,N,nmax = self.k,self.N,self.nmax
         ap,dp = self.ka/k,self.kd/k
 
-        if idp:self._check_idp(idp=None)
+        self._check_idp(idp);
         args = {}
         if def_args:
             args = {'lw':2,'labs':['$y$','$z$'],'imOpt':'c','axPos':'V','fonts':{'title':25},}
@@ -54,24 +54,24 @@ class HardSphereArrayBase():
         Gopt =  ''.join([c for c in opts if c in 'GF'] )
         name+=['f','df']['G' in opts]
         if 'P' in opts:
-            for p in idp:
-                if v:print("...compute field at sphere p=%d..." %p)
-                fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt=Gopt,idp=p)
-                if 'i' in opts:
-                    f = fz(fi)
-                    dsp.stddisp(plts,im=[y,z,f],
-                        title = r"Incident %s at sphere %d, $N_{max}=%d$" %(fstr,p,nmax),
-                        name=name+'i_sphere%d.png' %p,**args,**kwargs)
-                if 's' in opts:
-                    f = fz(fs)
-                    dsp.stddisp(plts,im=[y,z,f],
-                        title = r"Scattered %s at sphere %d, $N_{max}=%d$" %(fstr,p,nmax),
-                        name=name+'s_sphere%d.png' %p,**args,**kwargs)
-                if 't' in opts:
-                    f = fz(fi+fs)
-                    dsp.stddisp(plts,im=[y,z,f],
-                        title = r"Total %s at sphere %d, $N_{max}=%d$" %(fstr,p,nmax),
-                        name=name+'t_sphere%d.png' %p,**args,**kwargs)
+            p=idp
+            if v:print("...compute field at sphere p=%d..." %p)
+            fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt=Gopt,idp=p)
+            if 'i' in opts:
+                f = fz(fi)
+                dsp.stddisp(plts,im=[y,z,f],
+                    title = r"Incident %s at sphere %d, $N_{max}=%d$" %(fstr,p,nmax),
+                    name=name+'i_sphere%d.png' %p,**args,**kwargs)
+            if 's' in opts:
+                f = fz(fs)
+                dsp.stddisp(plts,im=[y,z,f],
+                    title = r"Scattered %s at sphere %d, $N_{max}=%d$" %(fstr,p,nmax),
+                    name=name+'s_sphere%d.png' %p,**args,**kwargs)
+            if 't' in opts:
+                f = fz(fi+fs)
+                dsp.stddisp(plts,im=[y,z,f],
+                    title = r"Total %s at sphere %d, $N_{max}=%d$" %(fstr,p,nmax),
+                    name=name+'t_sphere%d.png' %p,**args,**kwargs)
         if 'T' in opts:
             if v:print("...compute field from all spheres ...")
             fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt=Gopt)
@@ -132,14 +132,8 @@ class HardSphereArrayBase():
     ############################################################################
     def _check_idp(self,idp=None):
         if isinstance(idp,int) :
-            if idp>=0 and idp<self.N:
-                idp=[idp]
-            else:
-                print(colors.red+'warn:sphere index not within 0<=idp<N'+colors.black)
-                idp=np.arange(self.N)
-        else:
-            idp=np.arange(self.N)
-        return idp
+            if not (idp>=0 and idp<self.N):
+                raise Exception(colors.red+'sphere index not within 0<=idp<N'+colors.black)
 
     def test_convergence(self,nmaxs,npts=361,name='', **kwargs):
         ns = np.array(nmaxs).size

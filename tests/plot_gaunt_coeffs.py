@@ -44,15 +44,15 @@ def plot_psi_lm(l,m,zl='in',zq='',bbt={}, phi=0,cart_opt=True,npts=100,r=(1e-3,5
 ###########################################################################################################
 #                                               Tests
 ###########################################################################################################
-opts= '' #i(in-in), o(out-out)g(gaunt)
+opts= 'o' #i(in-in), o(out-out)g(gaunt)
 name,opt=path+'psi','p'
 
 Nmax=1
 ls = np.hstack([[n]*(n+1) for n in np.arange(Nmax)])
 ms = np.hstack([np.arange(n+1) for n in np.arange(Nmax)])
+phi,npts,R = 0, 100, 2
 
 if 'i' in opts:
-    phi,npts,R = 0, 100, 2
     xylims,xylims0 = 2*R*np.array([1e-3,1,0,1]),R*np.array([-1,1,-1,1])
     bbt = {'r_d':6,'theta_d':2*np.pi/3,'phi_d':np.pi, 'Nmax':10}
     for l,m in zip(ls,ms): plot_psi_lm(l=l,m=m,zl='in',zq=''  ,bbt={} ,phi=phi,cart_opt=True,npts=npts,r=xylims0,

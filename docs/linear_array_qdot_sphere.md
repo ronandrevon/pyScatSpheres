@@ -24,8 +24,8 @@ Since spherical harmonics are used, the continuity of the derivative of the radi
 \begin{eqnarray}
       \Big(\sum_{q=1}^N f_q^{(out)}+f^{(i)}\Big)\big|_{r_p=a_p}
   &=& \Big(f_p^{(in)}\Big)\big|_{r_p=a_p} \\
-      \dP_r\Big(\sum_{q=1}^N f_q^{(out)}+f^{(i)}\Big)\big|_{r_p=a_p}
-  &=& \dP_r\Big(f_p^{(in)}\Big)\big|_{r_p=a_p} \\
+      \dP_{r_p}\Big(\sum_{q=1}^N f_q^{(out)}+f^{(i)}\Big)\big|_{r_p=a_p}
+  &=& \dP_{r_p}\Big(f_p^{(in)}\Big)\big|_{r_p=a_p} \\
 \end{eqnarray}
 
 Using the orthogonality of the spherical harmonics.

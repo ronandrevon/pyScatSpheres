@@ -9,7 +9,7 @@
 # 
 # The module for solving the linear array of spherical quantum dot is `qdot_sphere_array` of the `pyScatSpheres` package.
 
-# In[1]:
+# In[5]:
 
 
 import importlib as imp
@@ -18,7 +18,7 @@ from pyScatSpheres import qdot_sphere_array as qsa;imp.reload(qsa)
 from pyScatSpheres import glob_colors as colors
 from pyScatSpheres import displayStandards as dsp
 # import IPython
-# %matplotlib notebook
+get_ipython().run_line_magic('matplotlib', 'notebook')
 
 
 # ## Single sphere
