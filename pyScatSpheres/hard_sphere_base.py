@@ -5,7 +5,7 @@ from . import displayStandards as dsp #;imp.reload(dsp)
 from . import spherical_utils as spu #;imp.reload(spu)
 
 class HardSphereArrayBase():
-    def __init__(self,N=1,ka=1,kd=2,kp=np.inf,k=1,nmax=7,Cp=None,solve=True,copt=1):
+    def __init__(self,N=1,ka=1,kd=2*np.ones(1),kp=np.inf,k=1,nmax=7,Cp=None,solve=True,copt=1):
         '''equally disitributed linear array of hard spheres
         - N,ka,kp,kd : nb spheres,wave number inside spheres, normalized radius, normalized distances
         - k : incident wave number
@@ -46,10 +46,11 @@ class HardSphereArrayBase():
             args = {'lw':2,'labs':['$y$','$z$'],'imOpt':'c','axPos':'V','fonts':{'title':25},}
 
         if not ('T'  in opts or 'P' in opts) : opts+='T'
-
         t = np.linspace(-np.pi/2,np.pi/2,100)
         ct,st = np.cos(t), np.sin(t)
-        plts = [ [ap*ct, dp*p+ap*st,'k-',''] for p in range(N)]
+#LIGNE A CHANGER !!
+        #plts = [ [ap*ct, dp*p+ap*st,'k-',''] for p in range(N)]
+        plts = [ [ap*ct, dp[p]*p+ap*st,'k-',''] for p in range(N)]
         fstr =  r'$%s \psi(r,\theta)$' %(['',r'\partial_r']['G' in opts])
         Gopt =  ''.join([c for c in opts if c in 'GF'] )
         name+=['f','df']['G' in opts]
@@ -125,7 +126,15 @@ class HardSphereArrayBase():
             name=name+'fka.svg',**kwargs)
 
     def _params(self):
-        ss = '$N=%d$, $n_{ref}=%g$, $ka=%.1f$, $kd=%.1f$' %(self.N,self.kp, self.ka,self.kd)
+        #ss = '$N=%d$, $n_{ref}=%g$, $ka=%.1f$, $kd=%.1f$' %(self.N,self.kp, self.ka,self.kd)
+        #pp='[''{:.2f}'.format(i) for i in self.kd']'
+#LIGNE A CHANGER !!
+        ss = '$N=%d$, $n_{ref}=%g$, $ka=%.1f$ ,kd=[' %(self.N,self.kp, self.ka)
+        for i in self.kd :
+            pp='%.1f,' %i 
+            ss+=pp
+        ss+=']'
+
         return ss
     ############################################################################
     # misc
@@ -154,9 +163,11 @@ class HardSphereArrayBase():
         #### display
         cs   = dsp.getCs('Spectral',ns)
         nref = ['%g' %self.kp,r'\infty'][self.kp==np.inf]
-        tle  = 'Convergence test $ka=%.1f$, $kd=%.1f$, $n_{ref}=%s$' %(self.ka,self.kd,nref)
+        tle  = 'Convergence test $ka=%.1f$, $n_{ref}=%s,$, kd=[' %(self.ka,nref)
+        for i in self.kd :
+            tlep='%.1f,' %i 
+            tle+=tlep
+        tle+=']'
         labs =[r"$\theta(^{\circ})$",r"$|f(\theta)|$"]
         plts = [[theta_d,np.abs(f[i]), cs[i] ,'$n_{max}=%d$' %nmax] for i,nmax in enumerate(nmaxs)]
-        dsp.stddisp(plts,labs=labs,lw=2,
-            title=tle,xylims=['x',0,180],
-            name=name+'fconv.svg',**kwargs)
+        dsp.stddisp(plts,labs=labs,lw=2,title=tle,xylims=['x',0,180],name=name+'fconv.svg',**kwargs)
