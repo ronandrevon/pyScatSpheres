@@ -26,7 +26,7 @@ matplotlib.rcParams['backend']='GTK3Agg'
 # screen_size=screen_size[int(len(screen_size)>2)]
 # screen_size = np.array(screen_size.split('x'),dtype=int)/dpi #inches
 
-dpi=96
+dpi=[96]*2
 screen_size=np.array([20. , 11.25])
 ###########################################################################
 #def : plotting standard
