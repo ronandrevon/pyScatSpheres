@@ -12,7 +12,12 @@ class HardSphereArrayBase():
         - nmax : max included order expansion
         '''
         self.k,self.N,self.nmax = k,N,nmax+1
-        self.ka,self.kp,self.kd,self.kd_p = ka,kp,kd,kd*np.arange(N)
+        self.ka,self.kp,self.kd= ka,kp,kd
+        self.kd_p=np.zeros(kd.shape[0])
+        self.kd_p[0]=kd[0]
+        for i in range(1,N):
+            self.kd_p[i]=kd[i]+self.kd_p[i-1] 
+        print(self.kd_p)
         self.d_p  = self.kd_p/k
         if isinstance(Cp,np.ndarray):self.set_Cp(Cp)
         if solve:self.solve(copt=copt)
@@ -35,7 +40,7 @@ class HardSphereArrayBase():
         ka,kd,N = self.ka,self.kd,self.N
         if not isinstance(r,tuple) and not isinstance(r,list) and not isinstance(r,np.ndarray):
             r=(1e-3,4*ka+N*kd,-2*ka,N*kd+2*ka)
-        # print(r)
+        print(r)
         r,theta,y,z = spu.polar_mesh2D(cart_opt,npts,r)
         k,N,nmax = self.k,self.N,self.nmax
         ap,dp = self.ka/k,self.kd/k
