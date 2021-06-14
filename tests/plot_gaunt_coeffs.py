@@ -3,11 +3,10 @@ import time
 from utils import*
 import scipy.special as spe
 import pyScatSpheres.spherical_utils as spu ;imp.reload(spu)
-import utils.displayStandards as dsp            ;imp.reload(dsp)
+import utils.displayStandards as dsp        ;imp.reload(dsp)
 path='../../docs/figures/'
 plt.close('all')
 
-#import sage.all
 import py3nj
 
 def plot_psi_lm(l,m,zl='in',zq='',bbt={}, phi=0,cart_opt=True,npts=100,r=(1e-3,5),fz=np.abs,name='',caxis=None,**kwargs):
@@ -75,6 +74,7 @@ if 'o' in opts:
 
 ### wigner speed
 if 'g' in opts:
+    import sage.all
     w3j = sage.functions.wigner.wigner_3j
     l,n,m,p = 4,10, 0,1
     qs = np.arange(abs(n-l),n+l)
@@ -92,10 +92,10 @@ phi = np.pi/2
 
 # Mstr = r"$\boldsymbol{M}_{%d1}^{(3)}(r,\theta,\phi=%d^{\circ})$" %(n,np.rad2deg(phi))
 # fM = lambda kr,theta,phi:np.real(spu.get_MNn1(kr,theta,phi, Nmax=1, zn=spu.hn1,znp=spu.hn1p,pol='y')[0][0])
-Mstr = r"$\boldsymbol{M}_{%d1}^{(3)}(r,\theta,\phi)$, $kd_p=$%.1f, $\nu_{max}=$%d" %(n,kdp,Nmax)
-fM = lambda kr,theta,phi:spu.get_MNn1_t(kdp,n,kr,theta,phi,Nmax,zn=spu.jn,znp=spu.jnp,pol='y',fz=np.real)[0]
-spu.plot_E3d_plane(fM,cmpts=[0,1,2],cart_opt='E',r=(0.5,5),npts=100,phi=phi,fieldname=Mstr,
-    opt='ps',name=path+'Mt3_11',caxis=[-0.5,0.5])
+# Mstr = r"$\boldsymbol{M}_{%d1}^{(3)}(r,\theta,\phi)$, $kd_p=$%.1f, $\nu_{max}=$%d" %(n,kdp,Nmax)
+# fM = lambda kr,theta,phi:spu.get_MNn1_t(kdp,n,kr,theta,phi,Nmax,zn=spu.jn,znp=spu.jnp,pol='y',fz=np.real)[0]
+# spu.plot_E3d_plane(fM,cmpts=[0,1,2],cart_opt='E',r=(0.5,5),npts=100,phi=phi,fieldname=Mstr,
+#     opt='ps',name=path+'Mt3_11',caxis=[-0.5,0.5])
 
 
 
