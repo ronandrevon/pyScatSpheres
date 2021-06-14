@@ -2,12 +2,12 @@ import importlib as imp
 import time
 from utils import*
 import scipy.special as spe
-import optics.scattering.spherical_utils as spu ;imp.reload(spu)
+import pyScatSpheres.spherical_utils as spu ;imp.reload(spu)
 import utils.displayStandards as dsp            ;imp.reload(dsp)
 path='../../docs/figures/'
 plt.close('all')
 
-import sage.all
+#import sage.all
 import py3nj
 
 def plot_psi_lm(l,m,zl='in',zq='',bbt={}, phi=0,cart_opt=True,npts=100,r=(1e-3,5),fz=np.abs,name='',caxis=None,**kwargs):
@@ -47,9 +47,11 @@ def plot_psi_lm(l,m,zl='in',zq='',bbt={}, phi=0,cart_opt=True,npts=100,r=(1e-3,5
 opts= 'o' #i(in-in), o(out-out)g(gaunt)
 name,opt=path+'psi','p'
 
-Nmax=1
+Nmax=2
 ls = np.hstack([[n]*(n+1) for n in np.arange(Nmax)])
 ms = np.hstack([np.arange(n+1) for n in np.arange(Nmax)])
+print(ls)
+print(ms)
 phi,npts,R = 0, 100, 2
 
 if 'i' in opts:

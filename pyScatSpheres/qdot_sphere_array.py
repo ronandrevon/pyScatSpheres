@@ -1,12 +1,12 @@
-# import importlib as imp
+import importlib as imp
 import scipy.special as spe
 import numpy as np, pandas as pd
 from . import displayStandards as dsp #;imp.reload(dsp)
 from . import glob_colors as colors
 from . import spherical_utils as spu  #;imp.reload(spu)
-from . import hard_sphere_base as hsb #;imp.reload(hsb)
+from . import hard_sphere_base as hsb ;imp.reload(hsb)
 import harmo_sphe as hs
-
+import time
 class QdotSphereArray(hsb.HardSphereArrayBase):
     def solve(self,nmax=-1,copt=1,opt2=0,v=1):
         ''' Finds the unknown coefficients
@@ -79,7 +79,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         self.ap,self.bp = cp[:self.N*self.nmax],cp[self.N*self.nmax:]
 
 
-    def compute_f2(self,r,theta,phi,ftype='t',Gopt='',idp=None):
+    def compute_f1(self,r,theta,phi,ftype='t',Gopt='',idp=None):
         ''' computes scattering amplitude f
         - r,theta,phi : np.ndarray each - coordinates
         - ftype : str - 't'(total), 's'(scattered), 'i'(incident),
@@ -123,6 +123,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             fs = np.zeros(r.shape,dtype=complex)
             gs = np.zeros(r.shape,dtype=complex)
             #outgoing field
+            ti1=time.time()
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
                 idx_o = r_p>=self.ka     #;print(idx_o.shape)
@@ -132,12 +133,16 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                     gs[idx_o] += self.bp[p*nmax+l]*spu.hn1p(l,k*r_p[idx_o])*Yl[idx_o]
                     #gs SHOULD USE THE TRANSLATION TO GET RADIAL DERIVATIVE r_p
             #remove scattered field inside spheres
+            print(time.time()-ti1)
+            ti2=time.time()
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
                 idx_i = r_p<self.ka
                 fs[idx_i] = 0
                 gs[idx_i] = 0
-            #inside field
+            #inside field*
+            print(time.time()-ti2)
+            ti3=time.time()
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
                 idx_i = r_p<self.ka     #;print(idx_i.shape)
@@ -145,7 +150,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                     Yl = spe.sph_harm(0,l,0,theta_p)
                     fs[idx_i] += self.ap[p*nmax+l]*spu.jn( l,     n_p*k*r_p[idx_i])*Yl[idx_i]
                     gs[idx_i] += self.ap[p*nmax+l]*n_p*spu.jnp( l,n_p*k*r_p[idx_i])*Yl[idx_i]
-
+            print(time.time()-ti3)
         #total field
         if Gopt=='G':
             # print('Radial derivative');
@@ -218,9 +223,124 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         if ftype in 'sta':
             fs = np.zeros(r.shape,dtype=complex)
             gs = np.zeros(r.shape,dtype=complex)
+            #print(coor)
             #outgoing field
+            
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
+
+                idx_o = r_p>=self.ka     #;print(idx_o.shape)
+                A=hs.harmonique(nmax-1,theta_p,'tab')
+                for l in range(nmax):
+                    Yl=A[:,0][l]
+
+                    fs[idx_o] += self.bp[p*nmax+l]*spu.hn1(l, k*r_p[idx_o])*Yl[idx_o]
+                    gs[idx_o] += self.bp[p*nmax+l]*spu.hn1p(l,k*r_p[idx_o])*Yl[idx_o]
+
+                    #t1=time.time()
+                    #A1=spu.hn1p(l,k*r_p[idx_o])
+                    #tf=time.time()-t1
+                    #print(tf)
+
+                    #gs SHOULD USE THE TRANSLATION TO GET RADIAL DERIVATIVE r_p
+            #remove scattered field inside spheres
+
+            for p in range(N):
+                r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
+                idx_i = r_p<self.ka
+                fs[idx_i] = 0
+                gs[idx_i] = 0
+            #inside field
+
+            for p in range(N):
+                r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
+                idx_i = r_p<self.ka     #;print(idx_i.shape)
+                A=hs.harmonique(nmax-1,theta_p,'tab')
+                for l in range(nmax):
+                    Yl=A[:,0][l]
+                    #print(time.time()-ti2)
+                    #Yl=hs.harmonique(l,theta_p,0)
+
+                    fs[idx_i] += self.ap[p*nmax+l]*spu.jn( l,     n_p*k*r_p[idx_i])*Yl[idx_i]
+                    gs[idx_i] += self.ap[p*nmax+l]*n_p*spu.jnp( l,n_p*k*r_p[idx_i])*Yl[idx_i]
+                    #t1=time.time()
+                    #A1=spu.jn( l,     n_p*k*r_p[idx_i])
+                    #tf=time.time()-t1
+                    #print(tf)
+   
+        #total field
+        if Gopt=='G':
+            # print('Radial derivative');
+            if   ftype=='t' :return gs+gi
+            elif ftype=='s' :return gs
+            elif ftype=='i' :return gi
+            elif ftype=='a' :return gi,gs
+        elif Gopt=='F':
+            # print('Flux');
+            if   ftype=='t' :return np.conj(fs+fi)*(gs+gi)
+            elif ftype=='s' :return np.conj(fs)*gs
+            elif ftype=='i' :return np.conj(fi)*gi
+            elif ftype=='a' :return np.conj(fi)*gi,np.conj(fs)*gs
+        else:
+            if   ftype=='t' :return fs+fi
+            elif ftype=='s' :return fs
+            elif ftype=='i' :return fi
+            elif ftype=='a' :return fi,fs
+
+    def compute_f3(self,r,theta,phi,ftype='t',Gopt='',idp=None):
+        ''' computes scattering amplitude f
+        - r,theta,phi : np.ndarray each - coordinates
+        - ftype : str - 't'(total), 's'(scattered), 'i'(incident),
+        - Gopt : compute gradient(G), Flux(F)
+        - idp : index of sphere to show (None or -1 => all)
+        return :
+            - Field
+        '''
+        k,n_p,d_p,nmax,N = self.k,self.kp,self.d_p,self.nmax,self.N
+        x,y,z = spu.sphere2cart(r,theta,phi)
+        self._check_idp(idp) #;print(idp)
+
+        #incident wave
+        if ftype in 'ita':
+            fi = np.zeros(r.shape,dtype=complex)
+            gi = np.zeros(r.shape,dtype=complex)
+            # plane wave at sphere idp : use local spherical decomposition
+            if isinstance(idp,int):
+                # print('incident field at p sphere')
+                r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[idp])
+                for l in range(nmax):
+                    fi += 1J**l*(2*l+1)*spu.jn(l,k*r_p)*spu.Pl(l,theta_p)
+                    gi += 1J**l*(2*l+1)*spu.jnp(l,k*r_p)*spu.Pl(l,theta_p)*k
+                fi *= np.exp(1J*k*self.d_p[idp])
+                gi *= np.exp(1J*k*self.d_p[idp])
+            # Otherwise actual plane wave propagating along z
+            else:
+                # print('full incident field')
+                fi = np.exp(1J*k*z)
+                gi = 1J*k*np.cos(theta)*np.exp(1J*k*z)
+            #remove incident field inside pth spheres
+            for p in range(N):
+                r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
+                idx_i = r_p<self.ka
+                fi[idx_i] = 0
+                gi[idx_i] = 0
+
+        #scattered fields
+        # idp = range(N)
+        if ftype in 'sta':
+            fs = np.zeros(r.shape,dtype=complex)
+            gs = np.zeros(r.shape,dtype=complex)
+            coor=[[spu.cart2sphere(x,y,z-self.d_p[p])] for p in range(N)]
+            #print(coor)
+            #outgoing field
+            for p in range(N):
+                #r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
+                r_p=coor[p][0][0]
+                #print(r_p.shape)
+                theta_p=coor[p][0][1]
+                #print(theta_p.shape)
+                test=coor[:][0][0]
+                print(test[0])
                 idx_o = r_p>=self.ka     #;print(idx_o.shape)
                 A=hs.harmonique(nmax-1,theta_p,'tab')
                 for l in range(nmax):
@@ -239,7 +359,9 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                 gs[idx_i] = 0
             #inside field
             for p in range(N):
-                r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
+                #r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
+                r_p=coor[p][0][0]
+                theta_p=coor[p][0][1]
                 idx_i = r_p<self.ka     #;print(idx_i.shape)
                 A=hs.harmonique(nmax-1,theta_p,'tab')
                 for l in range(nmax):

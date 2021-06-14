@@ -17,7 +17,6 @@ class HardSphereArrayBase():
         self.kd_p[0]=kd[0]
         for i in range(1,N):
             self.kd_p[i]=kd[i]+self.kd_p[i-1] 
-        print(self.kd_p)
         self.d_p  = self.kd_p/k
         if isinstance(Cp,np.ndarray):self.set_Cp(Cp)
         if solve:self.solve(copt=copt)
