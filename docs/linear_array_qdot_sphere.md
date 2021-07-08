@@ -28,16 +28,16 @@ Since spherical harmonics are used, the continuity of the derivative of the radi
   &=& \dP_{r_p}\Big(f_p^{(in)}\Big)\big|_{r_p=a_p} \\
 \end{eqnarray}
 
-Using the orthogonality of the spherical harmonics.
-solving the following linear system yields the unknown coefficients :
+Using the translational additions theorem and the orthogonality of the spherical harmonics $\int_{\Omega} Y_{l}Y_{l'}^{*}d\Omega=\delta_{l,l'}$,
+the following linear system yields the unknown coefficients :
 \begin{eqnarray}
-  \sum_{l=0}^{\infty} a_{pl}j_l(k_pa_p)
+  a_{pl}j_l(k_pa_p)
     &-& b_{pl}\hl(k_0a_p)\\
-    &-& \sum_{q\neq p}^{N} \sum_{n=0}^{\infty} a_{l0,n0}(k_0d_{pq},\theta_{pq})b_{qn}j_n(k_0a_p)
+    &-& \sum_{q\neq p}^{N}\sum_{n=0}^{\infty} a_{l0,n0}(k_0d_{pq},\theta_{pq})b_{qn}j_n(k_0a_p)
       = e^{jk_0d_p}c_lj_l(k_0a_p) \\
-  k_p\sum_l a_{pl}\dP_{\rho}j_l(k_pa_p)
-    &-& k_0\dP_{\rho}b_{pl}\hl(k_0a_p) \\
-    &-& k_0 \sum_{q\neq p}^{N} \sum_{n} a_{l0,n0}(k_0d_{pq},\theta_{pq})b_{qn}\dP_{\rho}j_n(k_0a_p)
+  k_p a_{pl}\dP_{\rho} j_l(k_pa_p)
+    &-& k_0 b_{pl}\dP_{\rho}\hl(k_0a_p) \\
+    &-& k_0 \sum_{q\neq p}^{N} \sum_{n=0}^{\infty} a_{l0,n0}(k_0d_{pq},\theta_{pq})b_{qn}\dP_{\rho}j_n(k_0a_p)
       = k_0e^{jk_0d_p}c_l\dP_{\rho}j_l(k_0a_p)
 \end{eqnarray}
 

@@ -46,12 +46,12 @@ N=10 | N=30 | N=40 | N=50
 Translates the spherical wave function $\psi_{l,m}$ from reference $O(\bb r)$ to $O^{'}$ where $\bb t=\bb r^{'} - \bb r$.
 \begin{eqnarray}
   \psi_{l,m}^{(out)}(\bb r^{'}) &=&
-    \sum_{n=0}^{\infty}\sum_{p=-n}^{n}
-    a_{l,m;n,p}(\bb t)\psi_{n,p}^{(out)}(\bb r)\\
-  a_{l,m;n,p}^{out-out}(\bb t) &=&
-    4\pi\sum_{q=|l-n|}^{l+n}
-    \left(-i\right)^{l-n-q}\psi^{(in)}_{q,m-p}(\bb t)
-    \left(-1\right)^m\cc G(l,n,q,m,-p,-m+p)
+    \sum_{\nu=0}^{\infty}\sum_{\mu=-n}^{n}
+    a_{l,m;\nu,\mu}(\bb t)^{(out-in)}\psi_{\nu,\mu}^{(in)}(\bb r)\\
+  a_{l,m;\nu,\mu}^{out-in}(\bb t) &=&
+    4\pi\sum_{q=|l-\nu|}^{l+\nu}
+    \left(-i\right)^{l-\nu-q}\psi^{(out)}_{q,m-\mu}(\bb t)
+    \left(-1\right)^m\cc G(l,\nu,q,m,-\mu,-m+\mu)
 \end{eqnarray}
 where
 $\psi_{l,m} = z_l(r)Y_l^m(\theta,\phi)$ and
@@ -76,7 +76,7 @@ $\psi_{00}$ | $\psi_{10}$ | $\psi_{11}$ | $\psi_{20}$
 [![](/figures/gaunt00.png)](/figures/gaunt00.png) | [![](/figures/gaunt10.png)](/figures/gaunt10.png) | [![](/figures/gaunt11.png)](/figures/gaunt11.png) | [![](/figures/gaunt20.png)](/figures/gaunt20.png)
 
 
-
+<!--
 ### Building the Legendre polynomials
 In practice, the $P_l^m/\sin\theta$ and $\dP_{\theta}P_l^m$ are found recursively using :
 \begin{eqnarray}
@@ -95,4 +95,4 @@ In practice, the $P_l^m/\sin\theta$ and $\dP_{\theta}P_l^m$ are found recursivel
       &&+\sin\theta\frac{P_l^{m+1}(\cos\theta)}{\sin\theta}
       ~\mbox{,}~ m\geq l
 \end{eqnarray}
-where $P_l^{m+1}=0$ if $m\geq l$.
+where $P_l^{m+1}=0$ if $m\geq l$. -->
