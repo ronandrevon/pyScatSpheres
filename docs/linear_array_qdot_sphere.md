@@ -33,11 +33,11 @@ the following linear system yields the unknown coefficients :
 \begin{eqnarray}
   a_{pl}j_l(k_pa_p)
     &-& b_{pl}\hl(k_0a_p)\\
-    &-& \sum_{q\neq p}^{N}\sum_{n=0}^{\infty} a_{l0,n0}(k_0d_{pq},\theta_{pq})b_{qn}j_n(k_0a_p)
+    &-& j_l(k_0a_p)\sum_{q\neq p}^{N}\sum_{n=0}^{\infty} a_{n0,l0}(k_0d_{pq},\theta_{pq})b_{qn}
       = e^{jk_0d_p}c_lj_l(k_0a_p) \\
   k_p a_{pl}\dP_{\rho} j_l(k_pa_p)
     &-& k_0 b_{pl}\dP_{\rho}\hl(k_0a_p) \\
-    &-& k_0 \sum_{q\neq p}^{N} \sum_{n=0}^{\infty} a_{l0,n0}(k_0d_{pq},\theta_{pq})b_{qn}\dP_{\rho}j_n(k_0a_p)
+    &-& k_0 \dP_{\rho}j_l(k_0a_p)\sum_{q\neq p}^{N} \sum_{n=0}^{\infty} a_{n0,l0}(k_0d_{pq},\theta_{pq})b_{qn}
       = k_0e^{jk_0d_p}c_l\dP_{\rho}j_l(k_0a_p)
 \end{eqnarray}
 
@@ -54,25 +54,50 @@ The linear system can also be written :
   \big(\bb P - \bb T \big)\bb A = \bb L
 \end{equation}
 
-where $\bb A=(\bb a_{pl}, \bb b_{pl})$ is the unknown vector, $\bb T$ the coupling matrix and :
-\begin{eqnarray}
-\bb P &=& \left[
+where $\bb A=(\bb a_{pl}, \bb b_{pl})$ is the unknown vector,
+$\bb P$ the matrix of each individual uncoupled sphere :
+\begin{equation}
+\bb P = \left[
   \begin{array}{ccccccc}
-  j_0^1      &\bb 0&  0        &-h_0^1   &\bb 0&  0      \\
-             & ... &           &         & ... &         \\
-    0        &\bb 0&j_M^N      &  0      &\bb 0&-h_M^N   \\
-  n_1j_0^{1'}&\bb 0&  0        &-h_0^{1'}&\bb 0& 0       \\
-             & ... &           &         & ... &         \\
-    0        &\bb 0&n_Nj_M^{N'}&  0      &\bb 0&-h_M^{N'}\\
+  j_0(k_1a_1)       &\bb 0&  0               &-h_0(k_0a_1)    &\bb 0&  0              \\
+                    & ... &                  &                & ... &                 \\
+    0               &\bb 0&j_M(k_Na_N)       &  0             &\bb 0&-h_M(k_0a_N)     \\
+  n_1j_0^{'}(k_1a_1)&\bb 0&  0               &-h_0^{'}(k_0a_1)&\bb 0& 0               \\
+                    & ... &                  &                & ... &                 \\
+    0               &\bb 0&n_Nj^{'}_M(k_Na_N)&  0             &\bb 0&-h_M^{'}(k_0a_N) \\
   \end{array}\right]
-~\mbox{and}~~~
-\bb L &=&
-  \left[\begin{array}{c}
-    c_0e^{jk_0d_1}j_0^1\\...\\c_Me^{jk_0d_N}j_M^N\\c_0e^{jk_0d_1}j_0^{N'}\\...\\c_Me^{jk_0d_N}j_M^{N'}
-  \end{array}\right]
-\end{eqnarray}
+\end{equation}
 
-where $j_l^p = j_l(k_pa_p)$, $h_l^p = h_l^{(1)}(k_0a_p)$ and $z_l^{p'}=\dP_{\rho}z_l^p(\rho)$.
+, $\bb T$ is the cross-coupling matrix and :
+\begin{eqnarray}
+\bb T &=& \left[
+  \begin{array}{cc}
+    \bb 0 & \bb T_p     \\
+    \bb 0 & \bb T_p^{'}
+  \end{array}\right] \\
+\bb T_p     &=& \bb j_l(k_0a_p)     \sum_{q\neq p}^{N}\bb A_{pq}\\
+\bb T_p^{'} &=& \bb j_l^{'}(k_0a_p) \sum_{q\neq p}^{N}\bb A_{pq}
+\end{eqnarray}
+and :
+\begin{equation}
+\bb A_{pq} = \left[
+  \begin{array}{cccc}
+  0                    & .. & a_{M,0}(k_0d_{pq},\theta_{pq}) \\
+                       & .. &                      \\
+  a_{0,M}(k_0d_{pq},\theta_{pq}) & .. & 0 \\
+  \end{array}\right]
+\end{equation}
+
+and $\bb L$ the incident wave :
+\begin{equation}
+\bb L =
+  \left[\begin{array}{c}
+    c_0e^{jk_0d_1}j_0(k_0a_1)\\...\\c_Me^{jk_0d_N}j_M(k_0a_N)\\c_0e^{jk_0d_1}j_0^{'}(k_0a_1)\\...\\c_Me^{jk_0d_N}j_M^{'}(k_0a_N)
+  \end{array}\right]
+\end{equation}
+
+<!-- where $j_l^p = j_l(k_pa_p)$, $h_l^p = h_l^{(1)}(k_0a_p)$  -->
+where $z_l^{'}=\dP_{\rho}z_l(\rho)$.
 
 ### Far field scattering
 In the far field,
