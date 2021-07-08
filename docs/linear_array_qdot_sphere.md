@@ -75,16 +75,16 @@ $\bb P$ the matrix of each individual uncoupled sphere :
     \bb 0 & \bb T_p     \\
     \bb 0 & \bb T_p^{'}
   \end{array}\right] \\
-\bb T_p     &=& \bb j_l(k_0a_p)     \sum_{q\neq p}^{N}\bb A_{pq}\\
-\bb T_p^{'} &=& \bb j_l^{'}(k_0a_p) \sum_{q\neq p}^{N}\bb A_{pq}
+\bb T_p     &=& \bb j_l(k_0a_p)     \sum_{q\neq p}^{N}\bb A_{pq}^{(out-in)}\\
+\bb T_p^{'} &=& \bb j_l^{'}(k_0a_p) \sum_{q\neq p}^{N}\bb A_{pq}^{(out-in)}
 \end{eqnarray}
 and :
 \begin{equation}
-\bb A_{pq} = \left[
+\bb A_{pq}^{(out-in)} = \left[
   \begin{array}{cccc}
-  0                    & .. & a_{M,0}(k_0d_{pq},\theta_{pq}) \\
-                       & .. &                      \\
-  a_{0,M}(k_0d_{pq},\theta_{pq}) & .. & 0 \\
+  0 & .. & a_{M0;00}^{(out-in)}(k_0d_{pq},\theta_{pq}) \\
+  .. & 0 & ..\\
+  a_{00;M0}^{(out-in)}(k_0d_{pq},\theta_{pq}) & .. & 0 \\
   \end{array}\right]
 \end{equation}
 
