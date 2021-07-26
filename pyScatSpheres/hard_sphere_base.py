@@ -14,7 +14,7 @@ class HardSphereArrayBase():
         self.k,self.N,self.nmax = k,N,nmax+1
         self.ka,self.kp,self.kd= ka,kp,kd
         self.kd_p=np.zeros(kd.shape[0])
-        self.kd_p[0]=kd[0]
+        self.kd_p[0]=self.kd[0]
         for i in range(1,N):
             self.kd_p[i]=kd[i]+self.kd_p[i-1] 
         self.d_p  = self.kd_p/k
