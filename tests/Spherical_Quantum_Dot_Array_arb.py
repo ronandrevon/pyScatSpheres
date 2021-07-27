@@ -9,7 +9,7 @@ from pyScatSpheres import harmo_sphe as hs
 import time
 import pickle
 
-qdot1 = qsa_arb.QdotSphereArray(ka=1,kd_z=np.array([1,2,3,4]),kd_y=np.array([0,0,0,0]),kp=1.1)
+qdot1 = qsa_arb.QdotSphereArray(ka=1,kd_z=np.array([2,4]),kd_y=np.array([0,0]),kp=1.1,nmax=3)
 
 print(qdot1.ap)
 print(qdot1.bp)
