@@ -5,7 +5,7 @@ from . import displayStandards as dsp #;imp.reload(dsp)
 from . import glob_colors as colors
 from . import spherical_utils as spu  #;imp.reload(spu)
 from . import hard_sphere_base as hsb ;imp.reload(hsb)
-import harmo_sphe as hs
+from . import harmo_sphe as hs
 import time
 class QdotSphereArray(hsb.HardSphereArrayBase):
     def solve(self,nmax=-1,copt=1,opt2=0,v=1):
@@ -14,6 +14,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         - copt : solve coupled problem
         - opt2 : get
         '''
+        print(colors.red,"Linéaire",colors.black)
         if nmax>0:self.nmax=nmax+1
         N,n_p,ka,kd,kdp,nmax = self.N,self.kp,self.ka,self.kd,self.kd_p,self.nmax
         fz_q = spu.hn1
@@ -60,16 +61,25 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                     aln0 = spu.a_ln(nmax-1,nmax-1, fz_q,kdpq,np.pi)
                     T[idp1,idqb] =  jl0[:,None] * aln0
                     T[idp2,idqb] = djl0[:,None] * aln0
+                    #print(np.pi)
+                    
                 for q in range(p+1,N):
                     idqb = slice((N+q)*nmax,(N+q+1)*nmax)
                     kdpq = kdp[q]-kdp[p]
                     aln1 = spu.a_ln(nmax-1,nmax-1, fz_q,kdpq,0)
                     T[idp1,idqb] =  jl0[:,None]* aln1
                     T[idp2,idqb] = djl0[:,None]* aln1
+                    #print("0")
         #### Solving
         if v:print(colors.blue+"...solving..."+colors.black)
         cp = np.linalg.solve(P-copt*T,L)
-        print(P.shape)
+        #print(P.shape)
+        #print("linéaire")
+        #dsp.stddisp(im=[np.log10(abs(P))], pOpt='im',cmap='Spectral')
+        #dsp.plt.show()
+        print(P-T)
+        self.V=P-T
+
         self.ap,self.bp = cp[:N*nmax],cp[N*nmax:]
 
         return self.ap,self.bp
