@@ -18,7 +18,7 @@ from pyScatSpheres import qdot_sphere_array as qsa;imp.reload(qsa)
 from pyScatSpheres import glob_colors as colors
 from pyScatSpheres import displayStandards as dsp
 # import IPython
-get_ipython().run_line_magic('matplotlib', 'notebook')
+#get_ipython().run_line_magic('matplotlib', 'notebook')
 
 
 # ## Single sphere
@@ -40,12 +40,12 @@ qdot1 = qsa.QdotSphereArray(N=1,ka=np.pi,kp=1.25,nmax=5)
 # Since the field is complex, it is possible using characters in the `fopts` argument to display the the real part `r`, the imaginary part `i`, the phase `a`, the magnitude `m`, and the magnitude squared `2`.
 
 # In[3]:
-
+"""
 
 fig,ax = plt.subplots()
 qdot1.show_ff(ax=ax,fopts='2');
 
-
+"""
 # The field around the sphere can be obtained with `show_f`.
 # 
 # By default, the absolute value of the field is displayed 

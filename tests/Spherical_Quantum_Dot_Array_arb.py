@@ -9,15 +9,20 @@ from pyScatSpheres import harmo_sphe as hs
 import time
 import pickle
 
-qdot1 = qsa_arb.QdotSphereArray(ka=1,kd_z=np.array([1,3,5]),kd_y=np.array([0,0,0]),kp=1.1,nmax=1)
-qdot2=qsa.QdotSphereArray(ka=1,kd=np.array([1,3,5]),kp=1.1,nmax=1,copt=1,N=3)
-#print(qdot1.ap)
+qdot1 = qsa_arb.QdotSphereArray(ka=1,kd_z=np.array([1,3,5,7]),kd_y=np.array([0,1,1,2]),kp=1.1,nmax=2)
+#qdot2=qsa.QdotSphereArray(ka=1,kd=np.array([2,2,2,4]),kp=1.1,nmax=2,copt=1,N=4)
+print(qdot1.ap)
 #print("\n")
 #print(qdot2.ap)
-#print("\n")
-#print(qdot1.bp)
+print("\n")
+print(qdot1.bp)
 #print("\n")
 #print(qdot2.bp)
 
 
-#pour nmax ca marche, mais quand j'augmente le nb d'atomes ca marche plus... grrrr
+fig,((ax11,ax12),(ax21,ax22),(ax31,ax32)) = plt.subplots(ncols=2,nrows=3)
+# qdot1.show_f(npts=200,opts='tTG',fz=np.real,r=(0,7,-5,5),caxis=[-1,1]); 
+args = {'npts':200,'fz':np.real,'def_args':0,'caxis':[-1,1],'short_title':1,'pOpt':'','fonts':{'title':15}}
+qdot1.show_f(opts='i ',ax=ax11,**args); 
+qdot1.show_f(opts='s ',ax=ax21,**args); 
+qdot1.show_f(opts='t ',ax=ax31,**args); 
