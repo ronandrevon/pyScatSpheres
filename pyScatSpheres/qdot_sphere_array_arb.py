@@ -193,7 +193,7 @@ class QdotSphereArray(hsba.HardSphereArrayBaseArb):
         #self._check_idp(idp) #;print(idp)
         print(y.min(),y.max())
 
-        #incident wave
+        ### incident wave -------------------------------------------------------------------------
         if ftype in 'ita':
             fi = np.zeros(r.shape,dtype=complex)
             gi = np.zeros(r.shape,dtype=complex)
@@ -219,7 +219,7 @@ class QdotSphereArray(hsba.HardSphereArrayBaseArb):
                 fi[idx_i] = 0
                 gi[idx_i] = 0
 
-        #scattered fields
+        ### scattered fields --------------------------------------------------------------------
         # idp = range(N)
         if ftype in 'sta':
             fs = np.zeros(r.shape,dtype=complex)
@@ -248,12 +248,19 @@ class QdotSphereArray(hsba.HardSphereArrayBaseArb):
                     for m in range(2*l+1):
                         #q*nmax**2+(nu)**2+mu
                         #Yl=A[l,m]
-                        Yl=hs.harmonique(l,theta_p,m)
+                        
+                        m1=m
+                        if (m>l):
+                            m1=l-m
+                        #Yl=hs.harmonique(l,theta_p,m1)
+                        #print(Yl.shape)
+                        #print(idx_o.shape)
+                        Yl=A[:,m1][l]
                         #print(Yl.shape)
                         #print(idx_o.shape)
 
-                        fs[idx_o] += self.bp[p*nmax**2+l**2+m]*spu.hn1(l, k*r_p[idx_o])*Yl#[idx_o]
-                        gs[idx_o] += self.bp[p*nmax**2+l**2+m]*spu.hn1p(l,k*r_p[idx_o])*Yl#[idx_o]
+                        fs[idx_o] += self.bp[p*nmax**2+l**2+m]*spu.hn1(l, k*r_p[idx_o])*Yl[idx_o]
+                        gs[idx_o] += self.bp[p*nmax**2+l**2+m]*spu.hn1p(l,k*r_p[idx_o])*Yl[idx_o]
 
                     #gs SHOULD USE THE TRANSLATION TO GET RADIAL DERIVATIVE r_p
             #remove scattered field inside spheres
@@ -268,21 +275,26 @@ class QdotSphereArray(hsba.HardSphereArrayBaseArb):
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y-self.d_py[p],z-self.d_pz[p])
                 idx_i = r_p<self.ka     #;print(idx_i.shape)
-                #A=hs.harmonique(nmax-1,theta_p,'tab')
+                A=hs.harmonique(nmax-1,theta_p,'tab')
                 for l in range(nmax):
                     for m in range(2*l+1):
-                        Yl=hs.harmonique(l,theta_p,m)
+                        m1=m
+                        if (m>l):
+                            m1=l-m
+                        #Yl=hs.harmonique(l,theta_p,m1)
                         #print(time.time()-ti2)
                         #Yl=hs.harmonique(l,theta_p,0)
+                        Yl=A[:,m1][l]
 
-                        fs[idx_i] += self.ap[p*nmax**2+l**2+m]*spu.jn( l,     n_p*k*r_p[idx_i])*Yl#[idx_i]
-                        gs[idx_i] += self.ap[p*nmax**2+l**2+m]*n_p*spu.jnp( l,n_p*k*r_p[idx_i])*Yl#[idx_i]
+                        fs[idx_i] += self.ap[p*nmax**2+l**2+m]*spu.jn( l, n_p*k*r_p[idx_i])*Yl[idx_i]
+                        gs[idx_i] += self.ap[p*nmax**2+l**2+m]*n_p*spu.jnp( l,n_p*k*r_p[idx_i])*Yl[idx_i]
                         #t1=time.time()
                         #A1=spu.jn( l,     n_p*k*r_p[idx_i])
                         #tf=time.time()-t1
                         #print(tf)
 
-        #total field
+
+        ### total field -----------------------------------------------------------------------------------------
         if Gopt=='G':
             # print('Radial derivative');
             if   ftype=='t' :return gs+gi

@@ -42,7 +42,7 @@ class HardSphereArrayBase():
         print(r)
         r,theta,y,z = spu.polar_mesh2D(cart_opt,npts,r)
         k,N,nmax = self.k,self.N,self.nmax
-        ap,dp = self.ka/k,self.kd/k
+        ap,dp = self.ka/k,self.kd_p/k
 
         self._check_idp(idp);
         args = {}
@@ -50,11 +50,11 @@ class HardSphereArrayBase():
             args = {'lw':2,'labs':['$y$','$z$'],'imOpt':'c','axPos':'V','fonts':{'title':25},}
 
         if not ('T'  in opts or 'P' in opts) : opts+='T'
-        t = np.linspace(-np.pi/2,np.pi/2,100)
+        t = np.linspace(-np.pi,np.pi,100)
         ct,st = np.cos(t), np.sin(t)
 #LIGNE A CHANGER !!
         #plts = [ [ap*ct, dp*p+ap*st,'k-',''] for p in range(N)]
-        plts = [ [ap*ct, dp[p]*p+ap*st,'k-',''] for p in range(N)]
+        plts = [ [ap*ct, dp[p]+ap*st,'k-',''] for p in range(N)]
         fstr =  r'$%s \psi(r,\theta)$' %(['',r'\partial_r']['G' in opts])
         Gopt =  ''.join([c for c in opts if c in 'GF'] )
         name+=['f','df']['G' in opts]

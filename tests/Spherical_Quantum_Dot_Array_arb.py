@@ -12,8 +12,8 @@ import time
 import pickle
 plt.close('all')
 
-qdot1 = qsa_arb.QdotSphereArray(ka=1,kd_z=np.array([1,3]),kd_y=np.array([0,1]),kp=1.1,nmax=2)
-#qdot2=qsa.QdotSphereArray(ka=1,kd=np.array([2,2,2,4]),kp=1.1,nmax=2,copt=1,N=4)
+qdot1 = qsa_arb.QdotSphereArray(ka=1,kd_z=np.array([2,2,2,4]),kd_y=np.array([2,2,2,4]),kp=1.1,nmax=2)
+qdot2=qsa.QdotSphereArray(ka=1,kd=np.array([2,2,2,4]),kp=1.1,nmax=2,copt=1,N=4)
 # print(qdot1.ap)
 #print("\n")
 #print(qdot2.ap)
@@ -29,6 +29,8 @@ args = {'npts':200,'fz':np.real,'def_args':0,'caxis':[-1,1],
     'short_title':1,'pOpt':'t','fonts':{'title':15}}
 
 # r,theta,y,z = spu.polar_mesh2D(1,100,(-3,3,-2,5))
-qdot1.show_f(opts='i ',r=(-4,4,-2,7),name='/home/tarik/Downloads/test.png',opt='ps',**args);
+#qdot1.show_f(opts='i ',r=(-4,4,-2,7),name='/home/tarik/Downloads/test.png',opt='p',**args);
+qdot1.show_f(opts='t ',r=(-4,12,-2,14),name='/home/tarik/Downloads/test.png',opt='p',**args);
+
 # qdot1.show_f(opts='s ',ax=ax21,**args);
 # qdot1.show_f(opts='t ',ax=ax31,**args);

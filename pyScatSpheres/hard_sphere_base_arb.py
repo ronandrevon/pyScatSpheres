@@ -93,8 +93,9 @@ class HardSphereArrayBaseArb():
                     name=name+'t_sphere%d.png' %p,**args,**kwargs)
         if 'T' in opts:
             if v:print("...compute field from all spheres ...")
-            # fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt=Gopt)
+            #fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt=Gopt)
             fi = self.compute_f(r,theta,0,ftype='i',Gopt=Gopt)
+            fs = self.compute_f(r,theta,0,ftype='s',Gopt=Gopt)
             params = self._params()
             if short_title:params,fstr = '',[r'$\Psi$',r'$\partial_r\Psi$']['G' in opts]
             # if ''

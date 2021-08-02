@@ -277,7 +277,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                     #A1=spu.jn( l,     n_p*k*r_p[idx_i])
                     #tf=time.time()-t1
                     #print(tf)
-   
+            
         #total field
         if Gopt=='G':
             # print('Radial derivative');
@@ -296,7 +296,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             elif ftype=='s' :return fs
             elif ftype=='i' :return fi
             elif ftype=='a' :return fi,fs
-
+"""
     def compute_f3(self,r,theta,phi,ftype='t',Gopt='',idp=None):
         ''' computes scattering amplitude f
         - r,theta,phi : np.ndarray each - coordinates
@@ -400,4 +400,4 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             elif ftype=='i' :return fi
             elif ftype=='a' :return fi,fs
 
-    
+"""
