@@ -16,7 +16,7 @@ class HardSphereArrayBase():
         self.kd_p=np.zeros(kd.shape[0])
         self.kd_p[0]=self.kd[0]
         for i in range(1,N):
-            self.kd_p[i]=kd[i]+self.kd_p[i-1] 
+            self.kd_p[i]=kd[i]+self.kd_p[i-1]
         self.d_p  = self.kd_p/k
         if isinstance(Cp,np.ndarray):self.set_Cp(Cp)
         if solve:self.solve(copt=copt)
@@ -135,7 +135,7 @@ class HardSphereArrayBase():
 #LIGNE A CHANGER !!
         ss = '$N=%d$, $n_{ref}=%g$, $ka=%.1f$ ,kd=[' %(self.N,self.kp, self.ka)
         for i in self.kd :
-            pp='%.1f,' %i 
+            pp='%.1f,' %i
             ss+=pp
         ss+=']'
 
@@ -163,7 +163,7 @@ class HardSphereArrayBase():
         nref = ['%g' %self.kp,r'\infty'][self.kp==np.inf]
         tle  = 'Convergence test $ka=%.1f$, $n_{ref}=%s,$, kd=[' %(self.ka,nref)
         for i in self.kd :
-            tlep='%.1f,' %i 
+            tlep='%.1f,' %i
             tle+=tlep
         tle+=']'
         labs =[r"$\theta(^{\circ})$",r"$|f(\theta)|$"]

@@ -1,7 +1,7 @@
 import scipy.special as spe
 import numpy as np
-from . import displayStandards as dsp 
-from . import spherical_utils as spu 
+from . import displayStandards as dsp
+from . import spherical_utils as spu
 
 class HardSphereArrayBaseArb():
     def __init__(self,ka=1,kd_z=2*np.ones((1,1)),kd_y=2*np.ones((1,1)),kp=np.inf,k=1,nmax=7,Cp=None,solve=True,copt=1):
@@ -17,12 +17,12 @@ class HardSphereArrayBaseArb():
         self.kd_pz=np.zeros(n)
         self.kd_pz[0]=kd_z[0]
         for i in range(1,n):
-            self.kd_pz[i]=kd_z[i]+self.kd_pz[i-1] 
+            self.kd_pz[i]=kd_z[i]+self.kd_pz[i-1]
         self.d_pz  = self.kd_pz/k
         self.kd_py=np.zeros(m)
         self.kd_py[0]=kd_y[0]
         for i in range(1,m):
-            self.kd_py[i]=kd_y[i]+self.kd_py[i-1] 
+            self.kd_py[i]=kd_y[i]+self.kd_py[i-1]
         self.d_py  = self.kd_py/k
         #self.kd_p=np.sqrt(kd_pz**2+kd_py**2)
         #self.d_p=np.sqrt(d_pz**2+d_py**2)
@@ -33,11 +33,11 @@ class HardSphereArrayBaseArb():
     def _params(self):
         ss = '$N=%d$, $n_{ref}=%g$, $ka=%.1f$ ,kd_x=[' %(self.kd_z.size,self.kp, self.ka)
         for i in self.kd_z :
-            pp='%.1f,' %i 
+            pp='%.1f,' %i
             ss+=pp
         ss+='], kd_y=['
         for i in self.kd_y :
-            pp='%.1f,' %i 
+            pp='%.1f,' %i
             ss+=pp
         ss+=']'
         return ss
@@ -48,14 +48,15 @@ class HardSphereArrayBaseArb():
         opts : i(incident), s(scattered), t(total), P(sphere idp),T(All), G(Gradient), F(flux)
         '''
         ka,kd_z,kd_y,N = self.ka,self.kd_z,self.kd_y,self.N
-#LIGNE A CHANGER !!        
+#LIGNE A CHANGER !!
         if not isinstance(r,tuple) and not isinstance(r,list) and not isinstance(r,np.ndarray):
             #r=(-4*ka+N*kd_y,4*ka+N*kd_z,-N*kd_y+2*ka,N*kd_z+2*ka) #CHANGER ICIIIIIIIIIII
             r=(1e-3,4*ka+N*kd_y,-2*ka,N*kd_z+2*ka)
-        print(r)
+        # print(r)
         r,theta,y,z = spu.polar_mesh2D(cart_opt,npts,r)
         k,N,nmax = self.k,self.N,self.nmax
-        ap,dp_z,dp_y = self.ka/k,self.kd_z/k,self.kd_y/k
+        # ap,dp_z,dp_y = self.ka/k,self.kd_z/k,self.kd_y/k
+        ap,dp_z,dp_y = self.ka/k,self.kd_pz/k,self.kd_py/k
 
         #self._check_idp(idp);
         args = {}
@@ -63,11 +64,11 @@ class HardSphereArrayBaseArb():
             args = {'lw':2,'labs':['$y$','$z$'],'imOpt':'c','axPos':'V','fonts':{'title':25},}
 
         if not ('T'  in opts or 'P' in opts) : opts+='T'
-        t = np.linspace(-np.pi/2,np.pi/2,100)
+        t = np.linspace(-np.pi,np.pi,100)
         ct,st = np.cos(t), np.sin(t)
 #LIGNE A CHANGER !!
         #plts = [ [ap*ct, dp*p+ap*st,'k-',''] for p in range(N)]
-        plts = [ [dp_y[p]*p+ap*ct, dp_z[p]*p+ap*st,'k-',''] for p in range(N)]
+        plts = [ [dp_y[p]+ap*ct, dp_z[p]+ap*st,'k-',''] for p in range(N)]
         fstr =  r'$%s \psi(r,\theta)$' %(['',r'\partial_r']['G' in opts])
         Gopt =  ''.join([c for c in opts if c in 'GF'] )
         name+=['f','df']['G' in opts]
@@ -92,7 +93,8 @@ class HardSphereArrayBaseArb():
                     name=name+'t_sphere%d.png' %p,**args,**kwargs)
         if 'T' in opts:
             if v:print("...compute field from all spheres ...")
-            fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt=Gopt)
+            # fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt=Gopt)
+            fi = self.compute_f(r,theta,0,ftype='i',Gopt=Gopt)
             params = self._params()
             if short_title:params,fstr = '',[r'$\Psi$',r'$\partial_r\Psi$']['G' in opts]
             # if ''
@@ -112,6 +114,3 @@ class HardSphereArrayBaseArb():
                     title = r"Total %s, %s" %(fstr,params),
                     name=name+'t.png',**args,**kwargs)
         return f.max(),f.min()
-
-
-
