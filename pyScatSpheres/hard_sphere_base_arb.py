@@ -31,7 +31,7 @@ class HardSphereArrayBaseArb():
         if solve:self.solve(copt=copt)
 
     def _params(self):
-        ss = '$N=%d$, $n_{ref}=%g$, $ka=%.1f$ ,kd_x=[' %(self.kd_z*self.kd_y,self.kp, self.ka)
+        ss = '$N=%d$, $n_{ref}=%g$, $ka=%.1f$ ,kd_x=[' %(self.kd_z.size,self.kp, self.ka)
         for i in self.kd_z :
             pp='%.1f,' %i 
             ss+=pp
@@ -41,4 +41,77 @@ class HardSphereArrayBaseArb():
             ss+=pp
         ss+=']'
         return ss
+
+    def show_f(self,cart_opt=True,npts=200,r=None,opts='tT',idp=None,fz=np.abs,
+        name='',def_args=True,short_title=False,v=0,**kwargs):
+        '''
+        opts : i(incident), s(scattered), t(total), P(sphere idp),T(All), G(Gradient), F(flux)
+        '''
+        ka,kd_z,kd_y,N = self.ka,self.kd_z,self.kd_y,self.N
+#LIGNE A CHANGER !!        
+        if not isinstance(r,tuple) and not isinstance(r,list) and not isinstance(r,np.ndarray):
+            #r=(-4*ka+N*kd_y,4*ka+N*kd_z,-N*kd_y+2*ka,N*kd_z+2*ka) #CHANGER ICIIIIIIIIIII
+            r=(1e-3,4*ka+N*kd_y,-2*ka,N*kd_z+2*ka)
+        print(r)
+        r,theta,y,z = spu.polar_mesh2D(cart_opt,npts,r)
+        k,N,nmax = self.k,self.N,self.nmax
+        ap,dp_z,dp_y = self.ka/k,self.kd_z/k,self.kd_y/k
+
+        #self._check_idp(idp);
+        args = {}
+        if def_args:
+            args = {'lw':2,'labs':['$y$','$z$'],'imOpt':'c','axPos':'V','fonts':{'title':25},}
+
+        if not ('T'  in opts or 'P' in opts) : opts+='T'
+        t = np.linspace(-np.pi/2,np.pi/2,100)
+        ct,st = np.cos(t), np.sin(t)
+#LIGNE A CHANGER !!
+        #plts = [ [ap*ct, dp*p+ap*st,'k-',''] for p in range(N)]
+        plts = [ [dp_y[p]*p+ap*ct, dp_z[p]*p+ap*st,'k-',''] for p in range(N)]
+        fstr =  r'$%s \psi(r,\theta)$' %(['',r'\partial_r']['G' in opts])
+        Gopt =  ''.join([c for c in opts if c in 'GF'] )
+        name+=['f','df']['G' in opts]
+        if 'P' in opts:
+            p=idp
+            if v:print("...compute field at sphere p=%d..." %p)
+            fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt=Gopt,idp=p)
+            if 'i' in opts:
+                f = fz(fi)
+                dsp.stddisp(plts,im=[y,z,f],
+                    title = r"Incident %s at sphere %d, $N_{max}=%d$" %(fstr,p,nmax),
+                    name=name+'i_sphere%d.png' %p,**args,**kwargs)
+            if 's' in opts:
+                f = fz(fs)
+                dsp.stddisp(plts,im=[y,z,f],
+                    title = r"Scattered %s at sphere %d, $N_{max}=%d$" %(fstr,p,nmax),
+                    name=name+'s_sphere%d.png' %p,**args,**kwargs)
+            if 't' in opts:
+                f = fz(fi+fs)
+                dsp.stddisp(plts,im=[y,z,f],
+                    title = r"Total %s at sphere %d, $N_{max}=%d$" %(fstr,p,nmax),
+                    name=name+'t_sphere%d.png' %p,**args,**kwargs)
+        if 'T' in opts:
+            if v:print("...compute field from all spheres ...")
+            fi,fs = self.compute_f(r,theta,0,ftype='a',Gopt=Gopt)
+            params = self._params()
+            if short_title:params,fstr = '',[r'$\Psi$',r'$\partial_r\Psi$']['G' in opts]
+            # if ''
+            if 'i' in opts:
+                f = fz(fi)
+                dsp.stddisp(plts,im=[y,z,f],
+                    title = r"Incident %s, %s " %(fstr,params),
+                    name=name+'i.png',**args,**kwargs)
+            if 's' in opts:
+                f = fz(fs)
+                dsp.stddisp(plts,im=[y,z,f],
+                    title = r"Scattered %s, %s" %(fstr,params),
+                    name=name+'s.png',**args,**kwargs)
+            if 't' in opts:
+                f = fz(fi+fs)
+                dsp.stddisp(plts,im=[y,z,f],
+                    title = r"Total %s, %s" %(fstr,params),
+                    name=name+'t.png',**args,**kwargs)
+        return f.max(),f.min()
+
+
 

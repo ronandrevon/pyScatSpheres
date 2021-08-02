@@ -77,7 +77,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         #print("linéaire")
         #dsp.stddisp(im=[np.log10(abs(P))], pOpt='im',cmap='Spectral')
         #dsp.plt.show()
-        print(P-T)
+        #print(P-T)
         self.V=P-T
 
         self.ap,self.bp = cp[:N*nmax],cp[N*nmax:]

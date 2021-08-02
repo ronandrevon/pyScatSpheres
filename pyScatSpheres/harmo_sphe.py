@@ -23,7 +23,7 @@ def legendre(l,x,indic):
 
 def harmonique(l,theta,indic):
 	Y=legendre(l,np.cos(theta),indic)
-	print(Y.shape)
+	#print(Y.shape)
 	Y[0,0]=np.sqrt(1/(4*math.pi))*Y[0,0]
 	if (l>=1):
 		Y[1,0]=np.sqrt((2*1+1)/(4*math.pi))*Y[1,0]
