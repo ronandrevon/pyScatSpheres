@@ -38,11 +38,12 @@ class HardSphereArrayBase():
         '''
         ka,kd,N = self.ka,self.kd,self.N
         if not isinstance(r,tuple) and not isinstance(r,list) and not isinstance(r,np.ndarray):
-            r=(1e-3,4*ka+N*kd,-2*ka,N*kd+2*ka)
+            r=(1e-3,4*ka[0]+N*kd,-2*ka.max(),N*kd+2*ka[0])
         print(r)
         r,theta,y,z = spu.polar_mesh2D(cart_opt,npts,r)
         k,N,nmax = self.k,self.N,self.nmax
-        ap,dp = self.ka/k,self.kd_p/k
+        dp = self.kd_p/k
+        ap=self.ka/k
 
         self._check_idp(idp);
         args = {}
@@ -54,7 +55,7 @@ class HardSphereArrayBase():
         ct,st = np.cos(t), np.sin(t)
 #LIGNE A CHANGER !!
         #plts = [ [ap*ct, dp*p+ap*st,'k-',''] for p in range(N)]
-        plts = [ [ap*ct, dp[p]+ap*st,'k-',''] for p in range(N)]
+        plts = [ [ap[p]*ct, dp[p]+ap[p]*st,'k-',''] for p in range(N)]
         fstr =  r'$%s \psi(r,\theta)$' %(['',r'\partial_r']['G' in opts])
         Gopt =  ''.join([c for c in opts if c in 'GF'] )
         name+=['f','df']['G' in opts]
@@ -132,8 +133,11 @@ class HardSphereArrayBase():
     def _params(self):
         #ss = '$N=%d$, $n_{ref}=%g$, $ka=%.1f$, $kd=%.1f$' %(self.N,self.kp, self.ka,self.kd)
         #pp='[''{:.2f}'.format(i) for i in self.kd']'
-#LIGNE A CHANGER !!
-        ss = '$N=%d$, $n_{ref}=%g$, $ka=%.1f$ ,kd=[' %(self.N,self.kp, self.ka)
+        ss = '$N=%d$, $n_{ref}=%g$, $ka=[$ ' %(self.N,self.kp)
+        for i in self.ka :
+            pp='%.1f,' %i
+            ss+=pp
+        ss+='], kd=['
         for i in self.kd :
             pp='%.1f,' %i
             ss+=pp

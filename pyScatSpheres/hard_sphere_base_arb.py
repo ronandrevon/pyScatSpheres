@@ -31,7 +31,11 @@ class HardSphereArrayBaseArb():
         if solve:self.solve(copt=copt)
 
     def _params(self):
-        ss = '$N=%d$, $n_{ref}=%g$, $ka=%.1f$ ,kd_x=[' %(self.kd_z.size,self.kp, self.ka)
+        ss = '$N=%d$, $n_{ref}=%g$, $ka=[$' %(self.kd_z.size,self.kp)
+        for i in self.ka :
+            pp='%.1f,' %i
+            ss+=pp
+        ss+='], kd=['
         for i in self.kd_z :
             pp='%.1f,' %i
             ss+=pp
@@ -51,7 +55,7 @@ class HardSphereArrayBaseArb():
 #LIGNE A CHANGER !!
         if not isinstance(r,tuple) and not isinstance(r,list) and not isinstance(r,np.ndarray):
             #r=(-4*ka+N*kd_y,4*ka+N*kd_z,-N*kd_y+2*ka,N*kd_z+2*ka) #CHANGER ICIIIIIIIIIII
-            r=(1e-3,4*ka+N*kd_y,-2*ka,N*kd_z+2*ka)
+            r=(1e-3,4*ka.max()+N*kd_y,-2*ka.max(),N*kd_z+2*ka.max())
         # print(r)
         r,theta,y,z = spu.polar_mesh2D(cart_opt,npts,r)
         k,N,nmax = self.k,self.N,self.nmax
@@ -68,7 +72,7 @@ class HardSphereArrayBaseArb():
         ct,st = np.cos(t), np.sin(t)
 #LIGNE A CHANGER !!
         #plts = [ [ap*ct, dp*p+ap*st,'k-',''] for p in range(N)]
-        plts = [ [dp_y[p]+ap*ct, dp_z[p]+ap*st,'k-',''] for p in range(N)]
+        plts = [ [dp_y[p]+ap[p]*ct, dp_z[p]+ap[p]*st,'k-',''] for p in range(N)]
         fstr =  r'$%s \psi(r,\theta)$' %(['',r'\partial_r']['G' in opts])
         Gopt =  ''.join([c for c in opts if c in 'GF'] )
         name+=['f','df']['G' in opts]

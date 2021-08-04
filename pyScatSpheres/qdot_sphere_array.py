@@ -22,19 +22,23 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         #preprocess,
         ll = np.arange(nmax)
         cl = 1J**ll*(2*ll+1)*np.sqrt(4*np.pi/(2*ll+1))
+        """
         jl0,jl1   = np.array([spu.jn( l,np.array([ka,n_p*ka]))  for l in ll]).T
         djl0,djl1 = np.array([spu.jnp(l,np.array([ka,n_p*ka]))  for l in ll]).T
         hl0  = np.array([spu.hn1(l,ka)  for l in ll])
         dhl0 = np.array([spu.hn1p(l,ka) for l in ll])
+        """
+        """
         if opt2:
             al = cl*(hl0*djl0-    dhl0*jl0)/(n_p*djl1*hl0-jl1*dhl0)
             bl = cl*(jl1*djl0-n_p*djl1*jl0)/(n_p*djl1*hl0-jl1*dhl0)
         else:
             al = cl*jl0
             bl = cl*djl0
-
+        
         #### incident plane wave response
         L = np.hstack([np.tile(al,N),np.tile(bl,N)])
+        L=np.z
         for p in range(N):
             idpl = p*nmax+np.arange(nmax) #;print('p=%d'%p)#;print('idp:' , idpl)
             L[idpl]        *= np.exp(1J*kdp[p])
@@ -42,6 +46,26 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         if opt2:
             self.ap,self.bp = L[:N*nmax],L[N*nmax:]
             return self.ap,self.bp
+        """
+        L=np.zeros(2*(N*(nmax)),dtype=complex) #cf calcul de ma feuilleeeeee trop dur les maths ahhaha grrr
+        for p in range(N) : #pas faire boucle sur sur boule mais pour l'instant on va faire ca sinon embrouiller moi tete
+            for l in range(nmax) :
+
+                    #Calcul coeff Cl
+                    cl = 1J**l*(2*l+1)*np.sqrt(4*np.pi/(2*l+1))#c depend que de l
+
+                    #Calcul des fct de bessel
+                    jl0=spu.jn(l,ka[p]) #j'espere que c'est bon ecrit comme ca ? peut etre c'est juste ka???????
+                    djl0=spu.jnp(l,ka[p])
+
+                    #Calcul des exp
+                    exp1=np.exp(1J*kdp[p]) #ca ca dépend que de N
+
+                    #Assemblage matrice
+                    #L[m+p*nmax**2:m+2*l+1+p*nmax**2]=cl*exp1*jl0
+                    L[p*nmax+l]=cl*exp1*jl0
+                    #L[m+N*(nmax)**2+p*nmax**2:m+2*l+1+N*(nmax)**2+p*nmax**2]=cl*exp1*djl0 #hihi j'espere que les indices sont bons sinon je pleure
+                    L[N*(nmax)+p*nmax+l]=cl*exp1*djl0
 
         #### assembling
         T = np.zeros((2*N*nmax,2*N*nmax),dtype=complex)
@@ -49,6 +73,10 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         if v:print(colors.blue+"...assembling coupling..."+colors.black)
         for p in range(N):
             if v>1:print(colors.yellow+'p=%d' %p+colors.black)
+            jl0,jl1   = np.array([spu.jn( l,np.array([ka[p],n_p*ka[p]]))  for l in ll]).T
+            djl0,djl1 = np.array([spu.jnp(l,np.array([ka[p],n_p*ka[p]]))  for l in ll]).T
+            hl0  = np.array([spu.hn1(l,ka[p])  for l in ll])
+            dhl0 = np.array([spu.hn1p(l,ka[p]) for l in ll])
             idp1,idp2 = slice(p*nmax,(p+1)*nmax),slice((N+p)*nmax,(N+p+1)*nmax)
             P[idp1,idp1] =  np.diag(jl1)
             P[idp1,idp2] = -np.diag(hl0)
@@ -123,7 +151,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             #remove incident field inside pth spheres
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
-                idx_i = r_p<self.ka
+                idx_i = r_p<self.ka[p]
                 fi[idx_i] = 0
                 gi[idx_i] = 0
 
@@ -136,7 +164,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             ti1=time.time()
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
-                idx_o = r_p>=self.ka     #;print(idx_o.shape)
+                idx_o = r_p>=self.ka[p]     #;print(idx_o.shape)
                 for l in range(nmax):
                     Yl = spe.sph_harm(0,l,0,theta_p)
                     fs[idx_o] += self.bp[p*nmax+l]*spu.hn1(l, k*r_p[idx_o])*Yl[idx_o]
@@ -147,7 +175,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             ti2=time.time()
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
-                idx_i = r_p<self.ka
+                idx_i = r_p<self.ka[p]
                 fs[idx_i] = 0
                 gs[idx_i] = 0
             #inside field*
@@ -155,7 +183,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             ti3=time.time()
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
-                idx_i = r_p<self.ka     #;print(idx_i.shape)
+                idx_i = r_p<self.ka[p]     #;print(idx_i.shape)
                 for l in range(nmax):
                     Yl = spe.sph_harm(0,l,0,theta_p)
                     fs[idx_i] += self.ap[p*nmax+l]*spu.jn( l,     n_p*k*r_p[idx_i])*Yl[idx_i]
@@ -224,7 +252,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             #remove incident field inside pth spheres
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
-                idx_i = r_p<self.ka
+                idx_i = r_p<self.ka[p]
                 fi[idx_i] = 0
                 gi[idx_i] = 0
 
@@ -239,7 +267,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
 
-                idx_o = r_p>=self.ka     #;print(idx_o.shape)
+                idx_o = r_p>=self.ka[p]     #;print(idx_o.shape)
                 A=hs.harmonique(nmax-1,theta_p,'tab')
                 for l in range(nmax):
                     Yl=A[:,0][l]
@@ -257,14 +285,14 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
 
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
-                idx_i = r_p<self.ka
+                idx_i = r_p<self.ka[p]
                 fs[idx_i] = 0
                 gs[idx_i] = 0
             #inside field
 
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
-                idx_i = r_p<self.ka     #;print(idx_i.shape)
+                idx_i = r_p<self.ka[p]     #;print(idx_i.shape)
                 A=hs.harmonique(nmax-1,theta_p,'tab')
                 for l in range(nmax):
                     Yl=A[:,0][l]
