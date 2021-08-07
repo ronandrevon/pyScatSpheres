@@ -128,12 +128,15 @@ where we have used the definition $\sigma=4\pi r^2 \Bigg |\frac{f(r,\theta)|}{f^
 
 
 
+
 <!--
 #######################################################################
                   Single sphere
 #######################################################################
  -->
 ## Single qdot sphere scattering
+
+### Analytical solution
 
 Using the orthogonality of the spherical harmonics the unknown coefficients are :
 
