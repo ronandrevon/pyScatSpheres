@@ -18,7 +18,7 @@ class QdotSphereArray(hsba.HardSphereArrayBaseArb):
         N,n_p,ka,kd_z,kd_y,kdpz,kdpy,nmax = self.N,self.kp,self.ka,self.kd_z,self.kd_y,self.kd_pz,self.kd_py,self.nmax
 
         print(colors.red,"Non linéaire",colors.black)
-
+        alpha=np.pi/4
         ###----------------------------------------------------------------------------------------
         #   Construction du second membre L
         ###----------------------------------------------------------------------------------------
@@ -26,6 +26,7 @@ class QdotSphereArray(hsba.HardSphereArrayBaseArb):
         L=np.zeros(2*(N*(nmax)**2),dtype=complex) #cf calcul de ma feuilleeeeee trop dur les maths ahhaha grrr
         for p in range(N) : #pas faire boucle sur sur boule mais pour l'instant on va faire ca sinon embrouiller moi tete
             m=0
+            r_p,theta_p,phi_p = spu.cart2sphere(0,self.d_py[p],self.d_pz[p])
             for l in range(nmax) :
 
                     #Calcul coeff Cl
@@ -36,7 +37,9 @@ class QdotSphereArray(hsba.HardSphereArrayBaseArb):
                     djl0=spu.jnp(l,ka[p])
 
                     #Calcul des exp
-                    exp1=np.exp(1J*kdpz[p]) #ca ca dépend que de N
+                    zeta=np.sin(theta_p)*np.sin(phi_p)*np.sin(alpha)+np.cos(theta_p)*np.cos(alpha)
+                    exp1=np.exp(1J*kdpz[p]*zeta) #ca ca dépend que de N
+
 
                     #Assemblage matrice
                     #L[m+p*nmax**2:m+2*l+1+p*nmax**2]=cl*exp1*jl0
@@ -111,6 +114,7 @@ class QdotSphereArray(hsba.HardSphereArrayBaseArb):
                                     #if (kdpz[q]-kdpz[p]>=0):
                                     # print(kdpq)
                                     theta=np.arccos((kdpz[q]-kdpz[p])/kdpq)
+                                    phi=np.arctan2(-y,-x)
                                     if np.isnan(theta):print(kdpq,kdpz[q],kdpz[p],theta)
                                     #theta=np.arctan2(y,x)
                                     #else:
@@ -132,8 +136,8 @@ class QdotSphereArray(hsba.HardSphereArrayBaseArb):
                                             m1=l-m
                                         if (mu>nu):
                                             mu1=nu-mu
-
-                                        a=spu.a_lmnp(l,m1,nu,mu1,fz_q,kdpq,theta,0)
+                                        
+                                        a=spu.a_lmnp(l,m1,nu,mu1,fz_q,kdpq,theta,phi)
                                         """
                                         print("m1:")
                                         print(m1)
@@ -235,7 +239,7 @@ class QdotSphereArray(hsba.HardSphereArrayBaseArb):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y-self.d_py[p],z-self.d_pz[p])
                 idx_o = r_p>=self.ka[p]     #;print(idx_o.shape)
                 # print(idx_o)
-                A=hs.harmonique(nmax-1,theta_p,'tab')
+                A=hs.harmonique(nmax-1,theta_p,'tab',phi_p)
                 """
                 for l in range(nmax):
                     Yl=A[:,0][l]
@@ -279,7 +283,7 @@ class QdotSphereArray(hsba.HardSphereArrayBaseArb):
             for p in range(N):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y-self.d_py[p],z-self.d_pz[p])
                 idx_i = r_p<self.ka[p]     #;print(idx_i.shape)
-                A=hs.harmonique(nmax-1,theta_p,'tab')
+                A=hs.harmonique(nmax-1,theta_p,'tab',phi_p)
                 for l in range(nmax):
                     for m in range(2*l+1):
                         m1=m

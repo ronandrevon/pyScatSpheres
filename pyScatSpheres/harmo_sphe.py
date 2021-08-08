@@ -21,7 +21,7 @@ def legendre(l,x,indic):
 		return P[l,indic]
 
 
-def harmonique(l,theta,indic):
+def harmonique(l,theta,indic,phi):
 	Y=legendre(l,np.cos(theta),indic)
 	#print(Y.shape)
 	Y[0,0]=np.sqrt(1/(4*math.pi))*Y[0,0]
@@ -37,8 +37,8 @@ def harmonique(l,theta,indic):
 			for m in range(1,L):
 				pos=np.sqrt((2*L+1)*math.factorial(L-m)/(4*math.pi*math.factorial(L+m)))
 				neg=np.sqrt((2*L+1)*math.factorial(L+m)/(4*math.pi*math.factorial(L-m)))
-				Y[L,m]=pos*Y[L,m]
-				Y[L,-m]=neg*Y[L,-m]
+				Y[L,m]=pos*Y[L,m]*np.exp(1J*m*phi)
+				Y[L,-m]=neg*Y[L,-m]*np.exp(-1J*m*phi)
 	if (indic=='tab'):
 		return Y
 	else :

@@ -19,19 +19,22 @@ fs=qdot1.compute_f(r,theta,0,ftype='t')
 
 
 ### Pilotage -----------------------------------------------------
-lmax=40
-eps=0.0001
+lmin=0
+lmax=10
+eps=0.0000000001
 N=2
-h=5
+h=1
 
 ### Initialisation -----------------------------------------------
-X=np.arange(0,lmax+h,h)
+X=np.arange(lmin,lmax+h,h)
 Y=np.zeros(X.size)
 indice=0
 
 ### Boucle -------------------------------------------------------
 for l in X:
-	qdot1 = qsa_arb.QdotSphereArray(ka=np.array([1.5,2]),kd_z=np.array([2,6]),kd_y=np.array([0,7]),kp=1.25,nmax=l)
+	qdot1 = qsa_arb.QdotSphereArray(ka=np.array([1,1]),kd_z=np.array([2,6]),kd_y=np.array([0,7]),kp=1.25,nmax=l)
+	#qdot1 = qsa_arb.QdotSphereArray(ka=np.array([1,1,2,2]),kd_z=np.array([2,4,3,5]),kd_y=np.array([0,5,-2,1]),kp=1.25,nmax=l)
+
 	ka=qdot1.ka
 	# sphère 1
 	r1_p=np.array([ka[0]+eps]*360)
@@ -74,7 +77,9 @@ for l in X:
 	indice+=1
 
 ### plot ---------------------------------------------------------------------------
+print(Y)
 plt.figure()
-plt.plot(X, np.log(Y), linewidth = 3)
+plt.plot(X, np.log(Y), linewidth = 3,color='red')
 plt.grid()
+plt.title('log de la valeur absolue de lerreur en fonction de lmax')
 plt.show()

@@ -165,7 +165,12 @@ class HardSphereArrayBase():
         #### display
         cs   = dsp.getCs('Spectral',ns)
         nref = ['%g' %self.kp,r'\infty'][self.kp==np.inf]
-        tle  = 'Convergence test $ka=%.1f$, $n_{ref}=%s,$, kd=[' %(self.ka,nref)
+        #tle  = 'Convergence test $ka=%.1f$, $n_{ref}=%s,$, kd=[' %(self.ka,nref)
+        tle  = 'Convergence test $ka=$'
+        for i in self.ka :
+            pp='%.1f,' %i
+            tle+=pp
+        tle+=', $n_{ref}=%s,$, kd=[' %(nref)
         for i in self.kd :
             tlep='%.1f,' %i
             tle+=tlep
