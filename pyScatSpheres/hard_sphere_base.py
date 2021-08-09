@@ -151,7 +151,9 @@ class HardSphereArrayBase():
         if isinstance(idp,int) :
             if not (idp>=0 and idp<self.N):
                 raise Exception(colors.red+'sphere index not within 0<=idp<N'+colors.black)
-
+        else:
+            idp=range(self.N)
+        return idp
     def test_convergence(self,nmaxs,npts=361,name='', **kwargs):
         ns = np.array(nmaxs).size
         theta = np.linspace(0,np.pi,npts)

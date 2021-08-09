@@ -35,7 +35,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         else:
             al = cl*jl0
             bl = cl*djl0
-        
+
         #### incident plane wave response
         L = np.hstack([np.tile(al,N),np.tile(bl,N)])
         L=np.z
@@ -90,7 +90,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                     T[idp1,idqb] =  jl0[:,None] * aln0
                     T[idp2,idqb] = djl0[:,None] * aln0
                     #print(np.pi)
-                    
+
                 for q in range(p+1,N):
                     idqb = slice((N+q)*nmax,(N+q+1)*nmax)
                     kdpq = kdp[q]-kdp[p]
@@ -229,14 +229,14 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         '''
         k,n_p,d_p,nmax,N = self.k,self.kp,self.d_p,self.nmax,self.N
         x,y,z = spu.sphere2cart(r,theta,phi)
-        self._check_idp(idp) #;print(idp)
+        idp = self._check_idp(idp) #;print(idp)
 
         #incident wave
         if ftype in 'ita':
             fi = np.zeros(r.shape,dtype=complex)
             gi = np.zeros(r.shape,dtype=complex)
             # plane wave at sphere idp : use local spherical decomposition
-            if isinstance(idp,int):
+            if 0:#isinstance(idp,int):
                 # print('incident field at p sphere')
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[idp])
                 for l in range(nmax):
@@ -250,7 +250,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                 fi = np.exp(1J*k*z)
                 gi = 1J*k*np.cos(theta)*np.exp(1J*k*z)
             #remove incident field inside pth spheres
-            for p in range(N):
+            for p in idp:
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
                 idx_i = r_p<self.ka[p]
                 fi[idx_i] = 0
@@ -263,8 +263,8 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             gs = np.zeros(r.shape,dtype=complex)
             #print(coor)
             #outgoing field
-            
-            for p in range(N):
+
+            for p in idp:
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
 
                 idx_o = r_p>=self.ka[p]     #;print(idx_o.shape)
@@ -283,14 +283,14 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                     #gs SHOULD USE THE TRANSLATION TO GET RADIAL DERIVATIVE r_p
             #remove scattered field inside spheres
 
-            for p in range(N):
+            for p in idp:
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
                 idx_i = r_p<self.ka[p]
                 fs[idx_i] = 0
                 gs[idx_i] = 0
             #inside field
 
-            for p in range(N):
+            for p in idp:
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
                 idx_i = r_p<self.ka[p]     #;print(idx_i.shape)
                 A=hs.harmonique(nmax-1,theta_p,'tab',0)
@@ -305,7 +305,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                     #A1=spu.jn( l,     n_p*k*r_p[idx_i])
                     #tf=time.time()-t1
                     #print(tf)
-            
+
         #total field
         if Gopt=='G':
             # print('Radial derivative');

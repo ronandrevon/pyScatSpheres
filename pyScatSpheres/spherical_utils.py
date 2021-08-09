@@ -2,9 +2,9 @@
 import time
 import numpy as np
 import scipy.special as spe
-import py3nj
 from . import displayStandards as dsp
-
+from . import glob_colors as colors
+# import py3nj
 import sage.all
 gaunt = sage.functions.wigner.gaunt
 
@@ -17,6 +17,11 @@ jnp  = lambda n,z : np.sqrt(np.pi/(2*z))*(spe.jvp(n+0.5,z)  - spe.jv(n+0.5,z)/(2
 hn1p = lambda n,z : np.sqrt(np.pi/(2*z))*(spe.h1vp(n+0.5,z) - spe.hankel1(n+0.5,z)/(2*z) )
 Pl = lambda l,theta: np.sqrt(4*np.pi/(2*l+1))*spe.sph_harm(0,l,0,theta)
 # psi_lm = lambda z_l,l,m,r,theta,phi:z_l(l,r)*spe.sph_harm(m,l,phi,theta)
+
+def get_ls_ms(nmax):
+    ls = np.hstack([[l]*(2*l+1)for l in range(nmax)])
+    ms = np.hstack([list(np.arange(l+1))+list(np.flipud(np.arange(-l,0))) for l in range(nmax)])
+    return ls,ms
 
 def get_MNnm(kr,theta,phi, Nmax, zn=hn1,znp=hn1p,pol='y'):
     '''Computes Mnm and Nmn in spherical coordinates up to Nmax'''
@@ -220,18 +225,42 @@ def get_plane_wave_scalar(y,z,lam=1,d_p=2.5,alpha=0,Nmax=10,fz=np.real,timeOpt=F
     -fz     : np.real,np.imag,np.abs or None
     '''
     k,alpha,npts = 2*np.pi/lam, np.deg2rad(alpha),y.shape[0]
-    r,theta = np.sqrt(y**2+z**2),np.arctan(y/z)
+    # r,theta = np.sqrt(y**2+z**2),np.arctan(y/z)
+    # print(d_p)
+    if not type(d_p) in [list,np.ndarray]:d_p=[0,0,d_p]
+    xp,yp,zp =d_p[0],d_p[1],d_p[2]
+    r,theta,phi = cart2sphere(0*y-xp,y-yp,z-zp)
+    r_p,theta_p,phi_p = cart2sphere(xp,yp,zp)
+    phi_a = np.pi/2
     Ex = np.zeros(z.shape,dtype=complex)
     n  = np.arange(Nmax+1)
+    # print(alpha)
+    # print(phi.max(),phi.min())
+    ap = np.zeros(((Nmax+1)**2),dtype=complex)
+    xi = np.sin(theta_p)*np.sin(phi_p)*np.sin(alpha)+np.cos(theta_p)*np.cos(alpha)
+    # print(r_p,xi)
     if alpha:
         t = time.time()
         for n in range(Nmax+1):
             ymn = np.zeros(Ex.shape,dtype=complex)
+            # print(n)
+            jl = jn(n,k*r)
             for m in range(-n,n+1):
-                ymn += spe.sph_harm(m,n,0,theta)*np.conj(spe.sph_harm(m,n,0,alpha))
-            Ex += 1J**n*spe.spherical_jn(n,k*r)*ymn
+                # print(m)
+                m1=m
+                if m<0:m1 = 2*n+1+m
+                ap0 = 4*np.pi*1J**n*np.conj(spe.sph_harm(m,n,phi_a,alpha))*np.exp(1J*k*r_p*xi)
+                ap[n**2+m1] = ap0
+                # e0=0#(2*np.random.rand(1)-1)*0.1
+                # ymn += spe.sph_harm(m,n,phi,theta)*np.conj(spe.sph_harm(m,n,phi_a,alpha))
+                # ymn += np.conj(spe.sph_harm(m,n,phi,theta))*spe.sph_harm(m,n,phi_a,alpha)
+
+                ymn += ap[n**2+m1]*jl*spe.sph_harm(m,n,phi,theta)
+            Ex += ymn
+            # Ex += 1J**n*jn(n,k*r)*ymn
+            # Ex += 1J**n*spe.spherical_jn(n,k*r)*ymn
         if timeOpt:print('loop:',time.time()-t)
-        Ex *= 4*np.pi*np.exp(1J*k*d_p*np.cos(alpha))
+        # Ex *= 4*np.pi*np.exp(1J*k*r_p*xi)
     else:
         t = time.time()
         Pn = np.zeros((npts,npts,Nmax+1))
@@ -246,6 +275,7 @@ def get_plane_wave_scalar(y,z,lam=1,d_p=2.5,alpha=0,Nmax=10,fz=np.real,timeOpt=F
         for n in range(Nmax+1):
             Ex += an(n)*Jn(n,k*r)*Pn[:,:,n]
         if timeOpt:print('sum Jn:',time.time()-t)
+    # print(ap)
     if fz:
         return fz(Ex)
     else:
@@ -354,7 +384,7 @@ def a_ln(lmax,nmax, fz_q,r_d,theta_d):
             aln[l,n] = 4*np.pi*np.sum((-1J)**(l-n-q)*zq[q]*Yq[q]*Glnq) #;print('n=%d' %n, q,zq[q],Yq[q],Glnq)
     return aln
 
-def a_lmnp(l,m,n,p, fz_q,r_d,theta_d,phi_d):
+def a_lmnp(l,m,n,p, fz_q=hn1,r_d=1,theta_d=0,phi_d=0):
     '''Scalar translational addition theorem coefficients
     - l,m,n,p : index to pass from psi_np to psi_lm
     - fz_q : type of expansion (bessel or hankel)
@@ -371,18 +401,89 @@ def a_lmnp(l,m,n,p, fz_q,r_d,theta_d,phi_d):
         (-1J)**(l-n-q)*z_q*Ympq*Glmnpq*(-1)**m)
     return a_lmnp
 
-def get_trans_coeff(n,p,r_d,theta_d,phi_d, N=5):
+def get_almnumu(l,m,r_d,theta_d,phi_d,Nmax=5,fz_q=hn1):
+    '''translational coeffs to express psi_lm as :
+    # psi_lm(r+d) = sum_{nu}sum_{mu} a_{l,m;nu,mu}psi_{nu}^{mu}(r)
+    args :
+     - l,m : indices
+     - r_d,theta_d,phi_d : d vector in spherical coords
+    returns :
+     - almnumu : coeffs r_d.size x Nmax**2
+    '''
+    ls = np.hstack([[l]*(2*l+1) for l in range(Nmax)])
+    ms = np.hstack([list(np.arange(l+1))+list(np.flipud(np.arange(-l,0))) for l in range(Nmax)])
+
+    a_lmnumu,i = np.zeros((r_d.size,Nmax**2),dtype=complex),0
+    for nu,mu in zip(ls,ms):
+        # print(colors.blue+'\t nu=%d,mu=%d: ' %(nu,mu)+colors.black);
+        q = np.arange(abs(l-nu),l+nu+1)
+        q = q[(l+nu+q)%2==0]
+        # print('q', q,'l+nu+q',l+nu+q);
+        # G : nqs
+        Gnumulmq  = np.array([np.float(gaunt(l,nu,q, m,-mu,mu-m)) for q in q])
+        # print('G',Gnumulmq)
+        z_q = np.array([fz_q(q,r_d) for q in q]).T
+        # z_q : nds x nqs
+        # print('hq',abs(z_q))
+        # Ympq : nds x nqs
+        Yqmmu = np.array([spe.sph_harm(m-mu,q0,phi_d,theta_d) for q0 in q ]).T
+        Yqmmu[:,q<abs(m-mu)] = 0
+        # print('Yq^(m-mu)',abs(Yqmmu),'m-mu',m-mu)
+        # a_lmnumuq : nds x nqs
+        a_lmnumuq = (-1J)**abs(l-nu-q)*z_q*(-1)**abs(m)*Yqmmu*Gnumulmq
+        # print('a_lmnumu',abs(a_lmnumuq))
+        a_lmnumu[:,i] = 4*np.pi*np.sum(a_lmnumuq,axis=1)
+        i+=1
+    return a_lmnumu
+
+def get_anumulm(l,m,r_d,theta_d,phi_d,Nmax=5,fz_q=hn1):
+    '''translational coeffs to express psi_lm as :
+    # psi_lm(r+d) = sum_{nu}sum_{mu} a_{l,m;nu,mu}psi_{nu}^{mu}(r)
+    args :
+     - l,m : indices
+     - r_d,theta_d,phi_d : d vector in spherical coords
+    returns :
+     - almnumu : coeffs r_d.size x Nmax**2
+    '''
+    ls = np.hstack([[l]*(2*l+1) for l in range(Nmax)])
+    ms = np.hstack([list(np.arange(l+1))+list(np.flipud(np.arange(-l,0))) for l in range(Nmax)])
+
+    a_numulm,i = np.zeros((r_d.size,Nmax**2),dtype=complex),0
+    for nu,mu in zip(ls,ms):
+        # print(colors.blue+'\t nu=%d,mu=%d: ' %(nu,mu)+colors.black);
+        q = np.arange(abs(nu-l),nu+l+1)
+        q = q[(l+nu+q)%2==0]
+        # print('q', q,'l+nu+q',l+nu+q);
+        # G : nqs
+        Gnumulmq  = np.array([np.float(gaunt(nu,l,q, mu,-m,m-mu)) for q in q])
+        # print('G',Gnumulmq)
+        z_q = np.array([fz_q(q,r_d) for q in q]).T
+        # z_q : nds x nqs
+        # print('hq',abs(z_q))
+        # Ympq : nds x nqs
+        Yqmum = np.array([spe.sph_harm(mu-m,q0,phi_d,theta_d) for q0 in q ]).T
+        Yqmum[:,q<abs(mu-m)] = 0
+        # print('Yq^(m-mu)',abs(Yqmmu),'m-mu',m-mu)
+        # a_lmnumuq : nds x nqs
+        a_numulmq = (-1J)**abs(nu-l-q)*z_q*(-1)**abs(mu)*Yqmum*Gnumulmq
+        # print('a_lmnumu',abs(a_lmnumuq))
+        a_numulm[:,i] = 4*np.pi*np.sum(a_numulmq,axis=1)
+        i+=1
+    return a_numulm
+
+def get_trans_coeff(n,p,r_d,theta_d,phi_d,fz_q=spe.spherical_jn, N=5):
     a_lmnp,i = np.zeros((N**2),dtype=complex),0
     for l in range(N):
         q = np.arange(abs(l-n),n+l+1)
-        Jq = np.array([spe.spherical_jn(q,r_d) for q in q])
+        # Jq = np.array([spe.spherical_jn(q,r_d) for q in q])
+        z_q = np.array([fz_q(q,r_d) for q in q])
         # print('l=%-3d' %l,q,Jq )
         for m in range(-l,l+1):
             Glmnpq = np.array([np.float(gaunt(l,n,q, m,-p,-m+p)) for q in q])
             Ympq = np.array([ [0,spe.sph_harm(m-p,q,phi_d,theta_d)][bool(abs(m-p)<=q)] for q in q ])
             # print('\t m=%-3d : ' %m,Glmnpq,Ympq)
             a_lmnp[i] = 4*np.pi*np.sum(
-                (-1J)**(l-n-q)*(-1)**m*Glmnpq*Jq*Ympq)
+                (-1J)**(l-n-q)*(-1)**m*Glmnpq*z_q*Ympq)
             i+=1
     return a_lmnp
 
@@ -456,9 +557,14 @@ def sphere2cart(r,theta,phi):
     return x,y,z
 
 def cart2sphere(x,y,z):
+    if not isinstance(x,np.ndarray):x,y,z = np.array([x]),np.array([y]),np.array([z])
     r   = np.sqrt(x*x+y*y+z*z)
-    rho = np.sqrt(x**2+y**2)
-    theta = np.arccos(z/r)
+    # rho = np.sqrt(x**2+y**2)
+    theta=np.zeros(r.shape)
+    # print(r>0,theta.shape,theta[r>0],r[r>0],np.arccos(z/r[r>0]))
+    idr=r>0
+    theta[idr] = np.arccos(z[idr]/r[idr])
+    # theta[y<0]+=np.pi
     phi   = np.arctan2(y,x)
     return r,theta,phi
 
@@ -496,6 +602,16 @@ def polar_mesh2D(cart_opt=False,npts=100,r=(0,1)):
         r,theta = np.meshgrid(np.linspace(r[0],r[1],npts),np.linspace(0,np.pi,npts))
         z,y = r*np.cos(theta), r*np.sin(theta)
     return r,theta,y,z
+
+def spherical_mesh2D(plane='yz',npts=100,r=(0,1,0,1)):
+    u = np.linspace(r[0],r[1],npts)
+    v = np.linspace(r[2],r[3],npts)
+    u0,v0 = np.meshgrid(u,v)
+    if   plane=='xy' : x,y,z = u0,u0,np.zeros(u0.shape)
+    elif plane=='yz' : x,y,z = np.zeros(u0.shape),u0,v0
+    elif plane=='xz' : x,y,z = u0,np.zeros(u0.shape),v0
+    r,theta,phi = cart2sphere(x,y,z)
+    return x,y,z,r,theta,phi
 
 def mesh_3D(npts=50,r=(0,1)):
     if len(r)==2:r=r*3

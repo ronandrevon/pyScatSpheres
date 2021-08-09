@@ -1,8 +1,8 @@
 import numpy as np
-import math 
+import math
 
 def legendre(l,x,indic):
-	P=np.zeros((l+1,2*l+1),dtype=object) 
+	P=np.zeros((l+1,2*l+1),dtype=object)
 	P[0,0]=np.ones(x.shape)
 	if (l>=1):
 		P[1,0],P[1,1]=x,-np.sqrt(1-x**2)
@@ -21,7 +21,9 @@ def legendre(l,x,indic):
 		return P[l,indic]
 
 
+
 def harmonique(l,theta,indic,phi):
+
 	Y=legendre(l,np.cos(theta),indic)
 	#print(Y.shape)
 	Y[0,0]=np.sqrt(1/(4*math.pi))*Y[0,0]
@@ -35,13 +37,13 @@ def harmonique(l,theta,indic,phi):
 			Y[L,0]=np.sqrt((2*L+1)/(4*math.pi))*Y[L,0]
 			Y[L,-L]=np.sqrt((2*L+1)*math.factorial(L+L)/(4*math.pi))*Y[L,-L]
 			for m in range(1,L):
+				ep=np.exp(1J*m*phi)
 				pos=np.sqrt((2*L+1)*math.factorial(L-m)/(4*math.pi*math.factorial(L+m)))
 				neg=np.sqrt((2*L+1)*math.factorial(L+m)/(4*math.pi*math.factorial(L-m)))
 				Y[L,m]=pos*Y[L,m]*np.exp(1J*m*phi)
+
 				Y[L,-m]=neg*Y[L,-m]*np.exp(-1J*m*phi)
 	if (indic=='tab'):
 		return Y
 	else :
 		return Y[l,indic]
-
-

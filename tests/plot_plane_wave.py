@@ -1,8 +1,8 @@
 import importlib as imp
-from utils import*
-from optics.scattering.spherical_utils import*
 import scipy.special as spe
-import optics.scattering.spherical_utils as spu ;imp.reload(spu)
+from pyScatSpheres.spherical_utils import*
+import pyScatSpheres.spherical_utils as spu ;imp.reload(spu)
+from utils import*
 import utils.displayStandards as dsp            ;imp.reload(dsp)
 path='../../docs/figures/'
 
@@ -20,14 +20,19 @@ def plot_plane_wave_scalar(lam=1,d_p=2.5,alpha=0,R=5,npts=50,Nmax=10,fz=np.real,
     - npts  : nb points along z
     '''
     yz0 = 1e-3
+    # y,z = np.meshgrid( R*np.linspace(yz0,1,npts), R*np.linspace(yz0,1,npts))
     y,z = np.meshgrid( R*np.linspace(yz0,1,npts), R*np.linspace(yz0,1,npts))
     Ex = spu.get_plane_wave_scalar(y,z,lam,d_p,alpha,Nmax,fz)
-
-    a_str=['',r'\cos\alpha'][np.float(alpha)>0]
-    tle  = r'$E_x=e^{jkz%s}$, $d_p=$%.1f, $\alpha$=%d$^{\circ}$, R=%1.f, $N_{max}$=%d ' %(a_str,d_p,np.rad2deg(alpha),R,Nmax)
+    # print(alpha)
+    # a_str=['z',r'z\cos\theta'][np.float(alpha)>0]
+    tle  = r'$E_x=e^{jk\cdot r}$, $d_p=$%s, $\alpha$=%d$^{\circ}$, R=%1.f, $N_{max}$=%d ' %(str(d_p),alpha,R,Nmax)
     labs = ['$y$','$z$']
-    dsp.stddisp(im=[y,z,Ex],labs=labs,title=tle,
-        imOpt='cv',axPos='V',pOpt='pt',#xyTicks=[[],[]]
+
+    ka = 2
+    a = ka*lam/(2*np.pi)
+    t = np.linspace(0,2*np.pi,100)
+    plts = [d_p[1]+a*np.cos(t),d_p[2]+a*np.sin(t),'k']
+    dsp.stddisp(plts,im=[y,z,Ex],labs=labs,title=tle,lw=2,
         **kwargs)
 
 def plot_plane_wave_vector3d(lam=1,d_p=0,alpha=0,R=5,npts=50,Nmax=10,fz=np.real,cmpt=0,pol='y',name='',**kwargs):
@@ -113,11 +118,12 @@ def plot_plane_wave_vector(lam=1,d_p=2.5,alpha=0,R=5,npts=50,Nmax=10,cmpts=[0,1,
 #################################################################################################
 # Plane wave tests
 #################################################################################################
-plt.close('all')
+# plt.close('all')
 pol='y'
 opt='p'
 
-plot_plane_wave_scalar(npts=100,Nmax=50 ,lam=1,R=5,alpha=10, opt=opt,name=path+'Exi_sphere1.png')
+# plot_plane_wave_scalar(npts=100,Nmax=15 ,lam=1,R=3,d_p=0  ,alpha=30,pOpt='im',caxis=[-1,1], opt=opt,name=path+'Exi_sphere1.png')
+plot_plane_wave_scalar(npts=100,Nmax=50 ,lam=2*np.pi,R=30,d_p=[0,4,4],alpha=45,pOpt='im',caxis=[-1,1], opt=opt,name=path+'Exi_sphere1.png')
 # plot_plane_wave_scalar(npts=100,nmax=10 ,lam=1,R=5, opt='p',name=path+'Exi_sphere1.png')
 # plot_plane_wave_scalar(npts=100,nmax=20 ,lam=1,R=5, opt='p',name=path+'Exi_sphere2.png')
 # plot_plane_wave_scalar(npts=100,nmax=50 ,lam=1,R=5, opt='p',name=path+'Exi_sphere3.png')
@@ -126,17 +132,18 @@ plot_plane_wave_scalar(npts=100,Nmax=50 ,lam=1,R=5,alpha=10, opt=opt,name=path+'
 # plot_plane_wave_scalar(lam=1,alpha=20,d_p=1,R=10,nmax=40,npts=100, opt='sc',name=path+'Exi_alpha_sphere3.png')
 # plot_plane_wave_scalar(lam=1,alpha=20,d_p=1,R=10,nmax=50,npts=100, opt='sc',name=path+'Exi_alpha_sphere4.png')
 ### vector plane wave cartesian and spherical components
-for cart_opt in [True,False]:plot_plane_wave_vector(lam=1,cart_opt=cart_opt,
-    R=3,npts=50,Nmax=30,d_p=0,alpha=0, phi=np.pi/2,pol=pol,
-    xylims=3*np.array([0,1,0,1]),
-    opt=opt,name=path+'pw_vec')
-### vector plane wave Ey varying d_p
-for i,d_p in enumerate([0,0.25,0.5,0.75]): plot_plane_wave_vector(lam=1,d_p=d_p,cmpts=[1],
-    alpha=0,R=2,cart_opt=True,phi=np.pi/2,pol=pol,npts=50,Nmax=20,
-    xylims=2*np.array([0,1,0,1]),
-    opt=opt,name=path+'pw_vec_d%d' %i)
+if 0:
+    for cart_opt in [True,False]:plot_plane_wave_vector(lam=1,cart_opt=cart_opt,
+        R=3,npts=50,Nmax=30,d_p=0,alpha=0, phi=np.pi/2,pol=pol,
+        xylims=3*np.array([0,1,0,1]),
+        opt=opt,name=path+'pw_vec')
+    ### vector plane wave Ey varying d_p
+    for i,d_p in enumerate([0,0.25,0.5,0.75]): plot_plane_wave_vector(lam=1,d_p=d_p,cmpts=[1],
+        alpha=0,R=2,cart_opt=True,phi=np.pi/2,pol=pol,npts=50,Nmax=20,
+        xylims=2*np.array([0,1,0,1]),
+        opt=opt,name=path+'pw_vec_d%d' %i)
 
-### vector plane wave 3d plot Ex,Ey,Ez as colorbar
-for cmpt in [0,1,2]:plot_plane_wave_vector3d(lam=1,cmpt=cmpt,pol=pol,d_p=0,alpha=0,npts=50,R=1,Nmax=20,
-    pOpt='tX',xyTicks=[1,1,1],xylims=1*np.array([0,1,0,1,0,1]),axPos='L',
-    opt=opt,name=path+'pw_vec3d')
+    ### vector plane wave 3d plot Ex,Ey,Ez as colorbar
+    for cmpt in [0,1,2]:plot_plane_wave_vector3d(lam=1,cmpt=cmpt,pol=pol,d_p=0,alpha=0,npts=50,R=1,Nmax=20,
+        pOpt='tX',xyTicks=[1,1,1],xylims=1*np.array([0,1,0,1,0,1]),axPos='L',
+        opt=opt,name=path+'pw_vec3d')

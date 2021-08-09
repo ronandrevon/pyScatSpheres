@@ -2,14 +2,14 @@ import matplotlib.pyplot as plt
 import scipy
 from scipy import special
 import numpy as np
-import harmo_sphe as hs
+from pyScatSpheres import harmo_sphe as hs
 import math
 import time
 
 """
 Paramètres
 """
-m=3
+m=1
 l=10
 h=0.001
 x=np.arange(0,math.pi+h,h)
@@ -29,7 +29,7 @@ for k in x:
 #Python 
 y2=scipy.special.sph_harm(m, l, 0, x)
 
-hihi=hs.harmonique(l,x,'tab',0)
+#hihi=hs.harmonique(l,x,'tab',0)
 #print(hihi)
 
 """
