@@ -33,19 +33,22 @@ the following linear system yields the unknown coefficients :
     &-& b_{p;lm}\hl(k_0a_p)
     - j_l(k_0a_p)\sum_{q\neq p}^{N} \\
       &&\sum_{\nu=0}^{\infty}\sum_{\mu=-\nu}^{\mu=\nu}
-      a_{l,m,\nu,\mu}^{(out-in)}(k_0d_{pq},\theta_{pq},\phi_{pq})b_{q;\nu\mu}
+      a_{\nu,\mu;l,m}^{(out-in)}(d_{pq},\theta_{pq},\phi_{pq})b_{q;\nu\mu}
       = e^{jk_0d_p\zeta_p}c_{lm}j_l(k_0a_p) \\
   k_p a_{p;lm} \dP_{\rho}j_l(k_pa_p)
     &-& k_0b_{p;lm}\dP_{\rho}\hl(k_0a_p) - k_0 \dP_{\rho} j_l(k_0a_p)\sum_{q\neq p}^{N} \\
     &&\sum_{\nu=0}^{\infty}\sum_{\mu=-\nu}^{\mu=\nu}
-      a_{l,m,\nu,\mu}^{(out-in)}(k_0d_{pq},\theta_{pq},\phi_{pq})b_{q;\nu\mu}
+      a_{\nu,\mu;l,m}^{(out-in)}(d_{pq},\theta_{pq},\phi_{pq})b_{q;\nu\mu}
       = k_0e^{jk_0d_p\zeta_p}c_{lm}\dP_{\rho}j_l(k_0a_p) \\
 \end{eqnarray}
 
 where :
 \begin{eqnarray}
   c_{lm}  &=& 4\pi j^l Y_l^{m*}(\alpha,\pi/2)\\
-  \zeta_p &=& \sin(\Theta_p)\sin(\Phi_p)\sin(\alpha)+
+  d_{pq}  &=& |\bb d_q-\bb d_p| \\
+  \theta_{pq} &=& \arccos\Big(\frac{z_q-z_p}{d_{pq} }\Big)\\
+  \phi_{pq}   &=& \arctan\Big(\frac{y_q-y_p}{x_q-x_p}\Big)\\
+  \zeta_p     &=& \sin(\Theta_p)\sin(\Phi_p)\sin(\alpha)+
                 \cos(\Theta_p)\cos(\alpha)\\
 \end{eqnarray}
 
@@ -53,92 +56,113 @@ where $0\le\alpha\le\pi$ is the angle of the incident wave with respect to $z$ i
 
 The coupling coefficients involve the translational addition theorem coefficients :
 \begin{eqnarray}
-  a_{lm;\nu\mu}^{(out-in)}(kd_{pq},\theta_{pq},\phi_{pq})
-    = 4\pi\sum_{q=|l-\nu|}^{l+\nu}&&(-j)^{l-\nu-q} \hl(kd_{pq})\\
-      && Y_q^{m-\mu}(\theta_{pq},\phi_{pq})\cc G(l,\nu,q, m,-\mu,-m+\mu)
+  a_{\nu,\mu;l,m}^{(out-in)}(d_{pq},\theta_{pq},\phi_{pq})
+    = 4\pi\sum_{q=|l-\nu|}^{l+\nu}  
+      &&(-j)^{l-\nu-q}h_q^{(1)}(kd_{pq}) Y_q^{m-\mu}(\theta_{pq},\phi_{pq})\\
+       &&(-1)^m \cc G(l,\nu,q, m,-\mu,\mu-m))
 \end{eqnarray}
 
-<!-- ### Linear system
+where
+$\cc G(l_1,l_2,l_3,m_1,m_2,m_3) =
+\int_{\Omega}Y_{l_1}^{m_1}Y_{l_2}^{m_2}Y_{l_3}^{m_3}d\Omega$
+are the [Gaunt coefficients](https://doc.sagemath.org/html/en/reference/functions/sage/functions/wigner.html) where we have used :
+\begin{equation}
+  \int_{\Omega}Y_{l}^{m}Y_{\nu}^{\mu*}Y_{q}^{m-\mu~*}d\Omega =
+(-1)^{\mu-m-\mu}\int_{\Omega}Y_{l}^{m}Y_{\nu}^{-\mu}Y_{q}^{-m+\mu}d\Omega
+\end{equation}
+
+### Alternative expression
+We can rewrite the equations by doing
+$   h_l^{'}(k_0a_p)eqa_{p;lm} - h_l(k_0a_p)eqb_{p;lm}$ and
+$n_pj_l^{'}(k_pa_p)eqa_{p;lm} - j_l(k_pa_p)eqb_{p;lm}$
+which gives :
+\begin{eqnarray}
+  a_{p;lm} &=& u_{p;l}e^{jk_0d_p\zeta_p}c_{lm} + u_{p;l}\sum_{q\neq p}^{N}
+      \sum_{\nu=0}^{\infty}\sum_{\mu=-\nu}^{\mu=\nu}
+      a_{\nu,\mu;l,m}^{(out-in)}(d_{pq},\theta_{pq},\phi_{pq})b_{q;\nu\mu}\\
+  b_{p;lm} &=& v_{p;l}e^{jk_0d_p\zeta_p}c_{lm} + v_{p;l} \sum_{q\neq p}^{N}
+      \sum_{\nu=0}^{\infty}\sum_{\mu=-\nu}^{\mu=\nu}
+      a_{\nu,\mu;l,m}^{(out-in)}(d_{pq},\theta_{pq},\phi_{pq})b_{q;\nu\mu}\\
+\end{eqnarray}
+
+where :  
+\begin{eqnarray}
+  u_{p;l} &=& \frac{h_l^{'}(k_0a_p)j_l(k_0a_p) - h_l(k_0a_p)j_l(k_0a_p)^{'}}
+    {j_l(k_pa_p)h_l^{'}(k_0a_p)-n_pj_l^{'}(k_pad_p)h_l(k_0a_p)} \\
+  v_{p;l} &=& \frac{n_pj_l^{'}(k_pa_p)j_l(k_0a_p) - j_l(k_pa_p)j_l^{'}(k_0a_p)}
+    {j_l(k_pa_p)h_l^{'}(k_0a_p)-n_pj_l^{'}(k_pa_p)h_l(k_0a_p)} \\
+\end{eqnarray}
+
+
+### Linear system
 The linear system can also be written :
 \begin{equation}
-  \big(\bb P - \bb T \big)\bb A = \bb L
+  \big(\bb I - \bb T \big)\bb A = \bb L
 \end{equation}
 
 where $\bb A=(\bb a_{pl}, \bb b_{pl})$ is the unknown vector,
-$\bb P$ the matrix of each individual uncoupled sphere :
-\begin{equation}
-\bb P = \left[
-  \begin{array}{ccccccc}
-  j_0(k_1a_1)       &\bb 0&  0               &-h_0(k_0a_1)    &\bb 0&  0              \\
-                    & ... &                  &                & ... &                 \\
-    0               &\bb 0&j_M(k_Na_N)       &  0             &\bb 0&-h_M(k_0a_N)     \\
-  n_1j_0^{'}(k_1a_1)&\bb 0&  0               &-h_0^{'}(k_0a_1)&\bb 0& 0               \\
-                    & ... &                  &                & ... &                 \\
-    0               &\bb 0&n_Nj^{'}_M(k_Na_N)&  0             &\bb 0&-h_M^{'}(k_0a_N) \\
-  \end{array}\right]
-\end{equation}
 
-, $\bb T$ is the cross-coupling matrix and :
+$\bb T$ is the cross-coupling matrix and :
 \begin{eqnarray}
 \bb T &=& \left[
   \begin{array}{cc}
-    \bb 0 & \bb T_p     \\
-    \bb 0 & \bb T_p^{'}
+    \bb 0 & \bb T_u  \\
+    \bb 0 & \bb T_v
   \end{array}\right] \\
-\bb T_p     &=& \bb j_l(k_0a_p)     \sum_{q\neq p}^{N}\bb A_{pq}^{(out-in)}\\
-\bb T_p^{'} &=& \bb j_l^{'}(k_0a_p) \sum_{q\neq p}^{N}\bb A_{pq}^{(out-in)}
-\end{eqnarray}
-and :
-\begin{equation}
-\bb A_{pq}^{(out-in)} = \left[
+\bb T_u &=& \left[
   \begin{array}{cccc}
-  0 & .. & a_{M0;00}^{(out-in)}(k_0d_{pq},\theta_{pq}) \\
-  .. & 0 & ..\\
-  a_{00;M0}^{(out-in)}(k_0d_{pq},\theta_{pq}) & .. & 0 \\
-  \end{array}\right]
-\end{equation}
+    \bb 0        & ..~\bb T_{u;1p}~.. & ..~\bb T_{u;1q}~.. & \bb T_{u;1N}\\
+    \bb T_{u;p1} & ..~\bb 0       ~.. & ..~\bb T_{u;pq}~.. & \bb T_{u;pN}\\
+    \bb T_{u;q1} & ..~\bb T_{u;qp}~.. & ..~\bb 0       ~.. & \bb T_{u;qN}\\
+    \bb T_{u;N1} & ..~\bb T_{u;Np}~.. & ..~\bb T_{u;Nq}~.. & \bb 0       \\
+  \end{array}\right] \\
+  \bb T_{u;pq} &=& \bb u_{p;l}\otimes\bb A_{pq}^{(out-in)}\\
+  \bb T_{v;pq} &=& \bb v_{p;l}\otimes\bb A_{pq}^{(out-in)}\\
+  \bb u_{p;l} &=& \left[ \bb u_{p;0},\bb u_{p;1},\bb u_{p;1},\bb u_{p;1},\bb u_{p;2}~... \right]^{T}\\
+  \bb v_{p;l} &=& \left[ \bb v_{p;0},\bb v_{p;1},\bb v_{p;1},\bb v_{p;1},\bb u_{p;2}~... \right]^{T}\\
+  \bb A_{pq}^{(out-in)} &=& \big(a^{(out-in)}(k_0d_{pq},\theta_{pq},\phi_{pq})\big)_{l,m}
+\end{eqnarray}
 
-and $\bb L$ the incident wave :
-\begin{equation}
-\bb L =
-  \left[\begin{array}{c}
-    c_0e^{jk_0d_1}j_0(k_0a_1)\\...\\c_Me^{jk_0d_N}j_M(k_0a_N)\\c_0e^{jk_0d_1}j_0^{'}(k_0a_1)\\...\\c_Me^{jk_0d_N}j_M^{'}(k_0a_N)
-  \end{array}\right]
-\end{equation}
+and $\bb L$ the incident wave coefficients:
+\begin{eqnarray}
+\bb L   &=& \left[\bb u_{p;l}\bb L_0,\bb v_{p;l}\bb L_0\right]\\
+\bb L_0 &=& \left[\bb c_{lm}e^{jk_0d_1\zeta_1},..~
+  \bb c_{lm}e^{jk_0d_p\zeta_p}..~,\bb c_{lm}e^{jk_0d_N\zeta_N}\right]^T\\
+\end{eqnarray}
 
-where $z_l^{'}=\dP_{\rho}z_l(\rho)$.
+where $\square^T$ denotes transpose and $z_l^{'}=\dP_{\rho}z_l(\rho)$.
 
 ### Far field scattering
 In the far field,
-$\hl(k_0r_p)\approx (-j)^{l+1}\frac{e^{jk_0rp}}{k_0r_p}$, $r_p=r-d_p\cos\theta$, $\theta_p=\theta$
-so the scattering amplitude from the $pth$ sphere $f_p(\theta)$  can be written :  
+$\hl(k_0r_p)\approx (-j)^{l+1}\frac{e^{jk_0rp}}{k_0r_p}$, $r_p=r-d_p\cos(\theta)$, $\theta_p=\theta$,$\phi_p=\phi$
+so the scattering amplitude from the $pth$ sphere $f_p(\theta,\phi)$  can be written :  
 
 \begin{equation}
-  f_p(\theta) = \sum_{l=0}^{\infty} (-j)^{l+1}b_{pl}Y_l^0(\theta)
+  f_p(\theta,\phi) = \sum_{l=0}^{\infty}\sum_{m=-l}^{l} (-j)^{l+1}b_{p;lm}Y_l^m(\theta,\phi)
 \end{equation}
-where we have used the notation $f_p(r_p,\theta)=\frac{e^{jk_0r_p}}{k_0r_p}f_p(\theta)$.
+where we have used the notation $f_p(r_p,\theta,\phi)=\frac{e^{jk_0r_p}}{k_0r_p}f_p(\theta,\phi)$.
 
 The total scattering amplitude is the sum of the contribution from all individual spheres.
 \begin{eqnarray}
-  f(\theta) &=& \sum_{p=1}^{N} f_p(\theta)e^{-jk_0d_p\cos\theta} \\
-            &=& \sum_{l=1}^{\infty}(-j)^{l+1}Y_l^0(\theta)
-              \sum_{p=1}^{N} b_{pl}e^{-jk_0d_p\cos\theta} \\
+  f(\theta,\phi) &=& \sum_{p=1}^{N} f_p(\theta,\phi)e^{-jk_0d_p\cos\theta} \\
+                 &=& \sum_{l=1}^{\infty}(-j)^{l+1}\sum_{m=-l}^{l}Y_l^m(\theta,\phi)
+                      \sum_{p=1}^{N} b_{p;lm}e^{-jk_0d_p\cos\theta} \\
 \end{eqnarray}
-where we have used the notation $f(r,\theta) = \frac{e^{jk_0r}}{k_0r}f(\theta)$.
+where we have used the notation $f(r,\theta,\phi) = \frac{e^{jk_0r}}{k_0r}f(\theta,\phi)$.
 
 The normalized differential scattering cross section is therefore :
 \begin{equation}
-  \frac{\sigma(\theta)}{\pi a_p^2} = \frac{4|f(\theta)|^2}{\left(k_0a_p\right)^2}
+  \frac{\sigma(\theta,\phi)}{\pi a_p^2} = \frac{4|f(\theta,\phi)|^2}{\left(k_0a_p\right)^2}
 \end{equation}
 
-where we have used the definition $\sigma=4\pi r^2 \Bigg |\frac{f(r,\theta)|}{f^{(i)}(r,\theta)}\Bigg|^2$. -->
+where we have used the definition $\sigma=4\pi r^2 \Bigg |\frac{f(r,\theta,\phi)|}{f^{(i)}(r,\theta,\phi)}\Bigg|^2$.
 
 
 
 
 
 
-## Single sphere 
+## Single sphere
 ### Analytical solution
 
 In the case of a single sphere, the analytical solution would be found as :
@@ -165,13 +189,3 @@ where $z_l^{'}=\dP_{\rho}z_l(\rho)$ for $z_l=j_l,h_l^{(1)}$.
 
 Therefore $a_{p;lm}=a_{p;l}Y_l^{m*}(\alpha)/Y_l^{0}(0)$ and
 $b_{p;lm}=b_{p;l}Y_l^{m*}(\alpha)/Y_l^{0}(0)$.
-<!--
-Using $d_p=0$ the continuity at the interface should be $f_p^{(in )}(\bb a_p)=f_p^{(out )}(\bb a_p)+e^{jk(z\cos\alpha+y\sin\alpha)}$
-
-\begin{eqnarray}
-  f_p^{(in )}(\bb a_p)
-    &=& \sum_{l=0}^{\infty}j_l(k_pa_p)\sum_{m=-l}^{m=l}
-      a_{p;lm}Y_l^m(\theta_p,\phi_p)\\
-    &=&\sum_{l=0}^{\infty}j_l(k_pa_p) a_{p;l0}\sum_{m=-l}^{m=l}
-      \frac{Y_l^{m}(\alpha)}{Y_l^{0}(0)} Y_l^m(\theta_p,\phi_p)\\
-\end{eqnarray} -->
