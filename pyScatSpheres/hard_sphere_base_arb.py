@@ -140,3 +140,32 @@ class HardSphereArrayBaseArb():
                     title = r"Total %s, %s" %(fstr,params),
                     name=name+'t.png',**args,**kwargs)
         return fig,ax# return f.max(),f.min()
+        
+    def show_ff(self,npts=361,fopts='m',lw=2,leg=1,name='',title=None,xylims=[],**kwargs):
+        ''' display far field scattering amplitude
+        - fopts : r(real), i(imag), m(mag), a(angle), 2(mag2)
+        '''
+        theta  = np.linspace(0,np.pi,npts)
+        theta_d = np.rad2deg(theta)
+        ff = self.get_ff(theta)
+
+
+        plts,ls = [], ['--','-'][leg]
+        if 'r' in fopts: plts+= [[theta_d,np.real(ff)    ,['c'          ,ls],['',r'$\Re$' ][leg] ]]
+        if 'i' in fopts: plts+= [[theta_d,np.imag(ff)    ,['r'          ,ls],['',r'$\Im$' ][leg] ]]
+        if 'a' in fopts: plts+= [[theta_d,np.angle(ff)   ,['m'          ,ls],['',r'$\phi$'][leg] ]]
+        if 'm' in fopts: plts+= [[theta_d,np.abs(ff)     ,['b'          ,ls],['',r'$||$'  ][leg] ]]
+        if '2' in fopts: plts+= [[theta_d,np.abs(ff)**2  ,[[0.25,0.75,1],ls],['',r'$||^2$'][leg] ]]
+        if not isinstance(title,str):
+            title='Scattering amplitude for %s' %self._params()
+        # if not xylims:
+        #     m,M = 0,0
+        #     if 'r' in fopts:m,M = min(m,np.abs(ff).min()
+        #     if 'i' in fopts:
+        #     if 'a' in fopts:
+        #     if 'm' in fopts:
+        #     if '2' in fopts:
+        #     xylims=[0,180,m,M]
+        return dsp.stddisp(plts,labs=[r"$\theta(^{\circ})$",r"$f(\theta)$"],lw=lw,
+            title=title, xylims=xylims,
+            name=name+'fka.svg',**kwargs)

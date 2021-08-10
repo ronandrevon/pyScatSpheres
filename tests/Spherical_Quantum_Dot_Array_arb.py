@@ -17,10 +17,11 @@ d=3
 # kd_z,kd_y = [0,d*ka]
 # qdot1 = qsa_arb.QdotSphereArray(ka=np.array(ka),kd_z=np.array(kd_z),kd_y=np.array(kd_y),kp=kp,nmax=nmax)
 
-qdot1 = qsa_arb.QdotSphereArray(ka=np.array([1.5,2]),kd_z=np.array([2,6]),kd_y=np.array([0,7]),kp=1.25,nmax=10)
-#qdot1 = qsa_arb.QdotSphereArray(ka=np.array([1,2,1,2]),kd_z=np.array([2,4,3.5,4]),kd_y=np.array([0,5,-2,1]),kp=1.25,nmax=10)
+#qdot1 = qsa_arb.QdotSphereArray(ka=np.array([1.5,2]),kd_z=np.array([2,6]),kd_y=np.array([0,7]),kp=1.25,nmax=10)
+qdot1 = qsa_arb.QdotSphereArray(ka=np.array([1,2,1,2,1]),kd_z=np.array([2,4,3.5,4,3]),kd_y=np.array([0,5,-2,1,5]),kp=1.25,nmax=7,alpha=0,opt2=0)
+#qdot1 = qsa.QdotSphereArray(ka=np.array([1,2,1,2,1]),kd=np.array([2,4,3.5,4,3]),kp=1.25,nmax=10,N=5)
 
-#qdot1 = qsa_arb.QdotSphereArray(ka=np.array([2.4,4,2.4]),kd_z=np.array([5,-4.5,4.5]),kd_y=np.array([0,4.5,4.5]),kp=1.1,nmax=7)
+#qdot1 = qsa_arb.QdotSphereArray(ka=np.array([2.4,4,2.4]),kd_z=np.array([5,-4.5,4.5]),kd_y=np.array([0,4.5,4.5]),kp=1.25,nmax=7,opt2=0)
 
 
 #qdot1=qsa.QdotSphereArray(ka=np.array([1,2,1,2]),kd=np.array([2,4,3.5,4]),kp=1.1,nmax=2,copt=1,N=4)
@@ -40,12 +41,15 @@ args = {'npts':500,'fz':np.real,'def_args':0,'caxis':[-1,1],
 
 # r,theta,y,z = spu.polar_mesh2D(1,100,(-3,3,-2,5))
 #qdot1.show_f(opts='i ',r=(-4,4,-2,7),name='/home/tarik/Downloads/test.png',opt='p',**args);
-qdot1.show_f(opts='t ',r=(-4,15,-5,15),name='/home/tarik/Downloads/test.png',opt='p',**args);
+ti1=time.time()
+#qdot1.show_f(opts='t ',r=(-4,15,-5,15),name='/home/tarik/Downloads/test.png',opt='p',**args);
+tf1=time.time()-ti1
 
-
+print(tf1)
 # pNmax = qdot1.N*(qdot1.nmax**2)
 # Pab = qdot1.P[pNmax+np.arange(pNmax),np.arange(pNmax)]
 # Pba = qdot1.P[np.arange(pNmax),pNmax+np.arange(pNmax)]
 # print(np.diag(qdot1.P));print(Pab);print(Pba)
 # qdot1.show_f(opts='s ',ax=ax21,**args);
 # qdot1.show_f(opts='t ',ax=ax31,**args);
+qdot1.show_ff()

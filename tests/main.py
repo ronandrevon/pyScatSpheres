@@ -9,8 +9,8 @@ import time
 """
 Paramètres
 """
-m=1
-l=10
+m=7
+l=7
 h=0.001
 x=np.arange(0,math.pi+h,h)
 
@@ -23,13 +23,13 @@ y1=np.zeros(n)
 y2=np.zeros(n)
 i=0
 for k in x:
-	Y=hs.harmonique(l,k,'tab')
+	Y=hs.harmonique(l,k,'tab',-np.pi)
 	y1[i]=Y[l,m]
 	i+=1
 #Python 
-y2=scipy.special.sph_harm(m, l, 0, x)
+y2=scipy.special.sph_harm(m, l,-np.pi, x)
 
-#hihi=hs.harmonique(l,x,'tab',0)
+hihi=hs.harmonique(l,x,'tab',0)
 #print(hihi)
 
 """
@@ -40,7 +40,7 @@ plt.plot(x, y1, color='red', linewidth = 3)
 #Python 
 plt.plot(x, y2, color='blue', linestyle='dashed', linewidth = 3) 
 #Légendes et affichages
-plt.title('Harmoniques sphériques')
+plt.title('Harmoniques sphériques, l=, m=')
 plt.grid()
 plt.show()
 
