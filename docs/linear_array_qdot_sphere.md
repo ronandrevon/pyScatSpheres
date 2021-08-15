@@ -48,6 +48,8 @@ where :
     &=& 4\pi\sum_{q=|l-n|}^{l+n}(-j)^{l-n-q} \hl(kd_{pq})Y_l^0(\theta_{pq})\cc G(l,n,q,0,0,0)
 \end{eqnarray}
 
+
+
 ### Linear system
 The linear system can also be written :
 \begin{equation}
@@ -98,6 +100,8 @@ and $\bb L$ the incident wave :
 
 <!-- where $j_l^p = j_l(k_pa_p)$, $h_l^p = h_l^{(1)}(k_0a_p)$  -->
 where $z_l^{'}=\dP_{\rho}z_l(\rho)$.
+
+
 
 ### Far field scattering
 In the far field,
@@ -170,17 +174,20 @@ a,d) Incident, b,e) scattered and c,f) total wave function $\psi(\bb r)$ and rad
 
 
 ### Scattering amplitude and cross section
-$k_p=1.0001$ | $k_p=1.1000$ | $k_p=1.5000$
------------- | ------------ | ------------
+a  | b  | c  
+-- | -- | --
 [![]({{figs}}1_n0_fka.svg)]({{figs}}1_n0_fka.svg) | [![]({{figs}}1_n1_fka.svg)]({{figs}}1_n1_fka.svg) | [![]({{figs}}1_n2_fka.svg)]({{figs}}1_n2_fka.svg)
 
-Scattering amplitude for a few normalized radius $ka$ and potential strength $k_p$.
+Scattering amplitude for a few normalized radius $ka$ and potential strength
+a) $k_p=1.1$ b) $k_p=1.001$ c) $k_p=1.0001$.
 
-a) $log(\sigma)$ | b) $lin(\sigma)$
----------------- | ----------------
+a  | b
+-- | --
 [![]({{figs}}1_log_ska.svg)]({{figs}}1_log_ska.svg) | [![]({{figs}}1_lin_ska.svg)]({{figs}}1_lin_ska.svg)
 
-Normalized scattering cross section in a) log b) lin scale for a few values of $k_p$ as a function of $ka$.
+Normalized scattering cross section in $\sigma$ in a) $\log$ and b) linear scales for a few values of $k_p$ over a range of normalized radius $ka$.
+
+It is noted that in the weak scattering regime $kp-1\ll 1$ and not too large spheres $ka$, the shape of the diffraction pattern is identical to the Born approximation. Only the amplitude of the scattering cross section increases with radius. In this regime the spheres  
 
 
 ### Small potential limit : Born approximation
@@ -247,11 +254,17 @@ For a $N$-shell with radius $r_i$, potential strength $\epsilon_i$:
     \frac{\epsilon_i-\epsilon_{i+1}}{\epsilon_i}f_{i}(q)
 \end{eqnarray}
 
-$V_0(r)$ | $f_0(\theta)$ | $V_1(r)$ | $f_1(\theta)$
--------- | ------------- | -------- | -------------
-[![]({{figs1}}shells_pot0.png)]({{figs1}}shells_pot0.png) |  [![]({{figs1}}shells_fka0.svg)]({{figs1}}shells_fka0.svg) |  [![]({{figs1}}shells_pot1.png)]({{figs1}}shells_pot1.png) |  [![]({{figs1}}shells_fka1.svg)]({{figs1}}shells_fka1.svg)
+a  | b  | c
+-- | -- | --
+[![]({{figs1}}shells_pot1.png)]({{figs1}}shells_pot1.png) | [![]({{figs1}}shells_fka1.svg)]({{figs1}}shells_fka1.svg) |   [![]({{figs1}}shells_fka1_npts.svg)]({{figs1}}shells_fka1_npts.svg)
 
+a) Multi-shell description of the potential
+b) Scattering amplitude increasing largest shell up to $ka=500$
+c) Scattering increasing number of shells up to $N=40$ using $ka_{max}=500$
 
+It is important to take the very low index high range spheres to account for the
+proper low angle representation of the scattering amplitude. It is also important to sample sufficiently to prevent appreciable ripples at large angles.
+The combination $ka_{max}=400$, $N=15$ would an acceptable set of parameters.
 
 <!--
 #######################################################################
@@ -270,6 +283,26 @@ $ka=1.00$ | $ka=5.00$ | $ka=15.0$
 
 
 ### Approximate solution
+
+Since back scattering is small, the scattering from the sphere located after the first sphere can be sought with an approximate solution using the analytical response to a spherical Hankel function $\Psi_{\nu0}^{(out)}$ located in $-kd$.
+
+Using the translation theorem for this input function this gives :
+
+\begin{eqnarray}
+  a_{pl} &=& c_{l}\frac{-h_0^{'}j_0 + h_0j_0^{'}}{n_pj_1^{'}h_0 - j_1h_0^{'}} \\
+  b_{pl} &=& c_{l}\frac{-n_pj_1^{'}j_0 + j_1j_0^{'}}{n_pj_1^{'}h_0 - j_1h_0^{'}} \\
+  c_l &=& a_{\nu,0;l,0}^{(out-in)}(kd_p,0,0)
+\end{eqnarray}
+
+Therefore the response to $\sum_{\nu} b_{p,\nu}\Psi_{\nu0}^{(out)}$ is :
+\begin{equation}
+  c_l^{(s)} = u_l\sum_{\nu} b_{p,\nu}a_{\nu,0;l,0}^{(out-in)}(kd_p,0,0)
+\end{equation}
+[![](figures/qdot2_approx_img.png)](figures/qdot2_approx_img.png)
+
+Note that this is the same as solving the coupled system but setting the sums
+over $\sum_{q<p}$ which is a triangular by block system whose inversion is trivial.
+
 {% set figs2a='/figures/qdotSphereArray2approx_' %}
 
 Evolution as a function of distance  $kd$ for $N=5$, $ka=2$, $n_{ref}=1.2$.

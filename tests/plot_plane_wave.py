@@ -22,6 +22,7 @@ def plot_plane_wave_scalar(lam=1,d_p=2.5,alpha=0,R=5,npts=50,Nmax=10,fz=np.real,
     yz0 = 1e-3
     y,z = np.meshgrid( R*np.linspace(yz0,1,npts), R*np.linspace(yz0,1,npts))
     Ex = spu.get_plane_wave_scalar(y,z,lam,d_p,alpha,Nmax,fz)
+    # Ex = spu.get_spherical_wave_scalar(y,z,lam,d_p,alpha,Nmax,fz)
 
     a_str=['',r'\cos\alpha'][np.float(alpha)>0]
     tle  = r'$E_x=e^{jkz%s}$, $d_p=$%.1f, $\alpha$=%d$^{\circ}$, R=%1.f, $N_{max}$=%d ' %(a_str,d_p,np.rad2deg(alpha),R,Nmax)

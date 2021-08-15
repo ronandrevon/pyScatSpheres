@@ -2,13 +2,12 @@
 import time
 import numpy as np
 import scipy.special as spe
-import py3nj
+# import py3nj
 from . import displayStandards as dsp
-
 import sage.all
 gaunt = sage.functions.wigner.gaunt
 
-w3j = lambda n1,n2,n3,m1,m2,m3 : py3nj.wigner3j(2*n1,2*n2,2*n3,2*m1,2*m2,2*m3)
+# w3j = lambda n1,n2,n3,m1,m2,m3 : py3nj.wigner3j(2*n1,2*n2,2*n3,2*m1,2*m2,2*m3)
 # gaunt = lambda l1,l2,l3,m1,m2,m3:np.sqrt((2*l1+1)*(2*l2+1)*(2*l3+1)/(4*np.pi))*w3j(l1,l2,l3,0,0,0)*w3j(l1,l2,l3,m1,m2,m3)
 yn   = lambda n,z : np.sqrt(np.pi/(2*z))*spe.yv(n+0.5,z)
 jn   = lambda n,z : np.sqrt(np.pi/(2*z))*spe.jv(n+0.5,z)
@@ -17,6 +16,11 @@ jnp  = lambda n,z : np.sqrt(np.pi/(2*z))*(spe.jvp(n+0.5,z)  - spe.jv(n+0.5,z)/(2
 hn1p = lambda n,z : np.sqrt(np.pi/(2*z))*(spe.h1vp(n+0.5,z) - spe.hankel1(n+0.5,z)/(2*z) )
 Pl = lambda l,theta: np.sqrt(4*np.pi/(2*l+1))*spe.sph_harm(0,l,0,theta)
 # psi_lm = lambda z_l,l,m,r,theta,phi:z_l(l,r)*spe.sph_harm(m,l,phi,theta)
+
+def get_ls_ms(nmax):
+    ls = np.hstack([[l]*(2*l+1)for l in range(nmax)])
+    ms = np.hstack([list(np.arange(l+1))+list(np.flipud(np.arange(-l,0))) for l in range(nmax)])
+    return ls,ms
 
 def get_MNnm(kr,theta,phi, Nmax, zn=hn1,znp=hn1p,pol='y'):
     '''Computes Mnm and Nmn in spherical coordinates up to Nmax'''
@@ -333,15 +337,15 @@ def get_plane_wave_vector(r,theta,phi=np.pi/2,lam=1,alpha=0,d_p=0,Nmax=10,fz=np.
 #     return Almnp,Blmnp
 #
 
-def a_ln(lmax,nmax, fz_q,r_d,theta_d):
+def a_ln(lmax,nmax, fz_q,r_d,theta_d,phi_d=0):
     '''Scalar translational addition theorem coefficients
     - Nmax : order of expansion
     - fz_q : type of expansion (bessel or hankel)
     - r_d,theta_d : translation vector
     '''
     l = np.arange(lmax+nmax+2)
-    Yq  = np.sqrt((2*l+1)/(4*np.pi))*spe.lpn(lmax+nmax+1,np.cos(theta_d))[0]
-    # Yq = np.array([spe.sph_harm(0,q,0,theta_d) for q in range(lmax+nmax)])
+    # Yq  = np.sqrt((2*l+1)/(4*np.pi))*spe.lpn(lmax+nmax+1,np.cos(theta_d))[0]
+    Yq = np.array([spe.sph_harm(0,q,phi_d,theta_d) for q in range(lmax+nmax+1)])
     zq = np.array([fz_q(q,r_d) for q in range(lmax+nmax+2)])
 
     aln = np.zeros((lmax+1,nmax+1),dtype=complex)
@@ -370,6 +374,41 @@ def a_lmnp(l,m,n,p, fz_q,r_d,theta_d,phi_d):
     a_lmnp = 4*np.pi*np.sum(
         (-1J)**(l-n-q)*z_q*Ympq*Glmnpq*(-1)**m)
     return a_lmnp
+
+def get_almnumu(l,m,r_d,theta_d,phi_d,Nmax=5,fz_q=hn1):
+    '''translational coeffs to express psi_lm as :
+    # psi_lm(r+d) = sum_{nu}sum_{mu} a_{l,m;nu,mu}psi_{nu}^{mu}(r)
+    args :
+     - l,m : indices
+     - r_d,theta_d,phi_d : d vector in spherical coords
+    returns :
+     - almnumu : coeffs r_d.size x Nmax**2
+    '''
+    ls = np.hstack([[l]*(2*l+1) for l in range(Nmax)])
+    ms = np.hstack([list(np.arange(l+1))+list(np.flipud(np.arange(-l,0))) for l in range(Nmax)])
+
+    a_lmnumu,i = np.zeros((r_d.size,Nmax**2),dtype=complex),0
+    for nu,mu in zip(ls,ms):
+        # print(colors.blue+'\t nu=%d,mu=%d: ' %(nu,mu)+colors.black);
+        q = np.arange(abs(l-nu),l+nu+1)
+        q = q[(l+nu+q)%2==0]
+        # print('q', q,'l+nu+q',l+nu+q);
+        # G : nqs
+        Gnumulmq  = np.array([np.float(gaunt(l,nu,q, m,-mu,mu-m)) for q in q])
+        # print('G',Gnumulmq)
+        z_q = np.array([fz_q(q,r_d) for q in q]).T
+        # z_q : nds x nqs
+        # print('hq',abs(z_q))
+        # Ympq : nds x nqs
+        Yqmmu = np.array([spe.sph_harm(m-mu,q0,phi_d,theta_d) for q0 in q ]).T
+        Yqmmu[:,q<abs(m-mu)] = 0
+        # print('Yq^(m-mu)',abs(Yqmmu),'m-mu',m-mu)
+        # a_lmnumuq : nds x nqs
+        a_lmnumuq = (-1J)**abs(l-nu-q)*z_q*(-1)**abs(m)*Yqmmu*Gnumulmq
+        # print('a_lmnumu',abs(a_lmnumuq))
+        a_lmnumu[:,i] = 4*np.pi*np.sum(a_lmnumuq,axis=1)
+        i+=1
+    return a_lmnumu
 
 def get_trans_coeff(n,p,r_d,theta_d,phi_d, N=5):
     a_lmnp,i = np.zeros((N**2),dtype=complex),0
@@ -496,6 +535,16 @@ def polar_mesh2D(cart_opt=False,npts=100,r=(0,1)):
         r,theta = np.meshgrid(np.linspace(r[0],r[1],npts),np.linspace(0,np.pi,npts))
         z,y = r*np.cos(theta), r*np.sin(theta)
     return r,theta,y,z
+
+def spherical_mesh2D(plane='yz',npts=100,r=(0,1,0,1)):
+    u = np.linspace(r[0],r[1],npts)
+    v = np.linspace(r[2],r[3],npts)
+    u0,v0 = np.meshgrid(u,v)
+    if   plane=='xy' : x,y,z = u0,u0,np.zeros(u0.shape)
+    elif plane=='yz' : x,y,z = np.zeros(u0.shape),u0,v0
+    elif plane=='xz' : x,y,z = u0,np.zeros(u0.shape),v0
+    r,theta,phi = cart2sphere(x,y,z)
+    return x,y,z,r,theta,phi
 
 def mesh_3D(npts=50,r=(0,1)):
     if len(r)==2:r=r*3

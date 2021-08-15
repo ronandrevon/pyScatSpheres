@@ -1,4 +1,4 @@
-# import importlib as imp
+import importlib as imp
 import scipy.special as spe
 import numpy as np, pandas as pd
 from . import displayStandards as dsp #;imp.reload(dsp)
@@ -7,7 +7,7 @@ from . import spherical_utils as spu  #;imp.reload(spu)
 from . import hard_sphere_base as hsb #;imp.reload(hsb)
 
 class QdotSphereArray(hsb.HardSphereArrayBase):
-    def solve(self,nmax=-1,copt=1,opt2=0,v=1):
+    def solve(self,nmax=-1,copt=1,opt2=0,optT=0,v=1):
         ''' Finds the unknown coefficients
         - nmax : max inlcuded order
         - copt : solve coupled problem
@@ -27,6 +27,8 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         if opt2:
             al = cl*(hl0*djl0-    dhl0*jl0)/(n_p*djl1*hl0-jl1*dhl0)
             bl = cl*(jl1*djl0-n_p*djl1*jl0)/(n_p*djl1*hl0-jl1*dhl0)
+            self.vl=bl/cl
+            self.ul=al/cl
         else:
             al = cl*jl0
             bl = cl*djl0
@@ -42,6 +44,8 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             return self.ap,self.bp
 
         #### assembling
+        self.Nu = 2*N*nmax
+        self.Nap = N*nmax
         T = np.zeros((2*N*nmax,2*N*nmax),dtype=complex)
         P = np.zeros((2*N*nmax,2*N*nmax),dtype=complex)
         if v:print(colors.blue+"...assembling coupling..."+colors.black)
@@ -65,17 +69,22 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                     aln1 = spu.a_ln(nmax-1,nmax-1, fz_q,kdpq,0)
                     T[idp1,idqb] =  jl0[:,None]* aln1
                     T[idp2,idqb] = djl0[:,None]* aln1
+        if optT:
+            # print('optT')
+            j,i = np.meshgrid(np.arange(self.Nu),np.arange(self.Nu))
+            T[i+self.Nap<j] = 0
+            T[(i>=self.Nap) & (i+self.Nap<j+self.Nap)] = 0
+            self.T=T
         #### Solving
         if v:print(colors.blue+"...solving..."+colors.black)
         cp = np.linalg.solve(P-copt*T,L)
         self.ap,self.bp = cp[:N*nmax],cp[N*nmax:]
-
         return self.ap,self.bp
 
     def set_Cp(self,cp):
         # print(self.N,cp)
         self.ap,self.bp = cp[:self.N*self.nmax],cp[self.N*self.nmax:]
-
+        self.cp=self.bp
 
     def compute_f(self,r,theta,phi,ftype='t',Gopt='',idp=None):
         ''' computes scattering amplitude f
@@ -86,6 +95,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         return :
             - Field
         '''
+        print('...computing near field...')
         k,n_p,d_p,nmax,N = self.k,self.kp,self.d_p,self.nmax,self.N
         x,y,z = spu.sphere2cart(r,theta,phi)
         self._check_idp(idp) #;print(idp)

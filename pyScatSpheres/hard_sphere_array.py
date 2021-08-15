@@ -15,14 +15,22 @@ class HardSphereArray(hsb.HardSphereArrayBase):
 
         #preprocess
         ll = np.arange(nmax)
-        bl = 1J**ll*(2*ll+1)*np.sqrt(4*np.pi/(2*ll+1))
         ul = -np.array([spu.jn(l,ka)/spu.hn1(l,ka) for l in range(nmax)])
 
         #### incident plane wave response
+        bl = 1J**ll*(2*ll+1)*np.sqrt(4*np.pi/(2*ll+1))
         L = np.tile(bl*ul,N)
         for p in range(N):
             idpl = p*nmax+np.arange(nmax) #;print('p=%d'%p)#;print('idp:' , idpl)
             L[idpl] *= np.exp(1J*kdp[p])
+
+        # #spherical wave at O
+        # L = np.tile(bl*ul,N)
+        # for p in range(N):
+        #     idpl = p*nmax+np.arange(nmax) #;print('p=%d'%p)#;print('idp:' , idpl)
+        #     L[idpl] *= np.exp(1J*kdp[p])
+
+            # alnu = spu.a_ln(0,nmax,spu.hn1,kd_p[0],Theta_p[0],Phi_p[0])[0]
 
         #### coupling
         T = np.zeros((N*nmax,N*nmax),dtype=complex)
@@ -105,26 +113,26 @@ class HardSphereArray(hsb.HardSphereArrayBase):
                 f += (-1J)**(l+1)*Yl*self.Cp[p*nmax+l]*np.exp(-1J*self.kd_p[p]*ct)
         return f
 
-def a_ln(lmax,nmax, fz_q,r_d,theta_d):
-    '''Scalar translational addition theorem coefficients
-    - Nmax : order of expansion
-    - fz_q : type of expansion (bessel or hankel)
-    - r_d,theta_d : translation vector
-    '''
-    l = np.arange(lmax+nmax+2)
-    Yq  = np.sqrt((2*l+1)/(4*np.pi))*spe.lpn(lmax+nmax+1,np.cos(theta_d))[0]
-    # Yq = np.array([spe.sph_harm(0,q,0,theta_d) for q in range(lmax+nmax)])
-    zq = np.array([fz_q(q,r_d) for q in range(lmax+nmax+2)])
-
-    aln = np.zeros((lmax+1,nmax+1),dtype=complex)
-    for l in range(lmax+1):
-        # print('l=%d' %l)
-        for n in range(nmax+1):
-            q = np.arange(abs(l-n),n+l+1)   #;cput = time.time()
-            Glnq = np.array([np.float(spu.gaunt(l,n,q, 0,0,0)) for q in q])
-            # Glnq = spu.w3j(l,n,q, 0,0,0)
-            aln[l,n] = 4*np.pi*np.sum((-1J)**(l-n-q)*zq[q]*Yq[q]*Glnq) #;print('n=%d' %n, q,zq[q],Yq[q],Glnq)
-    return aln
+# def a_ln(lmax,nmax, fz_q,r_d,theta_d):
+#     '''Scalar translational addition theorem coefficients
+#     - Nmax : order of expansion
+#     - fz_q : type of expansion (bessel or hankel)
+#     - r_d,theta_d : translation vector
+#     '''
+#     l = np.arange(lmax+nmax+2)
+#     Yq  = np.sqrt((2*l+1)/(4*np.pi))*spe.lpn(lmax+nmax+1,np.cos(theta_d))[0]
+#     # Yq = np.array([spe.sph_harm(0,q,0,theta_d) for q in range(lmax+nmax)])
+#     zq = np.array([fz_q(q,r_d) for q in range(lmax+nmax+2)])
+#
+#     aln = np.zeros((lmax+1,nmax+1),dtype=complex)
+#     for l in range(lmax+1):
+#         # print('l=%d' %l)
+#         for n in range(nmax+1):
+#             q = np.arange(abs(l-n),n+l+1)   #;cput = time.time()
+#             Glnq = np.array([np.float(spu.gaunt(l,n,q, 0,0,0)) for q in q])
+#             # Glnq = spu.w3j(l,n,q, 0,0,0)
+#             aln[l,n] = 4*np.pi*np.sum((-1J)**(l-n-q)*zq[q]*Yq[q]*Glnq) #;print('n=%d' %n, q,zq[q],Yq[q],Glnq)
+#     return aln
 
 
 def sweep_ka(df_name,N=2,nmax=7,kas=[0.5,1,2,4],kds=None,nkds=50,kdr=(2,10),v=1):

@@ -1,17 +1,15 @@
-import importlib as imp
-from optics.scattering import qdot_sphere_array as qsa ;imp.reload(qsa)
-from optics.scattering import spherical_utils as spu   ;imp.reload(spu)
-from optics.scattering import spherical_utils as sphu  ;imp.reload(sphu)
-from utils import *                                    ;imp.reload(dsp)
+from utils import *                                ;imp.reload(dsp)
+from pyScatSpheres import qdot_sphere_array as qsa ;imp.reload(qsa)
+from pyScatSpheres import spherical_utils as spu   ;imp.reload(spu)
+from pyScatSpheres import spherical_utils as sphu  ;imp.reload(sphu)
 from scipy.integrate import trapz,quad
 import scipy.special as spe
-import scipy.fft as fft
-
+# import scipy.fft as fft
 plt.close('all')
-path='../../docs/figures/'
+path='../docs/figures/'
 name=path+'qdotSphereSingle_'
 
-opts = 'bQF' #b(Born) #w(weak phase)  Q(qa)F(f)M(multi-shell)
+opts = 'bM' #b(Born) #w(weak phase)  Q(qa)F(f)M(multi-shell)
 k0 = 1
 # kas = np.array([2,5,10])
 kas = np.array([10,30,60])
@@ -23,19 +21,20 @@ cm = 'Spectral'
 kp = np.sqrt(1+eps)
 # theta = np.linspace(1e-3,np.pi,361)
 # theta_deg = np.rad2deg(theta)
-theta_deg = np.linspace(1e-3,30,361)
+theta_deg = np.linspace(1e-3,15,361)
 theta = np.deg2rad(theta_deg)
-s1 = [qsa.QdotSphereArray(N=1,ka=ka,kp=kp,kd=0,nmax=80,solve=1,copt=0) for ka in kas]
-f1 = np.array([s.get_ff(theta) for s in s1])
+# s1 = [qsa.QdotSphereArray(N=1,ka=ka,kp=kp,kd=0,nmax=80,solve=1,copt=0) for ka in kas]
+# f1 = np.array([s.get_ff(theta) for s in s1])
+# cs = dsp.getCs(cm,kas.size)
+# dsp.stddisp()
 
-
-ct,st = np.cos(theta),np.sin(theta)
-cs = dsp.getCs(cm,kas.size)
-ka_max = kas.max()
-q = 2*np.sin(theta/2)
-
+##########################
 # Th Born approximation Radial fourier transform of the potential
 if 'b' in opts:
+    ct,st = np.cos(theta),np.sin(theta)
+    ka_max = kas.max()
+    q = 2*np.sin(theta/2)
+
     if 'Q' in opts:
         qa = np.linspace(0,2*ka_max,300)
         qa_x,qa_y = np.meshgrid(qa,qa)
@@ -64,36 +63,80 @@ if 'b' in opts:
             name=name+'fka1.svg',opt='ps')
 
     if 'M' in opts:
-        E,lam = 200,0.025
-        # r0 = np.hstack([[0.025,0.05] ,np.arange(1,6)*0.1+0.05])
-        # V0 = np.hstack([[15,2.20],[0.8,0.3,0.2,0.15,0.05]])
-        r0 = np.arange(50)*0.01+0.01
-        V0 = 0.016/r0**1.5
-        kas = r0*2*np.pi/lam
+        from scipy.interpolate import interp1d
+        Mopts = 'V'   #V(potential),Q(Fq), 0(single )
+        E = 200              #keV
+        lam = cst.keV2lam(E) #A
+        r,V = np.loadtxt('data/C_V.txt').T
+        V /=1e3
+        fV = interp1d(r,V)
+        npts = 40
+        r0 = np.linspace(0.02,2,npts)
+        # r0 = np.logspace(np.log10(0.02),np.log10(1),20)
+        V0 = fV(r0)
+        K = 1/lam
+        k0 = 2*np.pi/lam
+        kas = r0*k0
         eps = V0/E
+        kp = lambda eps:np.sqrt(1+eps)
 
-        csf = dsp.getCs('jet',kas.size)
-        img = 'data/potential_C.png'
-        rs = np.hstack([0,r0])
-        patches = [dsp.Rectangle((rs[i],0),rs[i+1]-rs[i],V,fill=1,color=csf[i],ec='b',alpha=0.5) for i,V in enumerate(V0)]
-        fig=dsp.image_bg(img,patches=patches,xylims=[0,0.5,0,20],xyTicks=[0.05,2],
-            name=name+'shells_pot1.png',opt='ps')
-        # dsp.fig_pos(fig)
+        if 'V' in Mopts:
+            csf = dsp.getCs('jet',kas.size)
+            rs = np.hstack([0,r0])
+            # kas = np.hstack([0,kas])
+            # plts = [[r,V,'b-o']]
+            plts = [[r*k0,kp(V/E),'b-o']]
+            patches = [dsp.Rectangle((k0*rs[i],0),k0*rs[i+1]-k0*rs[i],kp(eps[i]),fill=1,color=csf[i],ec='b',alpha=0.5) for i,V in enumerate(V0)]
 
-        eps = np.hstack([eps,0])
-        fi = [ (eps[i]-eps[i+1])*ka**3*(np.sin(ka*q)/(ka*q)-np.cos(ka*q))/(ka*q)**2 for i,ka in enumerate(kas)]
-        f = np.array(fi).sum(axis=0)
+            pps = [dsp.Rectangle((k0*rs[i],0),k0*rs[i+1]-k0*rs[i],kp(eps[i]),fill=1,color=csf[i],ec='b',alpha=0.5) for i,V in enumerate(V0)]
+            xt,yt =np.arange(0,101,10),np.arange(1,1.0026,0.0005)
+            inset = {'axpos':[0.4,0.3,0.5,0.5],'ms':5,'ec':(0.8,1,0.9),'patches':pps,
+                'xylims':[-5,101,0.9999,1.002],'pOpt':'tXG','fonts':{'tick':12},
+                'xyTicks':[xt,yt],'xyTickLabs':None}#[np.array(xt,dtype=str),np.array(yt,dtype=str)]}
 
-        # epss = np.flipud(np.cumsum(np.flipud(eps[1:])))
-        # f = fi[-1]
-        # for i in range(len(fi)-1):
-        #     f += (eps[i]-epss[i])/eps[i]*fi[i]
-        plts = [[theta_deg,np.abs(f),'k','total' ]]
-        plts += [[theta_deg,fi[i],[csf[i],'--'],''] for i,ka in enumerate(kas) ]
-        # plts += [[theta_deg,fi[i],[csf[i],'--'],'$ka=%d$' %ka ] for i,ka in enumerate(kas) ]
-        dsp.stddisp(plts,lw=2,labs=[r'$\theta(^{\circ})$',r'$|f(\theta)|$'],#inset=inset,iOpt='GtX',
-            xylims=['x',0,30],#legElt=legElt,title = r'$\epsilon=%.2f$, $n_{ref}=%.3f$' %(eps,kp),
-            name=name+'shells_fka1.svg',opt='ps')
+            fig=dsp.stddisp(plts,lw=2,patches=patches,title='potential for Carbone',
+                xylims=['y',1,1.01],inset=inset,
+                labs=['$ka$',r'$k_p$'],name=name+'shells_pot1.png',opt='ps')
+
+
+        if 'Q' in Mopts:
+            eps = np.hstack([eps,0])
+            fi = np.array([ (eps[i]-eps[i+1])*ka**3*(np.sin(ka*q)/(ka*q)-np.cos(ka*q))/(ka*q)**2 for i,ka in enumerate(kas)])
+            # fm = fi.sum(axis=0)
+            # fmax = abs(fm).max()
+            # f=abs(fm)*2.5/fmax
+            # plts = [[K*q,f,'k','total($ka_max=%d$)' ]]
+
+        #### increasing ka_max
+            xylims = [-0.1,10,-0.1,2.7]
+            nmaxs = np.hstack([np.arange(5,npts-1,10),[npts-1]])
+            fim = np.array([abs(np.array(fi[:nmax+1,:]).sum(axis=0)) for nmax in nmaxs])
+            cs = dsp.getCs('Spectral',npts)
+            plts= [[K*q,fim[i]*2.5/abs(fim[i]).max(),[cs[nmax],'-'],'$ka_{max}=%d$' %kas[nmax] ] for i,nmax in enumerate(nmaxs)]
+            # plts += [[k0*q,fi[i],[csf[i],'--'],''] for i,ka in enumerate(kas) ]
+            labs = [r'$q(\AA^{-1})$',r'$|f(q)|$']
+            # plts += [[theta_deg,fi[i],[csf[i],'--'],'$ka=%d$' %ka ] for i,ka in enumerate(kas) ]
+            dsp.stddisp(plts,lw=2,labs=labs,#inset=inset,iOpt='GtX',
+                xylims=xylims,#legElt=legElt,title = r'$\epsilon=%.2f$, $n_{ref}=%.3f$' %(eps,kp),
+                name=name+'shells_fka1.svg',opt='ps')
+
+            ####nb layers
+            n_eps = np.array([5,10,20,40])
+            nis = npts//n_eps
+            fim = np.array([abs(np.array(fi[::ni,:]).sum(axis=0)) for ni in nis])
+            cs = dsp.getCs('Spectral',nis.size)
+            plts= [[K*q,fim[i]*2.5/abs(fim[i]).max(),[cs[i],'-'],'$n_{layers}=%d$' %n_eps[i] ] for i,ni in enumerate(nis)]
+            # plts += [[k0*q,fi[i],[csf[i],'--'],''] for i,ka in enumerate(kas) ]
+            labs = [r'$q(\AA^{-1})$',r'$|f(q)|$']
+            # plts += [[theta_deg,fi[i],[csf[i],'--'],'$ka=%d$' %ka ] for i,ka in enumerate(kas) ]
+            dsp.stddisp(plts,lw=2,labs=labs,#inset=inset,iOpt='GtX',
+                xylims=xylims,#legElt=legElt,title = r'$\epsilon=%.2f$, $n_{ref}=%.3f$' %(eps,kp),
+                name=name+'shells_fka1_npts.svg',opt='p')
+
+        ####single test
+        if '0' in Mopts:
+            fi0 = abs(np.array(fi[:30:2,:]).sum(axis=0))
+            dsp.stddisp([K*q,fi0*2.5/fi0.max(),'b'],lw=2)
 
 sigV0 = k0*eps/2
 #weak phase

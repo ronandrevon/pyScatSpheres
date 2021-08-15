@@ -1,9 +1,9 @@
 import importlib as imp
-from optics.scattering import hard_sphere_arrayApprox as hsaA   ;imp.reload(hsaA)
-from optics.scattering import hard_sphere_array as hsa          ;imp.reload(hsa)
-from optics.scattering import gui as hsa_gui                    ;imp.reload(hsa_gui)
-from optics.scattering import spherical_utils as spu            ;imp.reload(spu)
-from optics.scattering import spherical_utils as sphu           ;imp.reload(sphu)
+from pyScatSpheres import hard_sphere_arrayApprox as hsaA   ;imp.reload(hsaA)
+from pyScatSpheres import hard_sphere_array as hsa          ;imp.reload(hsa)
+from pyScatSpheres import gui as hsa_gui                    ;imp.reload(hsa_gui)
+from pyScatSpheres import spherical_utils as spu            ;imp.reload(spu)
+from pyScatSpheres import spherical_utils as sphu           ;imp.reload(sphu)
 import scipy.special as spe
 from utils import *
 plt.close('all')
@@ -335,8 +335,8 @@ name=path+'hardSphereArray2approx_'
 
 # plt.close('all')
 
-s1=hsa.HardSphereArray(N=10,ka=2,kd=10,nmax=5,solve=True);
-s1.show_ff(fopts='m',opt='p')
-s1.show_f(opts='tT',npts=500,fz=np.real,caxis=[-1,1],name=name+'10_',opt='p')
+# s1=hsa.HardSphereArray(N=10,ka=2,kd=10,nmax=5,solve=True);
+# s1.show_ff(fopts='m',opt='p')
+# s1.show_f(opts='tT',npts=500,fz=np.real,caxis=[-1,1],name=name+'10_',opt='p')
 # s1.show_f(opts='sT',npts=500,fz=np.real,caxis=[-1,1],name=name+'10_',opt='p')
 # s1.test_convergence(nmaxs=[3,4,5])

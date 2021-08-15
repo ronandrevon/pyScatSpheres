@@ -5,7 +5,7 @@ from . import displayStandards as dsp #;imp.reload(dsp)
 from . import spherical_utils as spu #;imp.reload(spu)
 
 class HardSphereArrayBase():
-    def __init__(self,N=1,ka=1,kd=2,kp=np.inf,k=1,nmax=7,Cp=None,solve=True,copt=1):
+    def __init__(self,N=1,ka=1,kd=2,kp=np.inf,k=1,nmax=7,Cp=None,solve=True,copt=1,v=1):
         '''equally disitributed linear array of hard spheres
         - N,ka,kp,kd : nb spheres,wave number inside spheres, normalized radius, normalized distances
         - k : incident wave number
@@ -15,7 +15,7 @@ class HardSphereArrayBase():
         self.ka,self.kp,self.kd,self.kd_p = ka,kp,kd,kd*np.arange(N)
         self.d_p  = self.kd_p/k
         if isinstance(Cp,np.ndarray):self.set_Cp(Cp)
-        if solve:self.solve(copt=copt)
+        if solve:self.solve(copt=copt,v=v)
 
     def get_s(self,npts=361):
         theta = np.linspace(0,np.pi,npts)
