@@ -23,8 +23,8 @@ kp = np.sqrt(1+eps)
 # theta_deg = np.rad2deg(theta)
 theta_deg = np.linspace(1e-3,15,361)
 theta = np.deg2rad(theta_deg)
-# s1 = [qsa.QdotSphereArray(N=1,ka=ka,kp=kp,kd=0,nmax=80,solve=1,copt=0) for ka in kas]
-# f1 = np.array([s.get_ff(theta) for s in s1])
+s1 = [qsa.QdotSphereArray(N=1,ka=ka,kp=kp,kd=0,nmax=80,solve=1,copt=0) for ka in kas]
+f1 = np.array([s.get_ff(theta) for s in s1])
 # cs = dsp.getCs(cm,kas.size)
 # dsp.stddisp()
 
@@ -72,8 +72,9 @@ if 'b' in opts:
         fV = interp1d(r,V)
         npts = 40
         r0 = np.linspace(0.02,2,npts)
+        rV = np.hstack([0.02,(r0[:-1]+r0[1:])/2])
         # r0 = np.logspace(np.log10(0.02),np.log10(1),20)
-        V0 = fV(r0)
+        V0 = fV(rV)
         K = 1/lam
         k0 = 2*np.pi/lam
         kas = r0*k0
@@ -179,7 +180,8 @@ if 'w' in opts:
             # plts = [[theta_deg, fq/fq_max,'k-','eikonal']]
             # plts+= [[theta_deg,fqr/fq_max,'b-.']]
             # plts+= [[theta_deg,fqi/fq_max,'r-.']]
-            f0a = np.abs(eps*ka**3*(np.sin(ka*q)/(ka*q)-np.cos(ka*q))/(ka*q)**2); f0a /= f0a.max()
+            f0a = np.abs(eps*ka**3*(np.sin(ka*q)/(ka*q)-np.cos(ka*q))/(ka*q)**2)
+            f0a /= f0a.max()
             f1a = np.abs(f1[ia]);f1a/= f1a.max()
             f2a = fq/fq_max
             plts=[]

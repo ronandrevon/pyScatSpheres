@@ -1,22 +1,24 @@
 from utils import *
 import matplotlib.patches as patches
-import scipy,copy
+import scipy,copy,time
 from pyScatSpheres import qdot_sphere_array as qsa ;imp.reload(qsa)
 from pyScatSpheres import spherical_utils as spu   ;imp.reload(spu)
 from scipy.integrate import trapz,quad
 import scipy.special as spe
 plt.close('all')
 ka,kp=6,1.01
+N=10
 nmax = 10
 kd = 10
-N=10
 kds = np.arange(25,30,5)
-opts = 'D'
+opts = ''
 
 qdot1 = qsa.QdotSphereArray(N=1,ka=ka,kp=kp,nmax=nmax,solve=0)
 qdot1.solve(opt2=1)
 # qdot1.test_convergence([10,11,12,13,15])
-
+t0 = time.time()
+qdot1 = qsa.QdotSphereArray(N=10,ka=ka,kp=kp,nmax=nmax,solve=1)
+print(time.time()-t0)
 
 if 'f' in opts:
     qdot2   = qsa.QdotSphereArray(N=N,ka=ka,kp=kp,kd=kd,nmax=nmax,solve=1,copt=1)

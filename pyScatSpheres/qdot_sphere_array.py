@@ -56,7 +56,19 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             P[idp1,idp2] = -np.diag(hl0)
             P[idp2,idp1] =  np.diag(djl1*n_p)
             P[idp2,idp2] = -np.diag(dhl0)
-            if copt:
+            if copt==1:
+                q0,q1 = np.arange(p),np.arange(p+1,N)
+                q = np.hstack([q0,q1])                               #;print(q)
+                kdpq = abs(kdp[p]-kdp[q])                            #;print(kdpq)
+                theta_pq = np.hstack([[np.pi]*q0.size,[0]*q1.size])  #;print(theta_pq)
+                aln0 = spu.get_aln(nmax-1,nmax-1, fz_q,kdpq,theta_pq)#;print(aln0)
+                idqb = np.hstack([np.arange((N+q0)*nmax,(N+q0+1)*nmax) for q0 in q])
+                idp1,idp2 = np.arange(p*nmax,(p+1)*nmax),np.arange((N+p)*nmax,(N+p+1)*nmax)
+                # print(aln0.shape,idp1.shape,idqb.shape)# print(idp1,idqb)
+                # print(np.ix_(idp1,idqb))
+                T[np.ix_(idp1,idqb)] =  jl0[:,None] * aln0
+                T[np.ix_(idp2,idqb)] = djl0[:,None] * aln0
+            elif copt==2:
                 for q in range(p):
                     kdpq = kdp[p]-kdp[q]
                     idqb = slice((N+q)*nmax,(N+q+1)*nmax)
@@ -74,11 +86,36 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             j,i = np.meshgrid(np.arange(self.Nu),np.arange(self.Nu))
             T[i+self.Nap<j] = 0
             T[(i>=self.Nap) & (i+self.Nap<j+self.Nap)] = 0
-            self.T=T
         #### Solving
-        if v:print(colors.blue+"...solving..."+colors.black)
-        cp = np.linalg.solve(P-copt*T,L)
+        self.T=T
+        self.L=L
+        self.P=P
+        if v:print(colors.blue+"...solving %dx%d system..."%(self.Nu,self.Nu)+colors.black)
+        self.P1=np.linalg.inv(P)
+        cp = np.linalg.solve(P-(copt>0)*T,L)
         self.ap,self.bp = cp[:N*nmax],cp[N*nmax:]
+        return self.ap,self.bp
+
+    def get_cp0(self):
+        cp = self.P1.dot(self.L)
+        self.ap,self.bp = cp[:self.N*self.nmax],cp[self.N*self.nmax:]
+        return self.ap,self.bp
+    def get_cp2(self):
+        T=self.T.copy()
+        j,i = np.meshgrid(np.arange(self.Nu),np.arange(self.Nu))
+        T[i+self.Nap<j] = 0
+        T[(i>=self.Nap) & (i+self.Nap<j+self.Nap)] = 0
+        bp0 = self.P1.dot(self.L)
+        cp = (np.identity(self.Nu)+self.P1.dot(self.T)).dot(bp0)
+        self.ap,self.bp = cp[:self.N*self.nmax],cp[self.N*self.nmax:]
+        return self.ap,self.bp
+    def get_cpa(self):
+        j,i = np.meshgrid(np.arange(self.Nu),np.arange(self.Nu))
+        T=self.T.copy()
+        T[i+self.Nap<j] = 0
+        T[(i>=self.Nap) & (i+self.Nap<j+self.Nap)] = 0
+        cp = np.linalg.solve(self.P-T,self.L)
+        self.ap,self.bp = cp[:self.N*self.nmax],cp[self.N*self.nmax:]
         return self.ap,self.bp
 
     def set_Cp(self,cp):
@@ -183,3 +220,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             for p in np.arange(N):
                 f += (-1J)**(l+1)*Yl*self.bp[p*nmax+l]*np.exp(-1J*self.kd_p[p]*ct)
         return f
+
+
+    def show_T(self):
+        dsp.stddisp(im=[abs(self.T)],pOpt='im')

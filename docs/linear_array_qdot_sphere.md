@@ -2,8 +2,41 @@
 {% set figs='figures/qdotSphereArray' %}
 {% set figs1='figures/qdotSphereSingle_' %}
 {% set figs2='figures/qdotSphereArray2_' %}
+{% set figs2a='/figures/qdotSphereArray2approx_' %}
+{% set figsNa='/figures/qdotSphereArrayNapprox_' %}
 
 ## Formulation
+A solution of the Schrodinger equation is sought in spherical coordinate systems :
+\begin{equation}
+  \Big(-\frac{\hbar^2}{2m_e}\grad_{\bb r}^2 - eV(\bb r) \Big) \Psi = E\Psi
+\end{equation}
+
+where the potential $V$ is composed of an array of spheres of radius $a_p$ in which the potential is constant $V_p$.
+
+This equation can be written in each domain as :
+\begin{eqnarray}
+  \grad_{\bb r}^2\Psi  +\frac{2m_eE}{\hbar^2}\Big(1+\frac{eV}{E}\Big)\Psi &=& 0\\
+  \grad_{\bb r}^2\Psi  + k_p^2 \Psi &=& 0\\
+\end{eqnarray}
+where $k_p=k_0\sqrt{1+V_0/E}$ and $k_0^2=2m_eE/\hbar^2$.
+This is the Helmholtz equation whose radial solutions in spherical coordinates are the spherical Bessel functions and spherical Hankel functions of the first kind.
+
+The fast electron approximation looks at the solution of this problem in Cartesian coordinates where $\Psi=\Psi(x,y,z)e^{jk_0z}$ and assuming $\dP^2_z\ll 1$ so that :
+\begin{eqnarray}
+  \grad_{\bb \rho}^2\Psi + \dP^2_z\Psi + 2jk_0\dP_z\Psi - k_0^2\Psi + k_p^2 \Psi &=& 0\\
+  2jk_0\dP_z\Psi + \grad_{\bb \rho}^2\Psi + k_0^2\frac{V_0}{E} \Psi &=& 0\\
+\end{eqnarray}
+which can be solved as :
+\begin{eqnarray}
+  \dP_z\Psi &=& j/2k_0\grad_{\bb \rho}^2\Psi + jk_0/2\frac{V_0}{E} \Psi \\
+  \Psi(z) &=& e^{j\frac{\lambda}{4\pi}\grad_{\bb \rho}^2} e^{jk_0/2\frac{v_z}{E}} \Psi(0) \\
+  \Psi(z) &=& e^{j\frac{\lambda}{4\pi}\grad_{\bb \rho}^2} e^{j\sigma v_z} \Psi(0) \\
+\end{eqnarray}
+
+where $\sigma=k_0/2E=2\pi m_e\lambda/h^2$.
+
+In multislice, relativistic effects are included by taking the effective mass of the electron $m_e=\gamma m_0$ and the relativistic wavelength $\lambda$ in the expression of $\sigma$.
+
 ### Scattered field
 The scattered wave function inside and outside of the $p$th sphere, $p=1..N$, is expressed as :
 \begin{eqnarray}
@@ -105,8 +138,15 @@ where $z_l^{'}=\dP_{\rho}z_l(\rho)$.
 
 ### Far field scattering
 In the far field,
-$\hl(k_0r_p)\approx (-j)^{l+1}\frac{e^{jk_0rp}}{k_0r_p}$, $r_p=r-d_p\cos\theta$, $\theta_p=\theta$
-so the scattering amplitude from the $pth$ sphere $f_p(\theta)$  can be written :  
+$\hl(k_0r_p)\approx (-j)^{l+1}\frac{e^{jk_0rp}}{k_0r_p}$, $\theta_p\approx\theta$
+$r_p\approx r-d_p\cos\theta$,
+\begin{eqnarray}
+  r^2 &=& r_p^2 + d_p^2 + 2r_pd_p\cos\left(\theta-\Theta_p\right)\\
+      &\approx& r_p^2\big(1+2d_p/r_p\cos\left(\theta-\Theta_p\right)\big)\\
+  r   &\approx& r_p + d_p\cos\left(\theta-\Theta_p\right)\\
+\end{eqnarray}
+
+so the scattering amplitude from the $pth$ sphere $f_p(\theta)$ can be written :  
 <!-- $\frac{e^{jkr}}{kr} f_p(\theta)$ where : -->
 
 \begin{equation}
@@ -131,11 +171,62 @@ where we have used the definition $\sigma=4\pi r^2 \Bigg |\frac{f(r,\theta)|}{f^
 
 
 
+## Approximate solutions
+### Forward Scattering Approximation
+
+Since back scattering is small, the scattering from the sphere located after the first sphere can be sought with an approximate solution using the analytical response to a spherical Hankel function $\Psi_{\nu0}^{(out)}$ located in $-kd$.
+
+Using the translation theorem for this input function this gives :
+
+\begin{eqnarray}
+  a_{pl} &=& c_{l}\frac{-h_0^{'}j_0 + h_0j_0^{'}}{n_pj_1^{'}h_0 - j_1h_0^{'}} \\
+  b_{pl} &=& c_{l}\frac{-n_pj_1^{'}j_0 + j_1j_0^{'}}{n_pj_1^{'}h_0 - j_1h_0^{'}} \\
+  c_l &=& a_{\nu,0;l,0}^{(out-in)}(kd_p,0,0)
+\end{eqnarray}
+
+Therefore the response to $\sum_{\nu} b_{p,\nu}\Psi_{\nu0}^{(out)}$ is :
+\begin{equation}
+  c_l^{(s)} = u_l\sum_{\nu} b_{p,\nu}a_{\nu,0;l,0}^{(out-in)}(kd_p,0,0)
+\end{equation}
+[![](figures/qdot2_approx_img.png)](figures/qdot2_approx_img.png)
+
+Note that this is the same as solving the coupled system but setting the sums
+over $\sum_{q<p}$ which is a triangular by block system whose inversion is trivial.
+
+### Secondary Scattering approximation
+
+A less conservative approximation which only requires matrix multiplication and therefore afford full parallelization is the Forward Secondary Scattering approximation. It simply consists in computing :
+\begin{eqnarray}
+  \bb b_p &=& \bb P_b^{-1}\big(\bb L_b + \bb T_b\bb b_p^{(0)} \big)\\
+          &=& \big(\bb I + \bb P_b^{-1}\bb T_b \big)\bb P_b^{-1}\bb L_b\\
+\end{eqnarray}
+
+where $\bb b_p^{(0)}$ is the response of the spheres to incident wave and $\square_b$ means the part related to $b_p$.
+
+### Far field error estimate
+A figure of merit can be defined as the error in the far field diffraction pattern :
+
+\begin{equation}
+  \epsilon_{ff} = \int_{\Omega}\Big|
+      f^{(approx)}(\theta)-f^{(exact)}(\theta)\Big|^2d\Omega
+\end{equation}
+
+Otherwise, in the interest of diffraction physics, we can also look at the relative error of peaks intensities :
+
+\begin{equation}
+  err(ff) = \sum_{i}
+    \frac{\Bigg|\big|f_i^{(approx)}\big|^2-\big|f_i^{(exact)}\big|^2\Bigg|}{\big|f_i^{(exact)}\big|^2}
+\end{equation}
+where $f_i=f(\theta_i)$ and $\theta_i$ are the peak locations.
 
 
 <!--
 #######################################################################
+#######################################################################
+#######################################################################
                   Single sphere
+#######################################################################
+#######################################################################
 #######################################################################
  -->
 ## Single qdot sphere scattering
@@ -222,7 +313,7 @@ Using multislice in the weak phase approximation, the wave function in the far f
     \cc F_{2D}\Big[e^{j\sigma V_z(x,y)} \Big] \\
   V_z(x,y) &=& \int_{\cc B} V(x,y,z) dz  =
     \cc F^{-1}\big[\hat V(q_x,q_y,0)\big]\\
-  V_z(\rho,\phi)&=& 4\pi V_0\sqrt{a^2-\rho^2} ~\mbox{,}~~ \rho\le a
+  V_z(\rho,\phi)&=& 2V_0\sqrt{a^2-\rho^2} ~\mbox{,}~~ \rho\le a
 \end{eqnarray}
 
 where $2\sigma V_0=k_0\epsilon$, $\hat T(q_x,q_y,0)$ is the 2D Fourier transform of the transmission function and $V_z$ the projected potential.
@@ -280,40 +371,68 @@ $ka=1.00$ | $ka=5.00$ | $ka=15.0$
 [![]({{figs2}}0_fka.svg)]({{figs2}}0_fka.svg) | [![]({{figs2}}1_fka.svg)]({{figs2}}1_fka.svg) | [![]({{figs2}}2_fka.svg)]({{figs2}}2_fka.svg)
 
 
+### Validity range for the forward scattering approximation
+
+We can test the validity of the approximation for a 2 sphere scattering
+system.
+
+a  | b  | c  
+-- | -- | --
+[![]({{figs2a}}kakd_forward1.png)]({{figs2a}}kakd_forward1.png) | [![]({{figs2a}}kakd_forward2.png)]({{figs2a}}kakd_forward2.png) | [![]({{figs2a}}kakd_forward3.png)]({{figs2a}}kakd_forward3.png)
+[![]({{figs2a}}kakd_uncoupled1.png)]({{figs2a}}kakd_uncoupled1.png)| [![]({{figs2a}}kakd_uncoupled2.png)]({{figs2a}}kakd_uncoupled2.png)| [![]({{figs2a}}kakd_uncoupled3.png)]({{figs2a}}kakd_uncoupled3.png)
+
+$(ka,kd/ka)$ map with color axis as the $\log_{10}(\cc L_2)$ error of the
+$\cc L_2$ norm of the scattering amplitudes with the
+up) forward scattering approximation
+down) uncoupled (kinematic) approximation
+for a) $k_p=1.1$, b) $k_p=1.01$, c) $k_p=1.001$.
 
 
-### Approximate solution
+a  | b  
+-- | --
+[![]({{figs2a}}kakp_forward.png)]({{figs2a}}kakp_forward.png) | [![]({{figs2a}}kakp_uncoupled.png)]({{figs2a}}kakp_uncoupled.png)
 
-Since back scattering is small, the scattering from the sphere located after the first sphere can be sought with an approximate solution using the analytical response to a spherical Hankel function $\Psi_{\nu0}^{(out)}$ located in $-kd$.
+$(ka,k_p)$ map with color axis as the $\log_{10}(\cc L_2)$ error of the
+$\cc L_2$ norm of the scattering amplitudes with
+a) the forward scattering approximation
+b) the uncoupled (kinematic) approximation.
+The blue dot correspond to the location of the [spherical shells](#multi-shell-single-sphere-scattering) of Carbone atom
+at $E=200keV$.
 
-Using the translation theorem for this input function this gives :
 
-\begin{eqnarray}
-  a_{pl} &=& c_{l}\frac{-h_0^{'}j_0 + h_0j_0^{'}}{n_pj_1^{'}h_0 - j_1h_0^{'}} \\
-  b_{pl} &=& c_{l}\frac{-n_pj_1^{'}j_0 + j_1j_0^{'}}{n_pj_1^{'}h_0 - j_1h_0^{'}} \\
-  c_l &=& a_{\nu,0;l,0}^{(out-in)}(kd_p,0,0)
-\end{eqnarray}
+Both the uncoupled and forward scattering approximation work better with increasing distances $kd$ since scattering from the spheres reduces with distance. It is therefore less likely to affect scattering from the other spheres.
+The low values of $k_p$ result in overall good approximation of both the uncoupled and forward scattering approximation. This is an anticipated result since for weak potentials, the kinematic approximation is more valid.
+The uncoupled approximation improves with small radii since Small $ka$ result in small scattering cross section,
+On the other hand the forward scattering approximation improves with larger values of $ka$ since backward scattering is less likely for large $ka$.
 
-Therefore the response to $\sum_{\nu} b_{p,\nu}\Psi_{\nu0}^{(out)}$ is :
-\begin{equation}
-  c_l^{(s)} = u_l\sum_{\nu} b_{p,\nu}a_{\nu,0;l,0}^{(out-in)}(kd_p,0,0)
-\end{equation}
-[![](figures/qdot2_approx_img.png)](figures/qdot2_approx_img.png)
 
-Note that this is the same as solving the coupled system but setting the sums
-over $\sum_{q<p}$ which is a triangular by block system whose inversion is trivial.
 
-{% set figs2a='/figures/qdotSphereArray2approx_' %}
+## N spheres
 
-Evolution as a function of distance  $kd$ for $N=5$, $ka=2$, $n_{ref}=1.2$.
+### Validity of the approximations
 
-$kd=2.50ka$ | $kd=5.00ka$ | $kd=10.0ka$
------------ | ----------- | ----------
+a  | b  | c  
+-- | -- | --
+[![]({{figsNa}}err_kp1.svg)]({{figsNa}}err_kp1.svg) | [![]({{figsNa}}err_kp2.svg)]({{figsNa}}err_kp2.svg) | [![]({{figsNa}}err_kp3.svg)]({{figsNa}}err_kp3.svg)
+[![]({{figsNa}}ff_kp1.svg)]({{figsNa}}ff_kp1.svg)| [![]({{figsNa}}ff_kp2.svg)]({{figsNa}}ff_kp2.svg)| [![]({{figsNa}}ff_kp3.svg)]({{figsNa}}ff_kp3.svg)
+
+up) $\log_{10}(\cc L_2)$ error of the $\cc L_2$ norm of the scattering amplitudes with increasing number of spheres for a few radii for
+a) $k_p=1.01$  b) $k_p=1.001$ and  b) $k_p=1.0001$.
+down) examples of scattering amplitude profiles.
+
+### Selected far field scattering amplitudes
+
+a  | b  | c
+-- | -- | --
 [![]({{figs2a}}kd0_fka.svg)]({{figs2a}}kd0_fka.svg) | [![]({{figs2a}}kd1_fka.svg)]({{figs2a}}kd1_fka.svg) |  [![]({{figs2a}}kd2_fka.svg)]({{figs2a}}kd2_fka.svg)
 
+Far field scattering amplitudes for $N=5$, $ka=2$, $n_{ref}=1.2$ for
+distance a) $kd=2.50ka$, b) $kd=5.00ka$ and c) $kd=10.0ka$.
 
-Evolution as a function of number of spheres $N$ for $ka=2$,$kd=4ka$, $n_{ref}=1.01$.
 
-$N=2$ | $N=5$ | $N=10$
------ | ----- | -----
+a  | b  | c
+-- | -- | --
 [![]({{figs2a}}N0_fka.svg)]({{figs2a}}N0_fka.svg) | [![]({{figs2a}}N1_fka.svg)]({{figs2a}}N1_fka.svg) |  [![]({{figs2a}}N2_fka.svg)]({{figs2a}}N2_fka.svg)
+
+Far field scattering amplitudes for $ka=2$,$kd=4ka$,$n_{ref}=1.01$
+for a) $N=2$, b) $N=5$ and c) $N=10$.

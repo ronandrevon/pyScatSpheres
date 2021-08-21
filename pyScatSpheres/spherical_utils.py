@@ -336,6 +336,36 @@ def get_plane_wave_vector(r,theta,phi=np.pi/2,lam=1,alpha=0,d_p=0,Nmax=10,fz=np.
 #     )
 #     return Almnp,Blmnp
 #
+def get_aln(lmax,nmax, fz_q,r_d,theta_d,phi_d=0):
+    '''Scalar translational addition theorem coefficients
+    - Nmax : order of expansion
+    - fz_q : type of expansion (bessel or hankel)
+    - r_d,theta_d : translation vectors
+    returns :
+    - aln : l x [n*d1,..,n*dN]
+    '''
+    l = np.arange(lmax+nmax+2)
+    # Yq  = np.sqrt((2*l+1)/(4*np.pi))*spe.lpn(lmax+nmax+1,np.cos(theta_d))[0]
+    # Yq = np.array([spe.sph_harm(0,q,phi_d,theta_d) for q in range(lmax+nmax+1)])
+    qmax = lmax+nmax+2
+    #### Yq,zq : nqs x nds
+    Yq = np.array([spe.sph_harm(0,q,phi_d,theta_d) for q in range(qmax)])
+    zq = np.array([fz_q(q,r_d) for q in range(qmax)])
+
+    nds = np.array(r_d).size
+    aln = np.zeros((lmax+1,(nmax+1)*nds),dtype=complex)
+    id0 = np.array([i*(nmax+1) for i in range(nds)])
+    for l in range(lmax+1):
+        # print('l=%d' %l)
+        for n in range(nmax+1):
+            q = np.arange(abs(l-n),n+l+1)   #;cput = time.time()
+            Glnq = np.array([np.float(gaunt(l,n,q, 0,0,0)) for q in q])
+            # Glnq = spu.w3j(l,n,q, 0,0,0)
+            # print((zq[q]*Yq[q]).shape,Glnq.shape)
+            alnu = 4*np.pi*np.sum((-1J)**(l-n-q[:,None])*zq[q]*Yq[q]*Glnq[:,None],axis=0)
+            # print(alnu.shape)
+            aln[l,id0+n] = alnu
+    return aln
 
 def a_ln(lmax,nmax, fz_q,r_d,theta_d,phi_d=0):
     '''Scalar translational addition theorem coefficients
