@@ -4,7 +4,7 @@ import numpy as np, pandas as pd
 from . import displayStandards as dsp #;imp.reload(dsp)
 from . import glob_colors as colors
 from . import spherical_utils as spu  #;imp.reload(spu)
-from . import hard_sphere_base as hsb #;imp.reload(hsb)
+from . import hard_sphere_base as hsb ;imp.reload(hsb)
 
 class QdotSphereArray(hsb.HardSphereArrayBase):
     def solve(self,nmax=-1,copt=1,opt2=0,optT=0,v=1):

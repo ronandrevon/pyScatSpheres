@@ -295,6 +295,17 @@ If the potential is small $\epsilon=V_0/E\ll 1$, the first Born approximation is
 \end{eqnarray}
 where the $q=2k_0\sin\frac{\theta}{2}$ is the momentum transfer wave vector and $\theta$ the scattering angle.
 
+<!-- In the case of a Coulomb potential this would be easier as  :
+\begin{eqnarray}
+  f(q)  &=& k_0^2\frac{\epsilon}{q}\int_0^{\infty}\sin(qr)dr\\
+  |f(q)|&=& \epsilon k_0^2a^3\frac{1}{q^2a^2/2}\\
+\end{eqnarray} -->
+
+For a screened Coulomb potential $e^{-\beta r}/r$ this would :
+\begin{eqnarray}
+  f(q)   &=& k_0^2\frac{\epsilon}{q+j\beta}\int_0^{\infty}\Im m\big(e^{j(q+j\beta )r}\big)dr\\
+  |f(q)| &=& 2\epsilon k_0^2a\frac{1}{q^2+\beta^2}\\
+\end{eqnarray}
 <!-- \begin{equation}
 f(q) = \frac{V_0}{E} \frac{a^3k_0^2}{q^2a^2}\Big(-\cos qa + \frac{\sin qa}{qa}\Big)
 \end{equation} -->
@@ -419,6 +430,15 @@ a  | b  | c
 up) $\log_{10}(\cc L_2)$ error of the $\cc L_2$ norm of the scattering amplitudes with increasing number of spheres for a few radii for
 a) $k_p=1.01$  b) $k_p=1.001$ and  b) $k_p=1.0001$.
 down) examples of scattering amplitude profiles.
+
+### Total cross section
+
+a  | b  | c
+-- | -- | --
+[![]({{figs}}_sigmaN0.svg)]({{figs}}_sigmaN0.svg) |  [![]({{figs}}_sigmaN1.svg)]({{figs}}_sigmaN1.svg) |  [![]({{figs}}_sigmaN2.svg)]({{figs}}_sigmaN2.svg)
+
+Total cross section for an array of scatterers for
+a) $k_p=1.1$, b) $k_p=1.01$, c) $k_p=1.001$.
 
 ### Selected far field scattering amplitudes
 

@@ -7,7 +7,7 @@ import scipy.fft as fft
 
 plt.close('all')
 path = 'data/qdot/'
-opts = 'rp' #t(transmission function), p(pattern), r(run)
+opts = 'p' #t(transmission function), p(pattern), r(run)
 nz = 10
 
 keV = 50  #keV

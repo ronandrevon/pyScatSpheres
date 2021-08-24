@@ -17,11 +17,13 @@ class HardSphereArrayBase():
         if isinstance(Cp,np.ndarray):self.set_Cp(Cp)
         if solve:self.solve(copt=copt,v=v)
 
-    def get_s(self,npts=361):
+    def get_s(self,npts=361,norm=False):
         theta = np.linspace(0,np.pi,npts)
         dt = theta[1]-theta[0]
         f = self.get_ff(theta)
         s = np.sum(np.abs(f)**2*np.sin(theta))*2*np.pi*dt
+        if norm:
+            s *= 4/self.ka**2
         return s
 
     ###############################################################

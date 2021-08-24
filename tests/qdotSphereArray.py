@@ -291,7 +291,7 @@ def load_qdot(df,cond):
     qdot.ap,qdot.bp= c.ap.copy(),c.bp.copy()
     return qdot
 
-opts = '' #2(show error for N=2), s(solve)
+opts = 'S' #2(show error for N=2), s(solve)
 # name=nameB+'2approx_'
 # df_name = 'data/df_qdotSpheres_2.pkl'
 name=nameB+'Napprox_'
@@ -319,19 +319,42 @@ if 's' in opts:
 
 df = pd.read_pickle(df_name)
 # if 'e' in opts:df = set_errors(df_name)
-################################################################################
-#### N
-################################################################################
-qdot = load_qdot(df,{'ka':15,'kp':1.001,'N':10})
-thetas = np.deg2rad(np.linspace(0,180,2001))
-ff = qdot.get_ff(thetas)
-# idp = np.hstack([ p*qdot.nmax+np.arange(4,qdot.nmax) for p in range(qdot.N)])
-idp = abs(qdot.bp)<1e-4
-qdot.bp[idp]=0#; qdot.show_ff()
-ff0 = qdot.get_ff(thetas)
-dsp.stddisp([[thetas,np.log10(abs(ff0-ff)),'b-']])
+if 'S' in opts:
+    kas,kps = [5,10,15],[1.1,1.01,1.001]
+    nkas = df.ka.unique().size
+    cs = dsp.getCs('jet',nkas)
+    npts = 3600
+    for i,kp in enumerate(kps):
+        plts=[]
+        for j,ka in enumerate(kas):
+            dfc = df.loc[(df.ka==ka) &(df.kp==kp)].copy()
+            Ns = np.array(dfc.N.values,dtype=float)
+            dfc['sigma']=0
+            for l,c in dfc.iterrows():
+                qdot = load_qdot(dfc,{'ka':c.ka,'kp':c.kp,'N':c.N})
+                dfc.loc[l,'sigma'] = qdot.get_s(npts=npts,norm=True)
+            plts+=[[Ns,dfc.sigma,[cs[j],'-o'],r'$ka=%d$' %ka]]
+
+            qdot = qsa.QdotSphereArray(N=1,ka=c.ka,kp=c.kp,kd=c.kd,nmax=c.nmax,solve=1,copt=0)
+            sig0 = qdot.get_s(npts=npts,norm=True)
+            plts += [[Ns,Ns**2*sig0,[cs[j],'--o'],''],[Ns,Ns*sig0,[cs[j],'-.o'],'']]
+            legElt = {r'$N^2\sigma_0$':'k--o',r'$N\sigma_0$':'k-.o'}
+        tle = r'$k_p=%.4f$' %kp
+        dsp.stddisp(plts,labs=['$N$',r'$\sigma_{tot}$'],lw=2,title=tle,legElt=legElt,
+            name=nameB+'_sigmaN%d.svg' %i,opt='sc')
+
+# thetas = np.deg2rad(np.linspace(0,180,2001))
+# ff = qdot.get_ff(thetas)
+# # idp = np.hstack([ p*qdot.nmax+np.arange(4,qdot.nmax) for p in range(qdot.N)])
+# idp = abs(qdot.bp)<1e-4
+# qdot.bp[idp]=0#; qdot.show_ff()
+# ff0 = qdot.get_ff(thetas)
+# dsp.stddisp([[thetas,np.log10(abs(ff0-ff)),'b-']])
 
 # qdot.test_convergence(nmaxs=[5,7,10])
+################################################################################
+#### N=N
+################################################################################
 if 'N' in opts:
     optsN = 'f' #e(errors), f(ff)
     kas0=np.array(df.ka.unique(),dtype=float)
