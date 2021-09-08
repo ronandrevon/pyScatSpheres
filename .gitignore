@@ -10,6 +10,12 @@ __pycache__/
 # C extensions
 *.so
 
+#latex
+*-eps-converted-to.pdf
+*.pdf
+*.pdf_tex
+**/latex/
+
 # Distribution / packaging
 .Python
 build/

@@ -1,17 +1,18 @@
 from utils import * ;imp.reload(dsp);imp.reload(cst)
 from pyScatSpheres import qdot_sphere_array as qsa ;imp.reload(qsa)
+from pyScatSpheres import utils as ut ;imp.reload(ut)
 from multislice import multislice as ms;
 from multislice import mupy_utils as mut;
 from multislice import postprocess as pp;
 import scipy.fft as fft
 
 plt.close('all')
-path = 'data/qdot/'
-opts = 'p' #t(transmission function), p(pattern), r(run)
+path,sim = 'data/qdot2/','qdot2'
+opts = 'p' #t(transmission function), p(pattern), r(run) s(solve qdot)
 nz = 10
 
 keV = 50  #keV
-Za = 12
+Za = 1
 r0,V0 = {
     100 :[0.1,4],
     1 :[0.1,0.5],
@@ -27,6 +28,8 @@ r0,V0 = {
     12:[0.1,2.0],
     13:[0.1,3.0],
     14:[0.1,4.0],
+    15:[0.1,10.0],
+    16:[0.1,20.0],
 }[Za]
 
 kdka = 5   #
@@ -42,8 +45,9 @@ ka = 2*np.pi/lam*r0#*0.9725
 # kp = 1.068#V=1.0,rr=0.9725,Za=8,
 kd  = kdka*ka
 xyz = path+'qdot.xyz'
-Nxy = 2048
+Nxy = 1024
 nmax = int(np.ceil(ka*1.1))
+islice = 1
 
 Npad = 200
 #### make xyz
@@ -54,7 +58,7 @@ if 'r' in opts:
     pattern = np.array([[Za,Npad/2*r0,Npad/2*r0,0, 1,0.05]])
     mut.make_xyz(xyz,pattern,lat_vec,lat_params)
     multi = ms.Multislice(path,keV=keV,data=xyz,NxNy=Nxy,repeat=[1,1,nz],
-        dz=a0,i_slice=1,fopt='f');
+        dz=a0,i_slice=islice,fopt='f');
     multi.p.wait()
 
 multi= pp.load(path,'')
@@ -88,7 +92,10 @@ if 't' in opts:
     # dsp.stddisp(im=[T.imag],pOpt='im',title='py Im T iz=%d' %iz)#,**kwargs)
     # dsp.stddisp(im=[Tms.imag-T.imag],pOpt='im',title='err Im T iz=%d' %iz)#,**kwargs)
     # dsp.stddisp(im=[abs(Tms-T)],pOpt='im',caxis=[0,1],title='abs(err T) iz=%d' %iz)#,**kwargs)
-
+ns=50
+I0 = [ np.load(path+sim+'_autoslic_pattern%s.npy' %str(iz).zfill(3))[0,0] for iz in range(ns)]
+# plts = [0.5*islice*np.arange(ns),I0,'b-o']
+# dsp.stddisp(plts,labs=['$z=Nd(A)$','$I_0$'])
 
 if 'p' in opts:
     optsP = '' #a(analytical),f(fft)
@@ -103,21 +110,33 @@ if 'p' in opts:
     qx0 = np.arange(Nmax)*dq
     thetas = 2*np.arcsin(qx0*lam/2)
     thetas_d=np.rad2deg(thetas)
-    plts,cs,ms = [],dsp.getCs('jet',nz),'x'
-    for iz in range(nz):
+    plts,cs,ms = [],dsp.getCs('Spectral',nz),'o'
+    nzi = [2]
+    for iz in nzi:
         # im = np.loadtxt(path+'qdot_autoslic_pattern.txt.%s' %str(iz).zfill(3))
         # real,imag = im[:,0:-1:2],im[:,1::2];#print(real.max())
         # I = real**2+imag**2
-        I = np.load(path+'qdot_autoslic_pattern%s.npy' %str(iz).zfill(3))
+        I = np.load(path+sim+'_autoslic_pattern%s.npy' %str(iz-1).zfill(3))
         # qx,qy,Ip = multi.pattern(iz=iz,Iopt='',out=1)
         I0 = I[s]
         plts += [[thetas_d,I0/I0[1],[cs[iz],'-'+ms],'']]
-
-    qdot = [qsa.QdotSphereArray(N=iz,ka=ka,kp=kp,kd=kd,nmax=nmax,solve=1,
-        copt=iz>1) for iz in np.arange(nz)+1 ]
     Iff = lambda ff:(abs(ff)/abs(ff).max())**2
-    for iz in range(nz):
-        plts += [[thetas_d,Iff(qdot[iz].get_ff(thetas)),[cs[iz],'--'+ms],'']]
+
+
+    solve='s' in opts
+    df_name = 'data/'+'df_'+sim+'_pyscat.pkl'
+    if solve:
+        kas,kps,kdkas,Ns = ut.get_param_list([ka,kp,kdka,np.arange(1,nz)])
+        ut.solve_set(df_name,kas,kps,kdkas,Ns,new=1)
+    qdot = [qsa.QdotSphereArray(N=iz,ka=ka,kp=kp,kd=kd,nmax=nmax,
+        solve=0) for iz in np.arange(1,nz)]
+    df = pd.read_pickle(df_name)
+    for iz,c in df.iterrows():qdot[iz].bp = c.bp
+
+    spy = slice(0,None,3)
+    for iz in nzi:
+        Ipy = Iff(qdot[iz-1].get_ff(thetas[spy]))
+        plts += [[thetas_d[spy],Ipy,[cs[iz],'--'+ms],'']]
 
     if 'a' in optsP:
         from scipy.integrate import trapz,quad
@@ -138,9 +157,10 @@ if 'p' in opts:
         plts += [[thetas_d,I,'k-.','fft2']]
 
     legElt = {'MS':'k-','pyscat':'k--'}
-    legElt.update({'iz=%d' %iz: [cs[iz],ms] for iz in range(nz)})
-    dsp.stddisp(plts,labs=[r'$\theta$(degrees)','I'],legElt=legElt,lw=2,
-        xylims=[0,thetas_d.max(),0,0.02])
+    legElt.update({'iz=%d' %iz: [cs[iz],ms] for iz in nzi})
+    dsp.stddisp(plts,labs=[r'$\theta$(degrees)','I'],legElt=legElt,lw=2,ms=3,
+        xylims=[0,thetas_d.max(),0,Ipy.max()],fonts='2',
+        name='figures/qdot_vs_multi.eps',opt='ps')
 
     # dsp.stddisp(im=[I],caxis=[0,10000],pOpt='im')
     # multi.pattern(iz=0,Iopt='s',caxis=[0,10000],cmap='jet')

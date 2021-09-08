@@ -140,11 +140,6 @@ where $z_l^{'}=\dP_{\rho}z_l(\rho)$.
 In the far field,
 $\hl(k_0r_p)\approx (-j)^{l+1}\frac{e^{jk_0rp}}{k_0r_p}$, $\theta_p\approx\theta$
 $r_p\approx r-d_p\cos\theta$,
-\begin{eqnarray}
-  r^2 &=& r_p^2 + d_p^2 + 2r_pd_p\cos\left(\theta-\Theta_p\right)\\
-      &\approx& r_p^2\big(1+2d_p/r_p\cos\left(\theta-\Theta_p\right)\big)\\
-  r   &\approx& r_p + d_p\cos\left(\theta-\Theta_p\right)\\
-\end{eqnarray}
 
 so the scattering amplitude from the $pth$ sphere $f_p(\theta)$ can be written :  
 <!-- $\frac{e^{jkr}}{kr} f_p(\theta)$ where : -->
@@ -201,9 +196,32 @@ A less conservative approximation which only requires matrix multiplication and 
           &=& \big(\bb I + \bb P_b^{-1}\bb T_b \big)\bb P_b^{-1}\bb L_b\\
 \end{eqnarray}
 
-where $\bb b_p^{(0)}$ is the response of the spheres to incident wave and $\square_b$ means the part related to $b_p$.
+where $\bb b_p^{(0)}$ is the response of the spheres to incident wave and $\square_b$ means the part related to $b_p$. The first term correspond to kinematic response while the coupled term correspond to secondary scattering approximation.
+Successive multiple scattering approximations could be computed using the same logic.
 
-### Far field error estimate
+Note that although multiple scattering includes subsequent scattering from all atoms including very remote atoms, the amplitude of multiple scattering is only appreciable for neighbouring atoms due to the spherical wave amplitude decrease.
+
+
+### Far field and scattering probabilities
+
+We can use the scattering cross section to define the probability of an electron being scattered. If $S$ is the area over which the specimen is illuminated and $H$ the thickness of the specimen, the incident plane wave can be normalized by $|A|^2=1/SH$. The flow of electrons per unit time per unit area is then $J_0=hk/m |A|^2=v/HS$. Since $\sigma J_0$ is the number of electrons scattered per second and it takes $\Delta t=H/v$ for an electron to go through the specimen, we can see $\sigma J_0H/v$ as the probability of an electron to be scattered. Therefore :
+\begin{equation}
+  P_{scat}=\frac{\sigma}{S}
+\end{equation}
+where $S$ can be seen as the surface illuminated in selected area electron diffraction(SAED). When performing a multislice simulation, $S$ is the area of the simulated domain (transverse super cell if performing a periodic simulation). The probability of an electron of not being scattered would be $P_{coh}=1-P_{scat}$. For a array of $N$ scatterers regularly spaced by distance $d$ and the average cross section per scatterer $\sigma_a = \sigma/N $, the probability is consistent with $P=\sigma_a N/V z=z/l_e$ where $l_e=1/\sigma_a\rho$ is the mean free path and $\rho=N/Sz$ is the density.
+
+
+Let's define $F_i$ the scattering amplitudes obtained by computing scattering from the wave being scattered $i$ times. It can readily be established that :
+\begin{eqnarray}
+    f(\theta) &=& \sum_{i=1}^N F_i(\theta)\\
+    \sigma &=& \sum_{i=1}^N \sigma_i\\
+    \sigma_i &=& F_i^2 + 2\Re\sum_{j>i}^N F_iF_j^{*}\\
+\end{eqnarray}
+
+where $\sigma_i/S$ can be defined as the probability of an electron to be scattered $i$ times. Since contributions from multiple scattering terms should normally be in ascending order, this definition ensures that the probability of scattering of order $n$ increases as soon as the corresponding term start contributing to the scattering amplitudes.
+
+
+### Error estimate
 A figure of merit can be defined as the error in the far field diffraction pattern :
 
 \begin{equation}
@@ -278,7 +296,8 @@ a  | b
 
 Normalized scattering cross section in $\sigma$ in a) $\log$ and b) linear scales for a few values of $k_p$ over a range of normalized radius $ka$.
 
-It is noted that in the weak scattering regime $kp-1\ll 1$ and not too large spheres $ka$, the shape of the diffraction pattern is identical to the Born approximation. Only the amplitude of the scattering cross section increases with radius. In this regime the spheres  
+It is noted that in the weak scattering regime $kp-1\ll 1$ and not too large spheres $ka$, the shape of the diffraction pattern is identical to the Born approximation. Only the amplitude of the scattering cross section increases with radius.
+<!-- In this regime the spheres   -->
 
 
 ### Small potential limit : Born approximation

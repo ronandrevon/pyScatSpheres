@@ -135,7 +135,14 @@ where $\square^T$ denotes transpose and $z_l^{'}=\dP_{\rho}z_l(\rho)$.
 ### Far field scattering
 In the far field,
 $\hl(k_0r_p)\approx (-j)^{l+1}\frac{e^{jk_0rp}}{k_0r_p}$, $r_p=r-d_p\cos(\theta)$, $\theta_p=\theta$,$\phi_p=\phi$
-so the scattering amplitude from the $pth$ sphere $f_p(\theta,\phi)$  can be written :  
+so the scattering amplitude from the $pth$ sphere $f_p(\theta-\Theta_p,\phi)$  can
+be written :  
+
+<!-- \begin{eqnarray}
+  r^2 &=& r_p^2 + d_p^2 + 2r_pd_p\cos\left(\theta-\Theta_p\right)\\
+      &\approx& r_p^2\big(1+2d_p/r_p\cos\left(\theta-\Theta_p\right)\big)\\
+  r   &\approx& r_p + d_p\cos\left(\theta-\Theta_p\right)\\
+\end{eqnarray} -->
 
 \begin{equation}
   f_p(\theta,\phi) = \sum_{l=0}^{\infty}\sum_{m=-l}^{l} (-j)^{l+1}b_{p;lm}Y_l^m(\theta,\phi)
@@ -144,9 +151,9 @@ where we have used the notation $f_p(r_p,\theta,\phi)=\frac{e^{jk_0r_p}}{k_0r_p}
 
 The total scattering amplitude is the sum of the contribution from all individual spheres.
 \begin{eqnarray}
-  f(\theta,\phi) &=& \sum_{p=1}^{N} f_p(\theta,\phi)e^{-jk_0d_p\cos\theta} \\
+  f(\theta,\phi) &=& \sum_{p=1}^{N} f_p(\theta,\phi)e^{-jk_0d_p\cos(\theta-\Theta_p)} \\
                  &=& \sum_{l=1}^{\infty}(-j)^{l+1}\sum_{m=-l}^{l}Y_l^m(\theta,\phi)
-                      \sum_{p=1}^{N} b_{p;lm}e^{-jk_0d_p\cos\theta} \\
+                      \sum_{p=1}^{N} b_{p;lm}e^{-jk_0d_p\cos(\theta-\Theta_p)} \\
 \end{eqnarray}
 where we have used the notation $f(r,\theta,\phi) = \frac{e^{jk_0r}}{k_0r}f(\theta,\phi)$.
 
