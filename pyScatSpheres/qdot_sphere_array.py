@@ -106,19 +106,25 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         T[i+self.Nap<j] = 0
         T[(i>=self.Nap) & (i+self.Nap<j+self.Nap)] = 0
         bp0 = self.P1.dot(self.L)
-        cp = (np.identity(self.Nu)+self.P1.dot(self.T)).dot(bp0)
+        cp = (np.identity(self.Nu)+self.P1.dot(T)).dot(bp0)
         self.ap,self.bp = cp[:self.N*self.nmax],cp[self.N*self.nmax:]
         return self.ap,self.bp
 
-    # def get_cpn(self,n=2):
-    #     T=self.T.copy()
-    #     j,i = np.meshgrid(np.arange(self.Nu),np.arange(self.Nu))
-    #     T[i+self.Nap<j] = 0
-    #     T[(i>=self.Nap) & (i+self.Nap<j+self.Nap)] = 0
-    #     bp0 = self.P1.dot(self.L)
-    #     cp = self.P1.dot(self.T)).dot(bp0)
-    #     self.ap,self.bp = cp[:self.N*self.nmax],cp[self.N*self.nmax:]
-    #     return self.ap,self.bp
+    def get_cpn(self,n=2):
+        T=self.T.copy()
+        j,i = np.meshgrid(np.arange(self.Nu),np.arange(self.Nu))
+        bp0 = self.P1.dot(self.L)
+        T[i+self.Nap<j] = 0
+        T[(i>=self.Nap) & (i+self.Nap<j+self.Nap)] = 0
+        T = self.P1.dot(T)
+        ap,bp = [],[]
+        Tn = np.identity(self.Nu)
+        for i in range(n):
+            cp = Tn.dot(bp0)#;print(cp.shape)
+            ap += [cp[:self.N*self.nmax]]
+            bp += [cp[self.N*self.nmax:]]
+            Tn = Tn.dot(T)
+        return ap,bp
 
     def get_cpa(self):
         j,i = np.meshgrid(np.arange(self.Nu),np.arange(self.Nu))

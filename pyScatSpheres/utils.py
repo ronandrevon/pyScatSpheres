@@ -1,6 +1,7 @@
+import importlib as imp
 import os,pandas as pd,numpy as np
 from utils import glob_colors as colors
-from . import qdot_sphere_array as qsa #;imp.reload(qsa)
+from . import qdot_sphere_array as qsa ;imp.reload(qsa)
 
 
 def load_qdot(df,cond,opts='co'):
@@ -30,8 +31,8 @@ def show_ff_multiscat(df,cond,npts=2001,**kwargs):
     qdot2.bp = c.bp
     ff =  qdot2.get_ff(theta)
 
-    qdot2.bp = c.bp0
-    ff0 = qdot2.get_ff(theta)
+    # qdot2.bp = c.bp0
+    # ff0 = qdot2.get_ff(theta)
     qdot2.bp = c.bp2
     ff2 = qdot2.get_ff(theta)
     qdot2.bp = c.bpa
@@ -60,12 +61,22 @@ def set_errors(df_name,err='bp'):
     thetas_d = np.linspace(0,180,180*10+1)
     thetas = np.deg2rad(thetas_d)
     dt = thetas[1]-thetas[0]
+    ns  = len([col for col in df.columns if 'bp_' in col])
+    cols_bp  = ['bp_%d' %(i+1) for i in range(ns)]
+    cols_err = ['err_%d' %(i+1) for i in range(ns)]
     for i,c in df.iterrows():
         s = qsa.QdotSphereArray(N=c.N,ka=c.ka,kp=c.kp,kd=c.kd,nmax=c.nmax-1,solve=0,copt=1,v=0)
         if err=='bp':
-            df.loc[i,'err_a'] = abs(c.bp-c.bpa).sum()
-            df.loc[i,'err_0'] = abs(c.bp-c.bp0).sum()
-            # df.loc[i,'err_2'] = abs(c.bp-c.bp2).sum()
+            # df.loc[i,'err_a'] = abs(c.bp-c.bpa).sum()
+            bpm = abs(c.bp).sum()
+            df.loc[i,'erra'] = abs(c.bp-c.bpa).sum()/bpm
+            df.loc[i,'err0'] = abs(c.bp-c.bp0).sum()/bpm
+            df.loc[i,'err2'] = abs(c.bp-c.bp2).sum()/bpm
+            #bp_n : n x (N*nmax*2)
+            bp_n = np.array([np.array(b,dtype=complex) for b in c[cols_bp]])
+            bps = np.cumsum(bp_n,axis=0)
+            # print(bps.shape)
+            df.loc[i,cols_err] = abs(c.bp-bps).sum(axis=1)/bpm
         else:
             s.bp = c.bp
             ff = s.get_ff(thetas)
@@ -78,13 +89,13 @@ def set_errors(df_name,err='bp'):
             ff_2i = ff2[idx]
 
             s.bp = c.bpa
-            df.loc[i,'err_a'] = (abs(abs(s.get_ff(theta_i))**2-ff_2i)/ff_2i).mean()
+            df.loc[i,'erra'] = (abs(abs(s.get_ff(theta_i))**2-ff_2i)/ff_2i).mean()
             # df.loc[i,'err_a'] = abs(s.get_ff(thetas)-ff).sum()*dt/ffmax
             s.bp = c.bp2
-            df.loc[i,'err_2'] = (abs(abs(s.get_ff(theta_i))**2-ff_2i)/ff_2i).mean()
+            df.loc[i,'err2'] = (abs(abs(s.get_ff(theta_i))**2-ff_2i)/ff_2i).mean()
             # df.loc[i,'err_2'] = abs(s.get_ff(thetas)-ff).sum()*dt/ffmax
             s.bp = c.bp0
-            df.loc[i,'err_0'] = (abs(abs(s.get_ff(theta_i))**2-ff_2i)/ff_2i).mean()
+            df.loc[i,'err0'] = (abs(abs(s.get_ff(theta_i))**2-ff_2i)/ff_2i).mean()
             # df.loc[i,'err_0'] = abs(s.get_ff(thetas)-ff).sum()*dt/ffmax
 
         # if df.loc[i,'err_0']<8e-3 and df.loc[i,'err_0']>3e-3:
@@ -105,12 +116,13 @@ def get_param_list(params):
         params[i] = np.array(p)
     return params
 
-def solve_set(df_name,kas,kps,kdkas,Ns,new=0):
+def solve_set(df_name,kas,kps,kdkas,Ns,new=0,n=2):
     cols = ['N','ka','kp','kd','nmax','ap','bp']
-    cols_add = ['bp0','err_0','bpa','err_a','bp2','err_2']
-    df = pd.DataFrame(columns=cols+cols_add)
-    thetas = np.deg2rad(np.linspace(0,60,361))
-    dt = thetas[1]-thetas[0]
+    cols_add = ['bpa','bp2','bp0']#,'err_0','err_a']
+    bpn_cols = ['bp_%d' %(i+1) for i in range(n)]
+    df = pd.DataFrame(columns=cols+cols_add+bpn_cols)
+    # thetas = np.deg2rad(np.linspace(0,60,361))
+    # dt = thetas[1]-thetas[0]
     for i,(ka,kp,kdka,N) in enumerate(zip(kas,kps,kdkas,Ns)):
         nmax = max(int(np.ceil(1.3*ka)),int(ka)+4)
         print('%d/%d' %(i,kas.size) +
@@ -118,20 +130,22 @@ def solve_set(df_name,kas,kps,kdkas,Ns,new=0):
         kd = kdka*ka  #;print(N,ka,kd,kp,nmax)
         s = qsa.QdotSphereArray(N=N,ka=ka,kp=kp,kd=kd,nmax=nmax,solve=1,copt=N>1,v=0)
         df.loc[i,cols]=[N,ka,kp,kd,nmax,s.ap,s.bp] #;print(df.loc[i])
-        #uncoupled
-        ap,bp0 = s.get_cp0()#solve(copt=0,v=0)
-        df.loc[i,'bp0'] = bp0
-        #Secondary
-        ap,bp2 = s.get_cp2()#solve(copt=0,v=0)
-        # print(bp0.shape,bp2.shape)
-        df.loc[i,'bp2'] = bp2
+        # #uncoupled
+        # ap,bp0 = s.get_cp0()#solve(copt=0,v=0)
         #forward coupling
-        ap,bpa = s.get_cpa()#solve(copt=0,v=0)
-        df.loc[i,'bpa'] = bpa
+        # ap,bpa = s.get_cpa()#solve(copt=0,v=0)
+        # ap,bpa = s.get_cpa()#solve(copt=0,v=0)
+        df.loc[i,'bpa'] = s.get_cpa()[1]
+        df.loc[i,'bp2'] = s.get_cp2()[1]
+        df.loc[i,'bp0'] = s.get_cp0()[1]
+        #multiple
+        # apn,bpn = s.get_cpn(n=n)#solve(copt=0,v=0)
+        # print(bp0.shape,bp2.shape)
+        df.loc[i,bpn_cols] = s.get_cpn(n=n)[1]
     if os.path.exists(df_name) and not new:
         df0 = pd.read_pickle(df_name)
-        df.append(df0)#;print(df.index)
-        # print('updating df')
+        df=df.append(df0)#;print(df.index)
+        print('updating df')
     df.to_pickle(df_name)
     # print(df.iloc[0],s.bp)
     print(colors.green+'DataFrame saved:\n'+ colors.yellow+df_name+colors.black)
