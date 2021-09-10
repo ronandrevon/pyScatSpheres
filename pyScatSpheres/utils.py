@@ -1,6 +1,100 @@
 import os,pandas as pd,numpy as np
-from . import qdot_sphere_array as qsa #;imp.reload(qsa)
 from utils import glob_colors as colors
+from . import qdot_sphere_array as qsa #;imp.reload(qsa)
+
+
+def load_qdot(df,cond,opts='co'):
+    '''opts:returns c(df_c) o(qdot object)'''
+    if isinstance(cond,dict):
+        cond = ' & '.join(['(%s==%.4f)' %(k,v) for k,v in cond.items()])#; print(cond)
+    # print(df.loc[df.eval(cond)])
+    c = df.loc[df.eval(cond)].iloc[0]
+
+    ret=[]
+    for i in opts:
+        if   'c'==i:ret+=[c]
+        elif 'o'==i:
+            qdot = qsa.QdotSphereArray(N=c.N,ka=c.ka,kp=c.kp,kd=c.kd,nmax=c.nmax,solve=0)
+            qdot.ap,qdot.bp= c.ap.copy(),c.bp.copy()
+            ret+=[qdot]
+    if len(opts)<2:ret=ret[0]
+    return ret
+
+def show_ff_multiscat(df,cond,npts=2001,**kwargs):
+
+    c = df.loc[df.eval(cond)].iloc[0]
+    qdot2   = qsa.QdotSphereArray(N=c.N,ka=c.ka,kp=c.kp,kd=c.kd,nmax=c.nmax,solve=0)
+
+    theta_d = np.linspace(0,30,npts)
+    theta   = np.deg2rad(theta_d)
+    qdot2.bp = c.bp
+    ff =  qdot2.get_ff(theta)
+
+    qdot2.bp = c.bp0
+    ff0 = qdot2.get_ff(theta)
+    qdot2.bp = c.bp2
+    ff2 = qdot2.get_ff(theta)
+    qdot2.bp = c.bpa
+    ffa = qdot2.get_ff(theta)
+    ffmax = abs(ff).max()
+
+    err = lambda ff0:ff0
+    err = lambda ff0:np.log10(abs(abs(ff0)-abs(ff))/abs(ff))
+    plts=[]
+    # plts =[[theta_d,np.log10(abs(ff)) ,'b-' ,'exact']]
+    plts+=[[theta_d,err(ffa),'g--','forward']]
+    plts+=[[theta_d,err(ff2),'c--','secondary']]
+    plts+=[[theta_d,err(ff0),'r--','uncoupled']]
+    tle = r'$N=%d, ka=%d, k_p=%.4f, kd=%d$ ' %(c.N,c.ka,c.kp,c.kd)
+    dsp.stddisp(plts,labs=[r"$\theta(^{\circ})$",r"$f(\theta)$"],#title=tle,
+        lw=2,**kwargs)
+
+
+def set_errors(df_name,err='bp'):
+    '''err:
+        - 'bp' : sum(bpa-bp)
+        - 'ff' : sum(ff-cp)
+        - 'fm' : error at the peaks
+    '''
+    df = pd.read_pickle(df_name)
+    thetas_d = np.linspace(0,180,180*10+1)
+    thetas = np.deg2rad(thetas_d)
+    dt = thetas[1]-thetas[0]
+    for i,c in df.iterrows():
+        s = qsa.QdotSphereArray(N=c.N,ka=c.ka,kp=c.kp,kd=c.kd,nmax=c.nmax-1,solve=0,copt=1,v=0)
+        if err=='bp':
+            df.loc[i,'err_a'] = abs(c.bp-c.bpa).sum()
+            df.loc[i,'err_0'] = abs(c.bp-c.bp0).sum()
+            # df.loc[i,'err_2'] = abs(c.bp-c.bp2).sum()
+        else:
+            s.bp = c.bp
+            ff = s.get_ff(thetas)
+            ff2 = abs(ff)**2
+            ffmax = abs(ff).max()
+
+            idx = find_peaks(abs(ff))#;print(idx);
+            idx = idx[0]
+            theta_i = thetas[idx]
+            ff_2i = ff2[idx]
+
+            s.bp = c.bpa
+            df.loc[i,'err_a'] = (abs(abs(s.get_ff(theta_i))**2-ff_2i)/ff_2i).mean()
+            # df.loc[i,'err_a'] = abs(s.get_ff(thetas)-ff).sum()*dt/ffmax
+            s.bp = c.bp2
+            df.loc[i,'err_2'] = (abs(abs(s.get_ff(theta_i))**2-ff_2i)/ff_2i).mean()
+            # df.loc[i,'err_2'] = abs(s.get_ff(thetas)-ff).sum()*dt/ffmax
+            s.bp = c.bp0
+            df.loc[i,'err_0'] = (abs(abs(s.get_ff(theta_i))**2-ff_2i)/ff_2i).mean()
+            # df.loc[i,'err_0'] = abs(s.get_ff(thetas)-ff).sum()*dt/ffmax
+
+        # if df.loc[i,'err_0']<8e-3 and df.loc[i,'err_0']>3e-3:
+        #     tle = 'ka=%d,kp=%.4f,kd=%d,nmax=%d,err=%.2E' %(s.ka,s.kp,s.kd,s.nmax,df.loc[i,'err_0'])
+        #     plts=[[thetas_d,abs(ff),'b-','exact'],[thetas_d,abs(ffa),'r--','forward'],[thetas_d,abs(ff0),'g-.','uncoupled'],]
+        #     dsp.stddisp(plts,title=tle,lw=2);plt.show()
+    df.to_pickle(df_name)
+    print(colors.green+'DataFrame updated with errors:\n'+ colors.yellow+df_name+colors.black)
+    return df
+
 
 def get_param_list(params):
     ns = np.unique([np.array(p).size for p in params if type(p) in [np.ndarray,list]])

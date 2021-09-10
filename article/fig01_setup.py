@@ -2,9 +2,10 @@ from utils import *   ;imp.reload(dsp)
 from matplotlib.patches import Circle
 plt.close('all')
 name='figures/Tmatrix.png'
+opt='ps'
 
 txts,plts=[],[]
-cs={1:[(0.75,)*3,0.6],6:[(0.1,)*3,1],7:['b',1.1],8:['r',1.2]}
+cs={1:[(0.75,)*3,0.8],6:[(0.1,)*3,1],7:['b',1.1],8:['r',1.2]}
 
 #### Sphere locations, Circles and n_p
 spheres = {
@@ -16,16 +17,17 @@ txts+= [[yz[0]+r/3,yz[1]-r/3,'$n_%s$' %i,'k'] for i,(yz,Z,c,r) in spheres.items(
 
 ####radius arrows
 theta = 1.15*3*np.pi/4#+np.pi/2
-rm=0.92
+rm=0.91
 ct,st = np.cos(theta),np.sin(theta)
 arrows = [ [yz[0],yz[1],rm*r*ct,rm*r*st,'k'] for i,(yz,Z,c,r) in spheres.items()]
 txts+= [[yz[0]+0.7*r*ct,yz[1]+0.7*r*st+0.05,'$a_%s$' %i,'k'] for i,(yz,Z,c,r) in spheres.items()]
 
 #### triedres
-c = (0.35,)*3
+c,Nf = (0.35,)*3,3
 u,(y,z) = 1,(0,0)
-arrows+= [ [y,z,u*i,u*j,c] for i,j in zip([0,9,-0.6],[9,0,-0.5])]
-txts+=[[u*i+0.1,u*j-0.1,s,c] for i,j,s in zip([0,9,-0.6],[9,0,-0.5],['$z$','$y$','$x$']) ]
+arrows+= [ [y,z,u*i,u*j,c] for i,j in zip([0,9,-0.6*Nf],[9,0,-0.5*Nf])]
+txts+=[[u*i+0.1,u*j-0.1,s,c] for i,j,s in zip([0,9,-0.6*Nf],[9,0,-0.5*Nf],['$z$','$y$','$x$']) ]
+txts[-1][0]-=0.25;txts[-1][1]+=0.3
 u,(y,z) = 1.5,spheres['p'][0]
 arrows+= [[y,z,u*i,u*j,c] for i,j in zip([0,1,-0.6],[1,0,-0.5])]
 u,(y,z) = 1.5,spheres['q'][0]
@@ -41,7 +43,7 @@ plts+= [[[0,yP],[0,zP],'k-','']]
 plts+= [[[yp,yq],[zp,zq],'k-','']]
 plts+= [[[yp,yP],[zp,zP],'k-','']]
 plts+= [[[yq,yP],[zq,zP],'k-','']]
-txtsB  = [[yP,zP,'$P$','k']]
+txtsB  = [[yP+0.1,zP,'$P$','k']]
 txtsB += [[0.8*yP/2+0.2,0.8*zP/2  ,r'$\vec{r}$'     ,'k']]
 txtsB += [[1.3*yp/2+0.1,1.3*zp/2  ,r'$\vec{d_p}$'   ,'k']]
 txtsB += [[1.3*yq/2,1.3*zq/2-0.25 ,r'$\vec{d_q}$'   ,'k']]
@@ -66,7 +68,7 @@ txts+= [[yp+0.5,zp+R+0.1,r'$\theta_p$',c]]
 #### incident wave
 ## theta_i
 theta_i = np.deg2rad(50)
-t,Ra  = np.linspace(0,theta_i,20),2
+t,Ra  = np.linspace(0,theta_i,20),1.55
 plts+=[[Ra*np.sin(t),Ra*np.cos(t),'r-','',2]]
 txts+= [[0.5,Ra+0.1,r'$\theta_i$','r']]
 ya,za = 1.1*Ra*np.sin(theta_i),1.1*Ra*np.cos(theta_i)
@@ -75,33 +77,37 @@ txts+= [[ya+0.2,za-0.3,r'$\vec{k_0}$','r']]
 
 ##### phi,phi,Phi_q
 ##phi
-Rb1,Rb2 = 0.9,0.25
-phi= np.deg2rad(-16)
+ta = 0.5/0.6
+Rab=4.5#Rb1,Rb2 = 1.2,0.25
+phi= np.deg2rad(75)
 t  = np.linspace(0,phi,20)
-xP = -0.5
-plts+=[[Rb1*yP*np.cos(t),Rb2*yP*np.sin(t),'k-','',2]]
+xzP,xP = -1.4,-0.5
+plts+=[[xzP/ta-Rab*xzP*np.sin(t),xzP*np.cos(t),'k-','',2]]
+# plts+=[[Rb1*yP*np.cos(t),Rb2*yP*np.sin(t),'k-','',2]]
 plts+=[[[yP,yP],[xP,zP],'k--','',1]]
 plts+=[[[0,yP],[0,xP],'k--','',1]]
-txts+= [[yP-0.5,xP+0.15,r'$\phi$','k']]
+txts+= [[yP/2+0.1,xzP+0.1,r'$\phi$','k']]
 ##Phi_q
-Phi_q= np.deg2rad(-30)
+Phi_q= np.deg2rad(65)
 t  = np.linspace(0,Phi_q,20)
-xq = -0.8
-plts+=[[Rb1*yq*np.cos(t),Rb2*yq*np.sin(t),'k-','',2]]
+xzq,xq = -0.9,-0.7
+plts+=[[xzq/ta-Rab*xzq*np.sin(t),xzq*np.cos(t),'k-','',2]]
+# plts+=[[Rb1*yq*np.cos(t),Rb2*yq*np.sin(t),'k-','',2]]
 plts+=[[[yq,yq],[xq,zq+0.1],'k--','',1]]
 plts+=[[[0,yq],[0,xq],'k--','',1]]
-txts+= [[yq-0.5,xq+0.15,r'$\Phi_q$','k']]
+txts+= [[1.5,xzq-0.1,r'$\Phi_q$','k']]
 ##phi_i
-phi_i= np.deg2rad(-56.5)
+phi_i= np.deg2rad(42)
 t = np.linspace(0,phi_i,20)
-xa,ya = -0.75,ya+0.1
-plts+=[[Rb1*ya*np.cos(t),Rb2*ya*np.sin(t),'r-','',2]]
+xza,xa,ya = -0.4,-0.55,ya+0.1
+plts+=[[xza/ta-Rab*xza*np.sin(t),xza*np.cos(t),'r-','',2]]
+# plts+=[[Rb1*ya*np.cos(t),Rb2*ya*np.sin(t),'r-','',2]]
 plts+=[[[ya,ya],[xa,za+0.1],'r--','',1]]
 plts+=[[[0,ya],[0,xa],'r--','',1]]
-txts+= [[ya-0.35,xa+0.25,r'$\phi_i$','r']]
+txts+= [[0,-0.75,r'$\phi_i$','r']]
 
 
 fig,ax = dsp.stddisp(texts=txtsB,targs={'ha':'left','va':'center','weight':'bold'},opt='p')
 dsp.stddisp(plts,ax=ax,arrows=arrows,texts=txts,patches=pps,targs={'ha':'left'},
-    xylims=[-1,10,-1,10],pOpt='ptX',axPos=[0,0,1,1],fonts={'text':25},
-    name=name,opt='ps')
+    xylims=[-1,10,-1,10],pOpt='peX',axPos=[0,0,1,1],fonts={'text':25},
+    name=name,opt=opt)

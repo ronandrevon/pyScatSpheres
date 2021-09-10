@@ -17,7 +17,7 @@ class HardSphereArrayBase():
         if isinstance(Cp,np.ndarray):self.set_Cp(Cp)
         if solve:self.solve(copt=copt,v=v)
 
-    def get_s(self,npts=3610,norm=False):
+    def get_s(self,npts=3601,norm=False):
         theta = np.linspace(0,np.pi,npts)
         dt = theta[1]-theta[0]
         f = self.get_ff(theta)

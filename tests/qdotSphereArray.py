@@ -123,6 +123,27 @@ if 'g' in opts:gui.GUI_handler(df_name = 'data/qdotSphereArray1.pkl')
 
 
 
+#### Solve for large number of systems
+df_name = 'data/df_qdotSpheresN2.pkl'
+if 's' in opts:
+    # kas0   = np.array([0.5,1,2,3,4,5,7,10,15,20,30])
+    # kdkas0 = np.array([2.1,3,5,10,25,20])
+    # kps0   = np.array([1.2,1.1,1.01,1.001,1.0001])
+    # kas,kdkas,kps = np.meshgrid(kas0,kdkas0,kps0)
+    # kas,kdkas,kps =kas.flatten(),kdkas.flatten(),kps.flatten()
+    # Ns=np.array([2]*kas.size,dtype=int)
+
+    kas0   = np.array([5,7,10,15])
+    kps0   = np.array([1.1,1.01,1.001,1.0001])
+    Ns0    = np.array([2,3,4,6,8,10,15,20,30]) #np.stack([np.arange(2,11,1),np.arange(15,26,5)])
+    kas,Ns,kps = np.meshgrid(kas0,Ns0,kps0)
+    kas,Ns,kps = kas.flatten(),Ns.flatten(),kps.flatten()
+    kdkas = np.array([3]*kas.size)
+
+    df = ut.solve_set(df_name,kas,kps,kdkas,Ns)
+
+
+
 
 ##############################################################################
 #### N=2 tests

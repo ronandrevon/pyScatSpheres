@@ -109,6 +109,17 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         cp = (np.identity(self.Nu)+self.P1.dot(self.T)).dot(bp0)
         self.ap,self.bp = cp[:self.N*self.nmax],cp[self.N*self.nmax:]
         return self.ap,self.bp
+
+    # def get_cpn(self,n=2):
+    #     T=self.T.copy()
+    #     j,i = np.meshgrid(np.arange(self.Nu),np.arange(self.Nu))
+    #     T[i+self.Nap<j] = 0
+    #     T[(i>=self.Nap) & (i+self.Nap<j+self.Nap)] = 0
+    #     bp0 = self.P1.dot(self.L)
+    #     cp = self.P1.dot(self.T)).dot(bp0)
+    #     self.ap,self.bp = cp[:self.N*self.nmax],cp[self.N*self.nmax:]
+    #     return self.ap,self.bp
+
     def get_cpa(self):
         j,i = np.meshgrid(np.arange(self.Nu),np.arange(self.Nu))
         T=self.T.copy()
@@ -122,6 +133,16 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
         # print(self.N,cp)
         self.ap,self.bp = cp[:self.N*self.nmax],cp[self.N*self.nmax:]
         self.cp=self.bp
+    def get_ffn(self,theta,bp):
+        k,d_p,nmax,N = self.k,self.d_p,self.nmax,self.N
+        ct = np.cos(theta)
+
+        f = np.zeros(theta.shape,dtype=complex)
+        for l in range(nmax):
+            Yl = spe.sph_harm(0,l,0,theta)
+            for p in np.arange(N):
+                f += (-1J)**(l+1)*Yl*bp[p*nmax+l]*np.exp(-1J*self.kd_p[p]*ct)
+        return f
 
     def compute_f(self,r,theta,phi,ftype='t',Gopt='',idp=None):
         ''' computes scattering amplitude f
