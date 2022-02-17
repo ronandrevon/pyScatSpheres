@@ -6,8 +6,8 @@ plt.close('all')
 name='figures/TmatrixSingleF.eps'
 
 #### parameter sets to show scattering amplitudes
-ka1,kp1 = 40,1.001
-ka2,kp2 = 5,1.025
+ka1,kp1 = 3,1.1
+ka2,kp2 = 10,1.02
 # lam = cst.keV2lam(200)
 k0,K = 1,1/(2*np.pi)#2*np.pi/lam,1/lam
 npts=180*8
@@ -35,7 +35,7 @@ qdot1 = qsa.QdotSphereArray(N=1,ka=ka1,kp=kp1,kd=0,copt=0,solve=1,nmax=int(ka1)+
 f1    = ff(qdot1.get_ff(thetas))
 f1b   = ff(born(ka1*2*np.pi*q))
 f1m   = ff(get_MS(q,ka1,kp1))
-plts += [[theta,f1 ,'g-','$ka=%d$' %ka1]]
+plts += [[theta,f1 ,'g-','$ka=%.1f$' %ka1]]
 plts += [[theta,f1b,'g--','']]
 plts += [[theta,f1m,'g-.','']]
 

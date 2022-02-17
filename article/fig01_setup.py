@@ -7,20 +7,20 @@ opt='ps'
 txts,plts=[],[]
 cs={1:[(0.75,)*3,0.8],6:[(0.1,)*3,1],7:['b',1.1],8:['r',1.2]}
 
-#### Sphere locations, Circles and n_p
+#### Sphere locations, radius, n_p
 spheres = {
-    'p':[(3,6), 6],'q':[(5,2), 7],
-    '2':[(8.5,4.5), 6],'N':[(8.5,8), 8],'1':[(7.25,0.75),1],}
+    'p':[(3.0,6.0), 6,0.5],'q':[(5.0,2.0), 7,0.5],
+    '2':[(8.5,4.5), 6,0.2],'N':[(8.5,8.0), 8,0.2],'1':[(7.25,0.75),1,0.2],}
 spheres = {k:v+cs[v[1]] for k,v in spheres.items()}
-pps = [Circle(yz,radius=r,color=c,alpha=0.5) for (yz,Z,c,r) in spheres.values()]
-txts+= [[yz[0]+r/3,yz[1]-r/3,'$n_%s$' %i,'k'] for i,(yz,Z,c,r) in spheres.items()]
+pps = [Circle(yz,radius=r,color=c,alpha=a) for (yz,Z,a,c,r) in spheres.values()]
+txts+= [[yz[0]+r/3,yz[1]-r/3,'$n_%s$' %i,(1-2*a,)*3] for i,(yz,Z,a,c,r) in spheres.items()]
 
 ####radius arrows
 theta = 1.15*3*np.pi/4#+np.pi/2
 rm=0.91
 ct,st = np.cos(theta),np.sin(theta)
-arrows = [ [yz[0],yz[1],rm*r*ct,rm*r*st,'k'] for i,(yz,Z,c,r) in spheres.items()]
-txts+= [[yz[0]+0.7*r*ct,yz[1]+0.7*r*st+0.05,'$a_%s$' %i,'k'] for i,(yz,Z,c,r) in spheres.items()]
+arrows = [ [yz[0],yz[1],rm*r*ct,rm*r*st,(1-2*a,)*3] for i,(yz,Z,a,c,r) in spheres.items()]
+txts+= [[yz[0]+0.7*r*ct,yz[1]+0.7*r*st+0.05,'$a_%s$' %i,(1-2*a,)*3] for i,(yz,Z,a,c,r) in spheres.items()]
 
 #### triedres
 c,Nf = (0.35,)*3,3

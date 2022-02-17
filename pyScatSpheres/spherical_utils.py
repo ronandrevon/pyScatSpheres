@@ -359,7 +359,7 @@ def get_aln(lmax,nmax, fz_q,r_d,theta_d,phi_d=0):
         # print('l=%d' %l)
         for n in range(nmax+1):
             q = np.arange(abs(l-n),n+l+1)   #;cput = time.time()
-            Glnq = np.array([np.float(gaunt(l,n,q, 0,0,0)) for q in q])
+            Glnq = np.array([float(gaunt(l,n,q, 0,0,0)) for q in q])
             # Glnq = spu.w3j(l,n,q, 0,0,0)
             # print((zq[q]*Yq[q]).shape,Glnq.shape)
             alnu = 4*np.pi*np.sum((-1J)**(l-n-q[:,None])*zq[q]*Yq[q]*Glnq[:,None],axis=0)

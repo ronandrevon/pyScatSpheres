@@ -156,3 +156,56 @@ class HardSphereArrayBase():
         dsp.stddisp(plts,labs=labs,lw=2,
             title=tle,xylims=['x',0,180],
             name=name+'fconv.svg',**kwargs)
+
+
+
+    def test_convergence_error(self,nu_max,npts=360,**kwargs):
+        nmaxs=np.arange(2,nu_max+1,2)
+        ns = np.array(nmaxs).size
+        # theta = np.linspace(0,np.pi,npts)
+
+        eps=1e-10
+        phi=np.pi/2
+
+        #### sphere 1
+        r1_p=np.array(self.ka+eps)
+        r1_m=np.array(self.ka-eps)
+        theta0=np.linspace(0,np.pi ,npts)
+        theta1 = np.hstack([theta0,np.flipud(theta0)])
+        # phi=np.array([np.pi/2]*npts2+[-np.pi/2]*npts2)
+
+        x,y,z = spu.sphere2cart(r1_p,theta1,phi=phi)
+        r_p1_p,theta_p1_p,phi_p1_p = spu.cart2sphere(x,y,z+self.d_p[0])
+
+        x,y,z = spu.sphere2cart(r1_m,theta1,phi=phi)
+        r_p1_m,theta_p1_m,phi_p1_m = spu.cart2sphere(x,y,z+self.d_p[0])
+
+        #### sphere 2
+        r2_p=np.array(self.ka+eps)
+        r2_m=np.array(self.ka-eps)
+        x,y,z = spu.sphere2cart(r2_p,theta1,phi=phi)
+        r_p2_p,theta_p2_p,phi_p2_p = spu.cart2sphere(x,y,z+self.d_p[1])
+        x,y,z = spu.sphere2cart(r2_m,theta1,phi=phi)
+        r_p2_m,theta_p2_m,phi_p2_m = spu.cart2sphere(x,y,z+self.d_p[1])
+
+        #concat
+        r_tot_p     = np.hstack((r_p1_p,r_p2_p))
+        theta_tot_p = np.hstack((theta_p1_p,theta_p2_p))
+        phi_tot_p   = np.hstack((phi_p1_p,phi_p2_p))
+        r_tot_m     = np.hstack((r_p1_m,r_p2_m))
+        theta_tot_m = np.hstack((theta_p1_m,theta_p2_m))
+        phi_tot_m   = np.hstack((phi_p1_m,phi_p2_m))
+
+        err=np.zeros(nmaxs.shape)
+        for i,nmax in enumerate(nmaxs):
+            print('solving nmax=%d' %nmax)
+            self.solve(nmax=nmax,copt=1,v=0)
+            f_p=self.compute_f(r_tot_p,theta_tot_p,phi_tot_p,ftype='t')
+            f_m=self.compute_f(r_tot_m,theta_tot_m,phi_tot_m,ftype='t')
+            f_tot=abs(f_p-f_m)
+            err[i]=np.sum(f_tot)
+        # print(err)
+        #### display
+        labs =[r"$\nu_{max}$",r"$\log_{10}(|err|)$"]
+        plts=[nmaxs,np.log10(abs(err)),'b-o','']
+        dsp.stddisp(plts,labs=labs,lw=2,**kwargs)
