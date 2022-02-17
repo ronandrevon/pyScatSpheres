@@ -27,7 +27,7 @@ npts=360
 npts2 = int(npts/2)
 ### Initialisation -----------------------------------------------
 # X=np.arange(0,lmax+h,h)
-X=np.arange(2,9,2)
+X=np.arange(2,12,2)
 Y=np.zeros(X.size)
 indice=0
 
@@ -104,10 +104,11 @@ for l in X:
 # fig,ax = qdot1.show_f(opts='t ',opt='p',**args);
 
 ### plot ---------------------------------------------------------------------------
-tle = r'Convergence error of $\Psi_{|r=a_p^+} - \Psi_{|r=a_p^-}$'
-dsp.stddisp([X, np.log(Y),'b-o'],lw=2,title=tle,
-	labs=['$N_{max}$','$log_{10}(|err|)$']);
+# tle = r'Convergence error of $\Psi_{|r=a_p^+} - \Psi_{|r=a_p^-}$'
+dsp.stddisp([X, np.log(Y),'b-o'],lw=2,#title=tle,
+	fonts={'lab':30,'tick':20},
+	labs=[r'$\nu_{max}$','$log_{10}(|err|)$']);
 # plt.figure()
 # plt.plot(X, np.log(Y), linewidth = 3)
 # plt.grid()
-# plt.show()
+plt.show()
