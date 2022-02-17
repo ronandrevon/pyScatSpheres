@@ -19,6 +19,7 @@ fs=qdot1.compute_f(r,theta,0,ftype='t')
 
 
 ### Pilotage -----------------------------------------------------
+
 lmax=10
 eps=1e-10
 N=2
@@ -27,15 +28,16 @@ npts=360
 npts2 = int(npts/2)
 ### Initialisation -----------------------------------------------
 # X=np.arange(0,lmax+h,h)
-X=np.arange(2,12,2)
+X=np.arange(2,16,2)
 Y=np.zeros(X.size)
 indice=0
 
 ### Boucle -------------------------------------------------------
 for l in X:
+
 	print(l)
 	# qdot1 = qsa_arb.QdotSphereArray(ka=np.array([1,1]),kd_z=np.array([0,2]),kd_y=np.array([0,0]),kp=1.25,nmax=l)
-	qdot1 = qsa_arb.QdotSphereArray(alpha=45,ka=1,kd_z=np.array([0,6]),kd_y=np.array([0,6]),kp=1.25,nmax=l)
+	qdot1 = qsa_arb.QdotSphereArray(alpha=0,ka=np.array([1,1]),kd_z=np.array([0,6]),kd_y=np.array([0,6]),kp=1.25,nmax=l,opt2=0)
 	# qdot1 = qsa_arb.QdotSphereArray(alpha=45,ka=1,kd_z=0,kd_y=0,kp=1.25,nmax=l)
 	ka=qdot1.ka
 
@@ -97,11 +99,11 @@ for l in X:
 	indice+=1
 
 
-# args = {'npts':300,'fz':np.real,'def_args':0,'caxis':[-1,1],'cmap':'jet',
-#     'r':(-1.5*ka,4*ka)*2,'short_title':1,'pOpt':'tXG','fonts':{'title':15}}
-# args['r']=(-2,4,-2,4)
-# args['r']=(0.5,3.5)*2
-# fig,ax = qdot1.show_f(opts='t ',opt='p',**args);
+args = {'npts':300,'fz':np.real,'def_args':0,'caxis':[-1,1],'cmap':'jet',
+ 'r':(-1.5*ka,4*ka)*2,'short_title':1,'pOpt':'tXG','fonts':{'title':15}}
+args['r']=(-2,8,-2,8)
+#args['r']=(0.5,3.5)*2
+fig,ax = qdot1.show_f(opts='t ',opt='p',**args);
 
 ### plot ---------------------------------------------------------------------------
 # tle = r'Convergence error of $\Psi_{|r=a_p^+} - \Psi_{|r=a_p^-}$'

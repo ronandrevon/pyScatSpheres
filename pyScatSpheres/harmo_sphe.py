@@ -21,25 +21,30 @@ def legendre(l,x,indic):
 		return P[l,indic]
 
 
+
 def harmonique(l,theta,indic,phi=0):
+
 	Y=legendre(l,np.cos(theta),indic)
 	#print(Y.shape)
+
 	Y[0,0]=np.sqrt(1/(4*math.pi))*Y[0,0]
 	if (l>=1):
 		Y[1,0]=np.sqrt((2*1+1)/(4*math.pi))*Y[1,0]
-		Y[1,1]=np.sqrt((2*1+1)/(4*math.pi*math.factorial(2*1)))*Y[1,1]
-		Y[1,-1]=np.sqrt((2*1+1)*math.factorial(1+1)/(4*math.pi*math.factorial(1-1)))*Y[1,-1]
+		Y[1,1]=np.sqrt((2*1+1)/(4*math.pi*math.factorial(2*1)))*Y[1,1]*np.exp(1J*phi)
+		Y[1,-1]=np.sqrt((2*1+1)*math.factorial(1+1)/(4*math.pi*math.factorial(1-1)))*Y[1,-1]*np.exp(-1J*phi)
 	if (l>=2):
 		for L in range (2,l+1):
-			Y[L,L]=np.sqrt((2*L+1)/(4*math.pi*math.factorial(2*L)))*Y[L,L]
-			Y[L,0]=np.sqrt((2*L+1)/(4*math.pi))*Y[L,0]
-			Y[L,-L]=np.sqrt((2*L+1)*math.factorial(L+L)/(4*math.pi))*Y[L,-L]
+			Y[L,L]=np.sqrt((2*L+1)/(4*math.pi*math.factorial(2*L)))*Y[L,L]*np.exp(1J*L*phi)
+			Y[L,0]=np.sqrt((2*L+1)/(4*math.pi))*Y[L,0]*np.exp(1J*0*phi)
+			Y[L,-L]=np.sqrt((2*L+1)*math.factorial(L+L)/(4*math.pi))*Y[L,-L]*np.exp(-1J*L*phi)
 			for m in range(1,L):
-				ep=np.exp(1J*m*phi)
+				#ep=np.exp(1J*m*phi)
 				pos=np.sqrt((2*L+1)*math.factorial(L-m)/(4*math.pi*math.factorial(L+m)))
 				neg=np.sqrt((2*L+1)*math.factorial(L+m)/(4*math.pi*math.factorial(L-m)))
-				Y[L,m] =pos*Y[L,m] *np.exp(1J*m*phi)
+				Y[L,m]=pos*Y[L,m]*np.exp(1J*m*phi)
 				Y[L,-m]=neg*Y[L,-m]*np.exp(-1J*m*phi)
+
+
 	if (indic=='tab'):
 		return Y
 	else :

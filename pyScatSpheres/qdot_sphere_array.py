@@ -268,7 +268,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
 
                 idx_o = r_p>=self.ka[p]     #;print(idx_o.shape)
-                A=hs.harmonique(nmax-1,theta_p,'tab')
+                A=hs.harmonique(nmax-1,theta_p,'tab',0)
                 for l in range(nmax):
                     Yl=A[:,0][l]
 
@@ -293,7 +293,7 @@ class QdotSphereArray(hsb.HardSphereArrayBase):
             for p in idp:
                 r_p,theta_p,phi_p = spu.cart2sphere(x,y,z-self.d_p[p])
                 idx_i = r_p<self.ka[p]     #;print(idx_i.shape)
-                A=hs.harmonique(nmax-1,theta_p,'tab')
+                A=hs.harmonique(nmax-1,theta_p,'tab',0)
                 for l in range(nmax):
                     Yl=A[:,0][l]
                     #print(time.time()-ti2)
