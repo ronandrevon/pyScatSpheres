@@ -73,7 +73,7 @@ if 'Q' in opts:
     npts = len(ka_maxs)
     nmaxs = np.array([ abs(kas-ka).argmin() for ka in ka_maxs])
     fim = np.array([abs(np.array(fi[:nmax+1,:]).sum(axis=0)) for nmax in nmaxs])
-    cs = dsp.getCs('Spectral',npts)
+    cs = dsp.getCs('jet',npts)
     plts= [[k0/(2*np.pi)*q,fim[i]*2.5/abs(fim[i]).max(),[cs[i],'-'],
         '$ka_{max}=%d$' %kas[nmax]] for i,nmax in enumerate(nmaxs)]
 

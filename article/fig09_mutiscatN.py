@@ -7,9 +7,9 @@ from pyScatSpheres import utils as ut ;imp.reload(ut)
 plt.close('all')
 name='figures/TmatrixApproxErr'
 # df_name = 'data/df_qdotSpheresN2.pkl'
-opts = 'be' #a(fig9a errors), f(ff) e(set_error)
-opt = 'p'
-cmap_ns = 'viridis'
+opts = 'ae' #a(fig9a errors), f(ff) e(set_error)
+opt = 'bp'
+cmap_ns = 'jet'
 
 args = {'labs':['$N$',r'$log_{10}(err(b_p))$'],'lw':2,
     'fonts':'2','opt':opt}
@@ -19,7 +19,7 @@ if 'a' in opts:
     ns = 5
     df_name='data/df_qdot_ka7_kp3_Ns.pkl'
     df = pd.read_pickle(df_name)
-    if 'e' in opts:df = ut.set_errors(df_name)
+    if 'e' in opts:df = ut.set_errors(df_name,err=opt)
 
     Ns0 =np.array(df.N.unique(),dtype=float)
     #### uncomment if kas,kps need be selected

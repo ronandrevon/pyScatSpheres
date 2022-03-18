@@ -3,14 +3,14 @@ from pyScatSpheres import utils as ut ;imp.reload(ut)
 plt.close('all')
 name='figures/Tmatrix_'
 opt='ps'
-opts='a' #b (fig10b scattering amplitudes) a(fig10a Probas)
+opts='ab' #b (fig10b scattering amplitudes) a(fig10a Probas)
 
-
+cmap='Greens_r' #'cool'
 theta = np.deg2rad(np.linspace(0,90,1000))#3601))
 if 'a' in opts:
     df_name = 'data/df_qdot_ka7_kp2_Ns.pkl'
     df = pd.read_pickle(df_name)
-    Nmax,n_max = df.shape[0],9#max scattering orders
+    Nmax,n_max = df.shape[0],3#max scattering orders
 
     dfc  = df[:Nmax].copy()
     Ns   = np.array(dfc.N.values,dtype=float)[:Nmax]
@@ -42,15 +42,15 @@ if 'a' in opts:
     dfc['sigma_dyn']=dfc[sig_cols[1:]].sum(axis=1)
     dfc['scat']=dfc[['sigma1','sigma_dyn']].sum(axis=1)
 
-    plts,cs=[],dsp.getCs('viridis',n_max+1)
+    plts,cs=[],dsp.getCs(cmap,n_max+3)
     # plts+= [[Ns,1-dfc.sigma/S,'r-','coh']]
     plts+= [[ns,Ppoisson,'k-.','$P_{scat}^{P}$']]
     # plts+= [[Ns,dfc.scat/S  ,'k--' ,'$P_{kin}+P_{dyn}$']]
     plts+= [[Ns,dfc.sigma/S ,'k-'  ,'$P_{scat}$']]
     plts+= [[Ns,dfc.sigma1/S,'c-o','$P_{kin}$']]
     plts+= [[Ns,dfc.sigma_dyn/S,'b-o','$P_{dyn}$']]
-    plts+= [[Ns,dfc['sigma%d' %i]/S,[cs[i],'--o'],''] for i in range(1,n_max+1)]
-    legElt={'$P_{n}$':'k--o'}
+    plts+= [[Ns,dfc['sigma%d' %i]/S,[cs[i],'--o'],'$P_{%d}$' %i] for i in np.arange(2,n_max+1)]
+    legElt={}#{'$P_{n}$':'k--o'}
     dsp.stddisp(plts,labs=['$N$',r'$Fraction$'],lw=2,fonts='2',legElt=legElt,
         name=name+'Pn.eps',opt=opt)
 
@@ -64,7 +64,7 @@ if 'b' in opts:
     ffs=[abs(qdot.get_ffn(theta,c['bp_%d' %(i+1)])) for i in range(nmax)]
 
     theta_d = np.rad2deg(theta)
-    plts,cs=[],dsp.getCs('viridis',nmax)
+    plts,cs=[],dsp.getCs(cmap,nmax+3)
     plts+= [[theta_d, ff ,'k-',r'$\sum f_n$',1]]
     plts+= [[theta_d, ffs[i],[cs[i],'--'],'$f_%d$' %(i+1),2] for i in range(nmax)]
     dsp.stddisp(plts,labs=[r'$\theta(deg)$',r'$|f_n|$'],fonts='2',

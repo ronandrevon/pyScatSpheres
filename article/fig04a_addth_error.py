@@ -50,6 +50,6 @@ plts2 = [[y0+ka*ct,z0+ka*st,'k',''] for y0,z0 in zip([0,-yp],[0,-zp])]
 # dsp.stddisp(plts1,im=[y,z,psi_lm0.real     ],lw=2,pOpt='im',caxis=[-0.5,0.5],title=r'$\psi_{%d%d}^{(0)}, \nu_{max}=%d$' %(l,m,nmax),cmap='seismic')
 # dsp.stddisp(plts2,im=[y-yp,z-zp,psi_lm.real],lw=2,pOpt='im',caxis=[-0.5,0.5],title=r'$\psi_{%d%d}      , \nu_{max}=%d$' %(l,m,nmax),cmap='seismic')
 
-dsp.stddisp(plts2,im=[y-yp,z-zp,np.log10(abs((psi_lm-psi_lm0)/psi_lm0))],
+fig,ax=dsp.stddisp(plts2,im=[y-yp,z-zp,np.log10(abs((psi_lm-psi_lm0)/psi_lm0))],
     lw=2,pOpt='im',caxis=[-5,0],labs=['$y_p$','$z_p$'],#title=r'$\log_{10}|\psi_{%d%d}-\psi_{%d%d}^{(0)}|, \nu_{max}=%d$' %(l,m,l,m,nmax))
     fonts={'lab':30,'tick':20},name=path+'addth_error.png',opt='ps')
