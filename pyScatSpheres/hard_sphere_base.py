@@ -164,7 +164,7 @@ class HardSphereArrayBase():
         ns = np.array(nmaxs).size
         # theta = np.linspace(0,np.pi,npts)
 
-        eps=1e-10
+        eps=1e-16
         phi=np.pi/2
 
         #### sphere 1

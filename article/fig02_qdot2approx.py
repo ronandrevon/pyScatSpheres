@@ -5,10 +5,11 @@ from pyScatSpheres import qdot_sphere_array as qsa ;imp.reload(qsa)
 from pyScatSpheres import spherical_utils as spu   ;imp.reload(spu)
 
 name='qdot2_approx_img.png'
-opt='ps'
+opt='sc'
 
 nmax,ka,k0=5,6,1
 kd  = 4.5*ka
+kp = 1.1
 nka = 5
 nka2 = 2.5*nka
 npts = 200
@@ -59,10 +60,11 @@ pp = [patches.FancyArrowPatch((kad, 0), (kad, kd), arrowstyle='<|-|>',
     mutation_scale=20,color='k',alpha=0.8,lw=2)]
 pp+=[patches.Circle((kap,kdp),ka,color='b',alpha=0.25,ec='k',lw=2)
     for kap,kdp in zip([0,nka*ka,nka2*ka,nka2*ka],[kd,kd,0,kd])]
-txt = [[1.2*kad,kd/2,'$kd$','k']]
+txt = [[1.3*kad,kd/2,'$kd$','k']]
 txt+= [[0.75*nka/2*ka,kd/2,'$+$','k']]
 n2,nl = (nka2+nka)/2,2
 txt+= [[1.05*n2*ka,1.4*kd/2,'?','k']]
 plt.arrow((n2-0.4)*ka,kd/2,0.8*nl*ka,0,width=1)
-dsp.stddisp(texts=txt,fonts={'text':30},patches=pp,lw=2,pOpt='Xe',ax=ax,
+dsp.stddisp(texts=txt,fonts={'text':50},patches=pp,lw=2,pOpt='Xe',ax=ax,
     opt=opt,name=name)
+plt.show()

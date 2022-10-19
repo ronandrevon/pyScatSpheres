@@ -2,10 +2,10 @@ from utils import * ;imp.reload(dsp)
 from pyScatSpheres import utils as ut ;imp.reload(ut)
 plt.close('all')
 name='figures/Tmatrix_'
-opt='ps'
-opts='ab' #b (fig10b scattering amplitudes) a(fig10a Probas)
+opt='s'
+opts='b' #b (fig10b scattering amplitudes) a(fig10a Probas)
 
-cmap='Greens_r' #'cool'
+cmap='jet'
 theta = np.deg2rad(np.linspace(0,90,1000))#3601))
 if 'a' in opts:
     df_name = 'data/df_qdot_ka7_kp2_Ns.pkl'
@@ -64,7 +64,7 @@ if 'b' in opts:
     ffs=[abs(qdot.get_ffn(theta,c['bp_%d' %(i+1)])) for i in range(nmax)]
 
     theta_d = np.rad2deg(theta)
-    plts,cs=[],dsp.getCs(cmap,nmax+3)
+    plts,cs=[],dsp.getCs(cmap,nmax+1    )
     plts+= [[theta_d, ff ,'k-',r'$\sum f_n$',1]]
     plts+= [[theta_d, ffs[i],[cs[i],'--'],'$f_%d$' %(i+1),2] for i in range(nmax)]
     dsp.stddisp(plts,labs=[r'$\theta(deg)$',r'$|f_n|$'],fonts='2',
@@ -74,7 +74,7 @@ if 'b' in opts:
 
 
 
-
+# plt.show()
 # if 'F' in opts:
 #     kas,kps = [5,10,15],[1.1,1.01,1.001]
 #     nkas = df.ka.unique().size

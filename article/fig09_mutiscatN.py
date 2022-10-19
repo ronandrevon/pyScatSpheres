@@ -7,7 +7,7 @@ from pyScatSpheres import utils as ut ;imp.reload(ut)
 plt.close('all')
 name='figures/TmatrixApproxErr'
 # df_name = 'data/df_qdotSpheresN2.pkl'
-opts = 'ae' #a(fig9a errors), f(ff) e(set_error)
+opts = 'a' #a(fig9a errors), f(ff) e(set_error)
 opt = 'bp'
 cmap_ns = 'jet'
 
@@ -61,6 +61,7 @@ if 'a' in opts:
     plts1= [[Ns0,errs_n[i,:],[cs[i],'--o'],''] for i in range(ns) ]
     dsp.stddisp(plts1,ax=ax,legLoc='lower left',xylims=[0,105,-6.5,0.5],#title='error uncoupled, $k_p=%.4f$' %kp,
         name=name+'.eps',**args)
+    plt.show()
     # dsp.stddisp(pltsa,title='error forward coupling, $k_p=%.4f$' %kp,
     # name=name+'err_forward.svg',**args)
 

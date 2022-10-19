@@ -8,7 +8,7 @@ from pyScatSpheres import utils as ut ;imp.reload(ut)
 plt.close('all')
 name='figures/qdotSphereArray2approx_kakp_'
 df_name = 'data/df_qdotSpheres_2.pkl'
-opt = 'sp'
+opt = 'p'
 opts = '' # s(resolve) e(set_error)
 
 #### load dataframe with precomputed solutions

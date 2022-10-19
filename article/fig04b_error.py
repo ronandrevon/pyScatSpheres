@@ -7,4 +7,4 @@ plt.close('all')
 
 q=qsa.QdotSphereArray(N=2,kp=1.1,kd=2,ka=0.5)
 
-q.test_convergence_error(13,fonts={'lab':30,'tick':20})
+q.test_convergence_error(16,fonts={'lab':30,'tick':20})
